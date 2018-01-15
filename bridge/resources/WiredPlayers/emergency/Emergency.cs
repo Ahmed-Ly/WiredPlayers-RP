@@ -1,0 +1,391 @@
+﻿using GTANetworkAPI;
+using WiredPlayers.model;
+using WiredPlayers.globals;
+using WiredPlayers.database;
+using WiredPlayers.house;
+using WiredPlayers.business;
+using WiredPlayers.faction;
+using System.Collections.Generic;
+using System.Threading;
+using System;
+
+namespace WiredPlayers.emergency
+{
+    class Emergency : Script
+    {
+        public static List<BloodModel> bloodList;
+        private static Dictionary<int, Timer> deathTimerList = new Dictionary<int, Timer>();
+
+        public Emergency()
+        {
+            Event.OnPlayerDeath += OnPlayerDeathHandler;
+            Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
+            Event.OnUpdate += OnUpdateHandler;
+        }
+
+        private void OnPlayerDeathHandler(Client player, NetHandle entityKiller, uint weapon, CancelEventArgs cancel)
+        {
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+            DeathModel death = new DeathModel(player, entityKiller, weapon);
+
+            // Creamos las variables para dar el aviso
+            Vector3 deathPosition = null;
+            String deathPlace = String.Empty;
+            String deathHour = DateTime.Now.ToString("h:mm:ss tt");
+
+            // Miramos el lugar donde ha muerto
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
+            {
+                int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
+                HouseModel house = House.getHouseById(houseId);
+                deathPosition = house.position;
+                deathPlace = house.name;
+            }
+            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
+            {
+                int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
+                BusinessModel business = Business.getBusinessById(businessId);
+                deathPosition = business.position;
+                deathPlace = business.name;
+            }
+            else
+            {
+                deathPosition = NAPI.Entity.GetEntityPosition(player);
+            }
+
+            // Creamos el aviso y lo añadimos a la lista
+            FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, playerId, deathPlace, deathPosition, -1, deathHour);
+            Faction.factionWarningList.Add(factionWarning);
+
+            // Creamos el mensaje de aviso
+            String warnMessage = String.Format(Messages.INF_EMERGENCY_WARNING, Faction.factionWarningList.Count - 1);
+
+            // Damos el aviso a todos los médicos de servicio
+            foreach (Client target in NAPI.Pools.GetAllPlayers())
+            {
+                if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) > 0)
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + warnMessage);
+                }
+            }
+
+            // Creamos el timer para poner el estado de muerto
+            Timer deathTimer = new Timer(OnDeathTimer, death, 2500, Timeout.Infinite);
+            deathTimerList.Add(playerId, deathTimer);
+
+            // Evitamos el respawn
+            cancel.Spawn = false;
+        }
+
+        private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
+        {
+            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            {
+                destroyDeathTimer(player);
+            }
+        }
+
+        private void OnUpdateHandler()
+        {
+            foreach (Client player in NAPI.Pools.GetAllPlayers())
+            {
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+                {
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.RESET_PED_RAGDOLL_TIMER, player);
+                }
+            }
+        }
+
+        public void OnDeathTimer(object death)
+        {
+            try
+            {
+                Client player = ((DeathModel)death).player;
+                NetHandle entityKiller = ((DeathModel)death).entityKiller;
+                uint weapon = ((DeathModel)death).weapon;
+                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+                int totalSeconds = Globals.getTotalSeconds();
+
+                //NAPI.Native.SendNativeToPlayer(player, Hash._RESET_LOCALPLAYER_STATE, player);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.RESET_PLAYER_ARREST_STATE, player);
+
+                //NAPI.Native.SendNativeToPlayer(player, Hash.IGNORE_NEXT_RESTART, true);
+                //NAPI.Native.SendNativeToPlayer(player, Hash._DISABLE_AUTOMATIC_RESPAWN, true);
+
+                //NAPI.Native.SendNativeToPlayer(player, Hash.SET_FADE_IN_AFTER_DEATH_ARREST, true);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.SET_FADE_OUT_AFTER_DEATH, false);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.NETWORK_REQUEST_CONTROL_OF_ENTITY, player);
+
+                //NAPI.Native.SendNativeToPlayer(player, Hash.FREEZE_ENTITY_POSITION, player, false);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.NETWORK_RESURRECT_LOCAL_PLAYER, player.Position.X, player.Position.Y, player.Position.Z, player.Rotation.Z, false, false);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.RESURRECT_PED, player);
+
+                //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, true);
+                //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
+
+                if (entityKiller != null && NAPI.Entity.GetEntityType(entityKiller) == EntityType.Player)
+                {
+                    int killerId = NAPI.Data.GetEntityData(entityKiller, EntityData.PLAYER_SQL_ID);
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
+                }
+                else
+                {
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, -1);
+                }
+                NAPI.Entity.SetEntityInvincible(player, true);
+                NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
+
+                // Borramos el timer de la lista
+                Timer deathTimer = deathTimerList[playerId];
+                if (deathTimer != null)
+                {
+                    deathTimer.Dispose();
+                    deathTimerList.Remove(playerId);
+                }
+            }
+            catch(Exception ex)
+            {
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.Message);
+            }
+        }
+
+        private int getRemainingBlood()
+        {
+            int remaining = 0;
+            foreach(BloodModel blood in bloodList)
+            {
+                if(blood.used)
+                {
+                    remaining--;
+                }
+                else
+                {
+                    remaining++;
+                }
+            }
+            return remaining;
+        }
+
+        public static void destroyDeathTimer(Client player)
+        {
+            Timer deathTimer = null;
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+            if (deathTimerList.TryGetValue(playerId, out deathTimer) == true)
+            {
+                deathTimer.Dispose();
+                deathTimerList.Remove(playerId);
+            }
+
+            NAPI.Entity.SetEntityInvincible(player, false);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, 0);
+            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, false);
+            NAPI.Data.ResetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN);
+        }
+
+        private void teleportPlayerToHospital(Client player)
+        {
+            Vector3 hospital = new Vector3(-1385.481f, -976.4036f, 9.273162f);
+            //NAPI.Native.SendNativeToPlayer(player, Hash.GIVE_PLAYER_RAGDOLL_CONTROL, player, false);
+            NAPI.Data.ResetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
+            NAPI.Entity.SetEntityPosition(player, hospital);
+            NAPI.Entity.SetEntityDimension(player, 0);
+            NAPI.Entity.SetEntityInvincible(player, false);
+        }
+
+        [Command("curar", Messages.GEN_HEAL_COMMAND)]
+        public void curarCommand(Client player, String targetString)
+        {
+            int targetId = 0;
+            Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+            if (target != null && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
+            {
+                if (NAPI.Player.GetPlayerHealth(target) < 100)
+                {
+                    String playerMessage = String.Format(Messages.INF_MEDIC_HEALED_PLAYER, target.Name);
+                    String targetMessage = String.Format(Messages.INF_PLAYER_HEALED_MEDIC, player.Name);
+
+                    // Curamos al personaje
+                    NAPI.Player.SetPlayerHealth(target, 100);
+
+                    foreach (Client targetPlayer in NAPI.Pools.GetAllPlayers())
+                    {
+                        if (targetPlayer.Position.DistanceTo(player.Position) < 20.0f)
+                        {
+                            String message = String.Format(Messages.INF_MEDIC_REANIMATED, player.Name, target.Name);
+                            NAPI.Chat.SendChatMessageToPlayer(targetPlayer, Constants.COLOR_CHAT_ME + message);
+                        }
+                    }
+
+                    // Enviamos el mensaje de aviso
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_HURT);
+                }
+            }
+            else
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+            }
+        }
+
+        [Command("reanimar", Messages.GEN_REANIMATE_COMMAND)]
+        public void reanimarCommand(Client player, String targetString)
+        {
+            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_EMERGENCY_FACTION);
+            }
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_ON_DUTY);
+            }
+            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+            }
+            else
+            {
+                int targetId = 0;
+                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                if (target != null)
+                {
+                    if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_KILLED) != 0)
+                    {
+                        if(getRemainingBlood() > 0)
+                        {
+                            // Eliminamos el timer
+                            destroyDeathTimer(target);
+
+                            // Creamos el modelo
+                            BloodModel bloodModel = new BloodModel();
+                            bloodModel.doctor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                            bloodModel.patient = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
+                            bloodModel.type = String.Empty;
+                            bloodModel.used = true;
+
+                            // Añadimos la sangre a la base de datos
+                            bloodModel.id = Database.addBloodTransaction(bloodModel);
+                            bloodList.Add(bloodModel);
+
+                            String playerMessage = String.Format(Messages.INF_PLAYER_REANIMATED, target.Name);
+                            String targetMessage = String.Format(Messages.SUC_TARGET_REANIMATED, player.Name);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SUCCESS + targetMessage);
+                        }
+                        else
+                        {
+                            // No queda sangre en las reservas
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_BLOOD_LEFT);
+                        }
+                    }
+                    else
+                    {
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_DEAD);
+                    }
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+                }
+            }
+        }
+
+        [Command("extraer", Messages.GEN_EXTRACT_COMMAND)]
+        public void extraerCommand(Client player, String targetString)
+        {
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+            }
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_ON_DUTY);
+            }
+            else
+            {
+                int targetId = 0;
+                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                if (target != null && NAPI.Data.GetEntityData(player, "PLAYER_FACTION") == Constants.FACTION_EMERGENCY)
+                {
+                    if (NAPI.Player.GetPlayerHealth(target) > 15)
+                    {
+                        // Creamos el modelo
+                        BloodModel blood = new BloodModel();
+                        blood.doctor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                        blood.patient = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
+                        blood.type = String.Empty;
+                        blood.used = false;
+
+                        // Añadimos la sangre a la base de datos
+                        blood.id = Database.addBloodTransaction(blood);
+                        bloodList.Add(blood);
+
+                        NAPI.Player.SetPlayerHealth(target, NAPI.Player.GetPlayerHealth(target) - 15);
+                        NAPI.Chat.SendChatMessageToPlayer(player, String.Format("Sangre extraida, ahora tiene {0}", NAPI.Player.GetPlayerHealth(target)));
+                    }
+                    else
+                    {
+                        NAPI.Chat.SendChatMessageToPlayer(player, String.Format("El jugador {0} tiene muy poca sangre, por lo tanto, no se le puede extraer", targetString));
+                    }
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+                }
+            }
+        }
+
+        [Command("morir")]
+        public void morirCommand(Client player)
+        {
+            // Miramos si está muerto y esperando a ir al hospital
+            if (NAPI.Data.HasEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) == true)
+            {
+                int totalSeconds = Globals.getTotalSeconds();
+
+                if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
+                {
+                    // Obtenemos el identificador del jugador
+                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+
+                    // Movemos al jugador al hospital
+                    teleportPlayerToHospital(player);
+
+                    // Eliminamos el timer
+                    destroyDeathTimer(player);
+
+                    // Obtenemos el aviso
+                    FactionWarningModel factionWarn = Faction.getFactionWarnByTarget(playerId, Constants.FACTION_EMERGENCY);
+
+                    if (factionWarn != null)
+                    {
+                        // Miramos si está atendido el aviso
+                        if (factionWarn.takenBy >= 0)
+                        {
+                            Client doctor = Globals.getPlayerById(factionWarn.takenBy);
+                            NAPI.Chat.SendChatMessageToPlayer(doctor, Constants.COLOR_INFO + Messages.INF_FACTION_WARN_CANCELED);
+                        }
+
+                        // Borramos el aviso de la lista
+                        Faction.factionWarningList.Remove(factionWarn);
+                    }
+
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_DEATH_TIME_NOT_PASSED);
+                }
+            }
+            else
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_DEAD);
+            }
+        }
+    }
+}
