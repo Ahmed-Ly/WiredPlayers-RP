@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <title>Panel de registro de cuenta</title>
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <script src="../lib/jquery-3.1.1.min.js"></script>
+        <script src="../lib/bootstrap.min.js"></script>
+    </head>
+    <body class="background col-lg-12">
+        <form class="col-lg-3 center-block panel vertical-center">
+            <div class="panel-heading login-heading"><img class="logo" src="../img/login/logo.png" /></div>
+            <p class="text-center">Bienvenido a WiredPlayers. Para jugar en el servidor, es necesario que registres tu cuenta y la vincules al foro</p>
+            <div class="col-lg-8 col-lg-offset-2"><input id="forum" class="form-control center-block" type="text" placeholder="Cuenta del foro" required="required" autofocus/></div>
+            <div class="col-lg-8 col-lg-offset-2"><input id="pass" class="form-control center-block" type="password" placeholder="Contraseña" required="required"/></div>
+            <div class="col-lg-6 col-lg-offset-3"><button id="register" class="btn btn-primary form-control center-block" onclick="registerAccount();">Acceder</button></div>
+        </form>
+    </body>
+    <script src="../js/functions.js"></script>
+</html>

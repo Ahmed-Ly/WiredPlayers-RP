@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <title>Panel de acceso a la cuenta</title>
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <script src="../lib/jquery-3.1.1.min.js"></script>
+        <script src="../lib/bootstrap.min.js"></script>
+    </head>
+    <body class="background col-lg-12">
+        <form class="col-lg-3 center-block panel vertical-center">
+            <div class="panel-heading login-heading"><img class="logo" src="../img/login/logo.png" /></div>
+            <p class="text-center">Bienvenido de nuevo a WiredPlayers. Para acceder al servidor, es necesario que ingreses tu contraseña</p>
+            <div class="col-lg-8 col-lg-offset-2"><input id="pass" class="form-control center-block pass-field" type="password" placeholder="Contraseña" required="required" autofocus/></div>
+            <div class="col-lg-6 col-lg-offset-3"><button id="register" class="btn btn-primary form-control center-block" onclick="loginAccount();">Acceder</button></div>
+        </form>
+    </body>
+    <script src="../js/functions.js"></script>
+</html>
