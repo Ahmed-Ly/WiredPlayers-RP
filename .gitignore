@@ -3,3 +3,5 @@
 ################################################################################
 
 /bridge/resources/WiredPlayers/obj
+/bridge/resources/WiredPlayers/bin/Debug/netcoreapp2.0
+/bridge/resources/WiredPlayers/.vs/WiredPlayers/v15
