@@ -7,5 +7,6 @@ require('./WiredPlayers/globals/bindings.js');
 require('./WiredPlayers/globals/dxDrawer.js');
 require('./WiredPlayers/drivingschool/drivingSchool.js');
 require('./WiredPlayers/character/character.js');
+require('./WiredPlayers/character/inventory.js');
 require('./WiredPlayers/vehicles/vehicles.js');
 require('./WiredPlayers/garbage/garbage.js');

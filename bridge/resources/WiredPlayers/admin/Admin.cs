@@ -93,8 +93,9 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     String message = String.Format(Messages.ADM_GOTO_PLAYER, target.Name);
@@ -127,8 +128,9 @@ namespace WiredPlayers.admin
 
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     String message = String.Format(Messages.ADM_BRING_PLAYER, player.SocialClubName);
@@ -160,8 +162,9 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     WeaponHash weapon = NAPI.Util.WeaponNameToModel(weaponName);
@@ -322,8 +325,8 @@ namespace WiredPlayers.admin
                                                 }
                                                 else
                                                 {
-                                                    uint dimension = 0;
-                                                    if (UInt32.TryParse(arguments[3], out dimension) == true)
+                                                    // Obtenemos la dimension
+                                                    if (UInt32.TryParse(arguments[3], out uint dimension) == true)
                                                     {
                                                         String message = String.Format(Messages.ADM_VEHICLE_DIMENSION_MODIFIED, dimension);
                                                         NAPI.Entity.SetEntityDimension(veh, dimension);
@@ -361,8 +364,8 @@ namespace WiredPlayers.admin
                                                 }
                                                 else
                                                 {
-                                                    int faction = 0;
-                                                    if (Int32.TryParse(arguments[2], out faction) == true)
+                                                    // Obtenemos la facción
+                                                    if (Int32.TryParse(arguments[2], out int faction) == true)
                                                     {
                                                         String message = String.Format(Messages.ADM_VEHICLE_FACTION_MODIFIED, faction);
                                                         vehicleId = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
@@ -674,8 +677,8 @@ namespace WiredPlayers.admin
                             {
                                 if (arguments.Length == 2)
                                 {
-                                    int type = 0;
-                                    if (Int32.TryParse(arguments[1], out type) == true)
+                                    // Obtenemos el tipo de negocio
+                                    if (Int32.TryParse(arguments[1], out int type) == true)
                                     {
                                         business.type = type;
                                         business.ipl = Business.getBusinessTypeIpl(type);
@@ -737,8 +740,8 @@ namespace WiredPlayers.admin
                                             case "tipo":
                                                 if (arguments.Length == 3)
                                                 {
-                                                    int businessType = 0;
-                                                    if (Int32.TryParse(arguments[2], out businessType) == true)
+                                                    // Obtenemos el tipo de negocio
+                                                    if (Int32.TryParse(arguments[2], out int businessType) == true)
                                                     {
                                                         // Cambiamos el tipo
                                                         business.type = businessType;
@@ -806,11 +809,10 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
-                int targetId = 0;
                 Client target = null;
 
                 // Miramos si viene un id o un nombre
-                if (Int32.TryParse(name, out targetId) == true)
+                if (Int32.TryParse(name, out int targetId) == true)
                 {
                     target = Globals.getPlayerById(targetId);
                     amount = surname;
@@ -823,8 +825,8 @@ namespace WiredPlayers.admin
                 // Comprobamos que el jugador se encuentre conectado
                 if (target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                 {
-                    int value = 0;
-                    if (Int32.TryParse(amount, out value) == true)
+                    // Obtenemos la cantidad
+                    if (Int32.TryParse(amount, out int value) == true)
                     {
                         String message = String.Empty;
                         switch (action.ToLower())
@@ -903,8 +905,8 @@ namespace WiredPlayers.admin
                     case "info":
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                         {
-                            int houseId;
-                            if (arguments.Length == 2 && int.TryParse(arguments[1], out houseId) == true) //Se ha metido ID.
+                            // Obtenemos el identificador de la casa
+                            if (arguments.Length == 2 && int.TryParse(arguments[1], out int houseId) == true) //Se ha metido ID.
                             {
                                 house = House.getHouseById(houseId);
                                 if (house != null)
@@ -950,9 +952,9 @@ namespace WiredPlayers.admin
                     case "modificar":
                         if (arguments.Length > 2)
                         {
-                            int value = 0;
                             String message = String.Empty;
-                            if (Int32.TryParse(arguments[2], out value) == true)
+
+                            if (Int32.TryParse(arguments[2], out int value) == true)
                             {
                                 // Modificación numérica
                                 switch (arguments[1].ToLower())
@@ -1099,8 +1101,8 @@ namespace WiredPlayers.admin
                     case "tpa":
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                         {
-                            int houseId = 0;
-                            if (arguments.Length == 2 && int.TryParse(arguments[1], out houseId) == true)
+                            // Obtenemos la casa
+                            if (arguments.Length == 2 && int.TryParse(arguments[1], out int houseId) == true)
                             {
                                 house = House.getHouseById(houseId);
                                 if (house != null)
@@ -1182,8 +1184,8 @@ namespace WiredPlayers.admin
                         {
                             if (arguments.Length == 2)
                             {
-                                int type = 0;
-                                if (Int32.TryParse(arguments[1], out type) == true)
+                                // Obtenemos el tipo de parking
+                                if (Int32.TryParse(arguments[1], out int type) == true)
                                 {
                                     if (type < Constants.PARKING_TYPE_PUBLIC || type > Constants.PARKING_TYPE_DEPOSIT)
                                     {
@@ -1221,8 +1223,8 @@ namespace WiredPlayers.admin
                                     case "casa":
                                         if (parking.type == Constants.PARKING_TYPE_GARAGE)
                                         {
-                                            int houseId = 0;
-                                            if (Int32.TryParse(arguments[2], out houseId) == true)
+                                            // Modificamos la casa adjunta
+                                            if (Int32.TryParse(arguments[2], out int houseId) == true)
                                             {
                                                 parking.houseId = houseId;
                                                 Database.updateParking(parking);
@@ -1327,8 +1329,9 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_KILLED) != 0)
@@ -1373,16 +1376,15 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
+                int jailTime = 0;
                 String[] arguments = args.Trim().Split(' ');
 
                 if (arguments.Length > 2)
                 {
-                    int targetId = 0;
-                    int jailTime = 0;
                     Client target = null;
                     String reason = String.Empty;
 
-                    if (Int32.TryParse(arguments[0], out targetId) == true)
+                    if (Int32.TryParse(arguments[0], out int targetId) == true)
                     {
                         target = Globals.getPlayerById(targetId);
                         if (Int32.TryParse(arguments[1], out jailTime) == true)
@@ -1439,8 +1441,8 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Player.KickPlayer(target, reason);
                 NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + target.Name + " ha sido expulsado por " + player.Name + " motivo: " + reason);
             }
@@ -1469,8 +1471,8 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Player.BanPlayer(target, reason);
                 NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + target.Name + " ha sido baneado por " + player.Name + " motivo: " + reason);
             }
@@ -1481,8 +1483,8 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                // Obtenemos el jugador objetivo
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + "Has cambiado la salud de " + target.Name + " por " + health);
                 NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + "El miembro del staff " + player.Name + " te ha cambiado la salud por " + health);
                 NAPI.Player.SetPlayerHealth(target, health);
@@ -1699,8 +1701,7 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == false)
                 {
@@ -1746,8 +1747,7 @@ namespace WiredPlayers.admin
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
                 String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";

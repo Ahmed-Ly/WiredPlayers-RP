@@ -145,16 +145,6 @@ mp.events.add('guiReady', () => {
 	fishingBarMax = resolution.x - 27.0;
 });
 
-mp.events.add('showPlayerInventory', (inventoryJson, targetPlayer) => {
-	// Mostramos el inventario
-	inventory = [];
-	target = targetPlayer;
-	populateInventory(inventoryJson);
-	mp.gui.cursor.show(true, true);
-	mp.gui.chat.activate(false);
-	mp.gui.chat.show(false);
-});
-
 mp.events.add('helptext', () => {
 	// Mostramos el texto de ayuda
 	mp.gui.cursor.show(true, true);

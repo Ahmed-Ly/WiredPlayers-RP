@@ -471,8 +471,7 @@ namespace WiredPlayers.faction
                         case "conectar":
                             if (arguments.Length == 3)
                             {
-                                int frequency = 0;
-                                if (Int32.TryParse(arguments[1], out frequency) == true)
+                                if (Int32.TryParse(arguments[1], out int frequency) == true)
                                 {
                                     // Ciframos la contraseña
                                     MD5 md5Hash = MD5.Create();
