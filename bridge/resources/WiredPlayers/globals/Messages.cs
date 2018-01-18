@@ -505,7 +505,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_INCRIMINATED_HIMSELF = "No te puedes inculpar a ti mismo.";
         public const String ERR_PLAYER_HANDCUFFED_HIMSELF = "No te puedes esposar a ti mismo.";
         public const String ERR_PLAYER_FINED_HIMSELF = "No te puedes multar a ti mismo.";
-        public const String ERR_PLAYER_IS_DEATH = "No puedes hacer eso estando inconsciente.";
+        public const String ERR_PLAYER_IS_DEAD = "No puedes hacer eso estando inconsciente.";
         public const String ERR_BUSINESS_LOCKED = "El negocio está cerrado con llave.";
         public const String ERR_PLAYER_NOT_BUSINESS_OWNER = "No eres el dueño del negocio."; 
         public const String ERR_ITEM_NOT_CONSUMABLE = "No tienes nada consumible en la mano.";

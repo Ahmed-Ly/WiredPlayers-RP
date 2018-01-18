@@ -11,11 +11,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("recogiendo")]
-        public void recogiendoComamnd(Client player)
+        public void RecogiendoComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -25,11 +25,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("facepalm")]
-        public void facepalmComamnd(Client player)
+        public void FacepalmComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -39,11 +39,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("loco")]
-        public void locoComamnd(Client player)
+        public void LocoComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -53,11 +53,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("flipar")]
-        public void fliparComamnd(Client player)
+        public void FliparComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -67,11 +67,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("burla")]
-        public void tauntComamnd(Client player)
+        public void BurlaComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -81,11 +81,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("paz")]
-        public void pazComamnd(Client player)
+        public void PazComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -95,11 +95,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("esconderse")]
-        public void esconderseComamnd(Client player)
+        public void EsconderseComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -109,11 +109,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("dj")]
-        public void djComamnd(Client player)
+        public void DjComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -123,11 +123,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("arrodillarse")]
-        public void arrodillarseCommand(Client player)
+        public void ArrodillarseCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -137,11 +137,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("hablar")]
-        public void hablarCommand(Client player)
+        public void HablarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -151,11 +151,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("mecanico", Messages.GEN_ANIMS_MECHANIC)] 
-        public void mecanicoCommand(Client player, int action)
+        public void MecanicoCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -181,11 +181,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("cavar")] 
-        public void cavarCommand(Client player)
+        public void CavarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -195,11 +195,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("llorar")]
-        public void llorarsueloCommand(Client player)
+        public void LlorarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -209,11 +209,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("limpiar", Messages.GEN_ANIMS_CLEAN)]
-        public void limpiarCommand(Client player, int action)
+        public void LimpiarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -247,11 +247,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("ducharse", Messages.GEN_ANIMS_SHOWER)]
-        public void ducharCommand(Client player, int action)
+        public void DucharseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -273,11 +273,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("venaqui")] 
-        public void vamosCommand(Client player)
+        public void VenaquiCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -287,11 +287,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("deporte", Messages.GEN_ANIMS_SPORTS)]
-        public void deporteCommand(Client player, int action)
+        public void DeporteCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -365,11 +365,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("teclear")]
-        public void ordenadorCommand(Client player)
+        public void TeclearCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -379,11 +379,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("llamarpuerta")]
-        public void llamarpuertaCommand(Client player)
+        public void LlamarpuertaCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -393,11 +393,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("graffiti")]
-        public void graffitiCommand(Client player)
+        public void GraffitiCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -407,11 +407,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("striptease", Messages.GEN_ANIMS_STRIPTEASE)]
-        public void stripteaseCommand(Client player, int action)
+        public void StripteaseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -481,11 +481,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("beber")]
-        public void beberCommand(Client player)
+        public void BeberCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -495,11 +495,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("beso", Messages.GEN_ANIMS_KISS)]
-        public void besoCommand(Client player, int action)
+        public void BesoCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -509,11 +509,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("apuntar", Messages.GEN_ANIMS_AIM)]
-        public void apuntarCommand(Client player, int action)
+        public void ApuntarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -531,11 +531,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("saludar", Messages.GEN_ANIMS_SALUTE)]
-        public void saludoCommand(Client player, int action)
+        public void SaludarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -574,11 +574,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("cortemangas")]
-        public void cortemangasCommand(Client player)
+        public void CortemangasCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -588,11 +588,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("andar", Messages.GEN_ANIMS_WALK)]
-        public void caminarCommand(Client player, int action)
+        public void AndarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -690,11 +690,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("nudillos")]
-        public void nudillosCommand(Client player)
+        public void NudillosCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -704,11 +704,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("rendirse", Messages.GEN_ANIMS_SURRENDER)]
-        public void rendirseCommand(Client player, int action)
+        public void RendirseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -766,11 +766,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("comer")]
-        public void comerCommand(Client player)
+        public void ComerCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -780,11 +780,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("vomitar")]
-        public void vomitarCommand(Client player)
+        public void VomitarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -794,11 +794,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("plantar")]
-        public void plantarCommand(Client player)
+        public void PlantarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -808,11 +808,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("rcp", Messages.GEN_ANIMS_PCR)]
-        public void rcpCommand(Client player, int action)
+        public void RcpCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -842,11 +842,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("sexocoche", Messages.GEN_ANIMS_CAR_SEX)]
-        public void sexococheCommand(Client player, int action)
+        public void SexococheCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Player.IsPlayerInAnyVehicle(player) == false)
             {
@@ -940,11 +940,11 @@ namespace WiredPlayers.Animations
         }
         
         [Command("bailesexy", Messages.GEN_ANIMS_SEXY_DANCE)]
-        public void bailarsexyCommand(Client player, int action)
+        public void BailesexyCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -982,11 +982,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("sentarse", Messages.GEN_ANIMS_SIT)]
-        public void sentarseCommand(Client player, int action)
+        public void SentarseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1044,11 +1044,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("fumar", Messages.GEN_ANIMS_SMOKING)]
-        public void fumarCommand(Client player, int action)
+        public void FumarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1074,11 +1074,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("tumbarse", Messages.GEN_ANIMS_LIE_DOWN)]
-        public void tumbarseCommand(Client player, int action)
+        public void TumbarseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1116,11 +1116,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("brazos", Messages.GEN_ANIMS_ARMS)]
-        public void brazosCommand(Client player, int action)
+        public void BrazosCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1150,11 +1150,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("guardia", Messages.GEN_ANIMS_GUARD)]
-        public void guardiaCommand(Client player, int action)
+        public void GuardiaCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1184,11 +1184,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("muerto", Messages.GEN_ANIMS_DEAD)]
-        public void muertoCommand(Client player, int action)
+        public void MuertoCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1222,11 +1222,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("pose", Messages.GEN_ANIMS_IDLE)]
-        public void poseCommand(Client player, int action)
+        public void PoseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1276,11 +1276,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("telefono", Messages.GEN_ANIMS_TLF)]
-        public void telefonoCommand(Client player, int action)
+        public void TelefonoCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1314,11 +1314,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("apoyarse", Messages.GEN_ANIMS_LEAN)]
-        public void apoyarsebarraCommand(Client player, int action)
+        public void ApoyarsebarraCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1380,11 +1380,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("animar", Messages.GEN_ANIMS_CHEER)]
-        public void animarfemCommand(Client player, int action)
+        public void AnimarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1426,11 +1426,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("bailar", Messages.GEN_ANIMS_DANCE)]
-        public void bailarCommand(Client player, int action)
+        public void BailarCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1468,11 +1468,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("mear")]
-        public void mearCommand(Client player)
+        public void MearCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1482,11 +1482,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("aplaudir")]
-        public void aplaudirM1Command(Client player)
+        public void AplaudirCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1496,11 +1496,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("borracha")]
-        public void borrachaCommand(Client player)
+        public void BorrachaCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1510,11 +1510,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("indiferencia")] 
-        public void indiferenciaCommand(Client player)
+        public void IndiferenciaCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1524,11 +1524,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("nervios")]
-        public void nerviosCommand(Client player)
+        public void NerviosCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1538,11 +1538,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("pensativo")]
-        public void pensativoCommand(Client player)
+        public void PensativoCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1552,11 +1552,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("calentarmanos")]
-        public void calentarmanosCommand(Client player)
+        public void CalentarmanosCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1566,11 +1566,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("rock")]
-        public void rockCommand(Client player)
+        public void RockCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1580,11 +1580,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("contoneo")]
-        public void provocarsexCommand(Client player)
+        public void ContoneoCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1594,11 +1594,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("malherido")]
-        public void heridoCommand(Client player)
+        public void MalheridoCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1608,11 +1608,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("tefo")]
-        public void tefoCommand(Client player)
+        public void TefoCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -1622,11 +1622,11 @@ namespace WiredPlayers.Animations
         }
 
         [Command("golpeado")]
-        public void golpeadoCommand(Client player)
+        public void GolpeadoCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {

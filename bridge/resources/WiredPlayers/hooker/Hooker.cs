@@ -12,16 +12,15 @@ namespace WiredPlayers.hooker
 
         public Hooker()
         {
-            Event.OnPlayerDisconnected += onPlayerDisconnected;
+            Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
-        private void onPlayerDisconnected(Client player, byte type, string reason)
+        private void OnPlayerDisconnected(Client player, byte type, string reason)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                Timer sexTimer = null;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                if (sexTimerList.TryGetValue(playerId, out sexTimer) == true)
+                if (sexTimerList.TryGetValue(playerId, out Timer sexTimer) == true)
                 {
                     sexTimer.Dispose();
                     sexTimerList.Remove(playerId);
@@ -69,7 +68,7 @@ namespace WiredPlayers.hooker
         }
 
         [Command("servicio", Messages.GEN_HOOKER_SERVICE_COMMAND)]
-        public void ofrecerservicioCommand(Client player, String service, String targetString, int price)
+        public void ServicioCommand(Client player, String service, String targetString, int price)
         {
             NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_HOOKER)
@@ -86,8 +85,7 @@ namespace WiredPlayers.hooker
             }
             else
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 
                 if (NAPI.Player.GetPlayerVehicleSeat(target) != Constants.VEHICLE_SEAT_DRIVER)
                 {

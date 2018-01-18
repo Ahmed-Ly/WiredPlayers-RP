@@ -33,25 +33,25 @@ namespace WiredPlayers.globals
 
         public Globals()
         {
-            Event.OnResourceStart += onResourceStart;
-            Event.OnClientEventTrigger += onClientEventTrigger;
-            Event.OnPlayerDisconnected += onPlayerDisconnected;
+            Event.OnResourceStart += OnResourceStart;
+            Event.OnClientEventTrigger += OnClientEventTrigger;
+            Event.OnPlayerDisconnected += OnPlayerDisconnected;
             Event.OnEntityEnterColShape += OnEntityEnterColShapeHandler;
             Event.OnEntityExitColShape += OnEntityExitColShapeHandler;
-            Event.OnPlayerEnterVehicle += onPlayerEnterVehicle;
+            Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
         }
 
-        private void onPlayerEnterVehicle(Client player, NetHandle entity, sbyte seat)
+        private void OnPlayerEnterVehicle(Client player, NetHandle entity, sbyte seat)
         {
             //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_HELMET, player, false);
         }
 
-        public List<AreaModel> getAreaList()
+        public List<AreaModel> GetAreaList()
         {
             return areaList;
         }
 
-        public static Client getPlayerById(int id)
+        public static Client GetPlayerById(int id)
         {
             Client target = null;
             foreach (Client player in NAPI.Pools.GetAllPlayers())
@@ -65,7 +65,7 @@ namespace WiredPlayers.globals
             return target;
         }
 
-        public static Vector3 getBusinessIplExit(String ipl)
+        public static Vector3 GetBusinessIplExit(String ipl)
         {
             Vector3 position = null;
             foreach (BusinessIplModel iplModel in Constants.BUSINESS_IPL_LIST)
@@ -79,7 +79,7 @@ namespace WiredPlayers.globals
             return position;
         }
 
-        public static Vector3 getHouseIplExit(String ipl)
+        public static Vector3 GetHouseIplExit(String ipl)
         {
             Vector3 position = null;
             foreach (HouseIplModel iplModel in Constants.HOUSE_IPL_LIST)
@@ -93,7 +93,7 @@ namespace WiredPlayers.globals
             return position;
         }
         
-        private void onClientEventTrigger(Client player, string eventName, params object[] arguments)
+        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
         {
             // Creamos las variables compartidas
             BusinessItemModel businessItem = null;
@@ -108,9 +108,9 @@ namespace WiredPlayers.globals
                     }
                     break;
                 case "checkPlayerInventoryKey":
-                    if (getPlayerInventoryTotal(player) > 0)
+                    if (GetPlayerInventoryTotal(player) > 0)
                     {
-                        inventory = getPlayerInventory(player);
+                        inventory = GetPlayerInventory(player);
                         NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                     }
                     else
@@ -136,13 +136,13 @@ namespace WiredPlayers.globals
                         {
                             if (player.Position.DistanceTo(business.position) <= 1.5f && player.Dimension == business.dimension)
                             {
-                                if (!Business.hasPlayerBusinessKeys(player, business) && business.locked)
+                                if (!Business.HasPlayerBusinessKeys(player, business) && business.locked)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_BUSINESS_LOCKED);
                                 }
                                 else
                                 {
-                                    Vector3 pos = getBusinessIplExit(business.ipl);
+                                    Vector3 pos = GetBusinessIplExit(business.ipl);
                                     NAPI.World.RequestIpl(business.ipl);
                                     NAPI.Entity.SetEntityPosition(player, pos);
                                     NAPI.Entity.SetEntityDimension(player, Convert.ToUInt32(business.id));
@@ -153,10 +153,10 @@ namespace WiredPlayers.globals
                             }
                             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) == business.id)
                             {
-                                Vector3 exitPosition = Business.getBusinessExitPoint(business.ipl);
+                                Vector3 exitPosition = Business.GetBusinessExitPoint(business.ipl);
                                 if (player.Position.DistanceTo(exitPosition) < 2.5f)
                                 {
-                                    if (!Business.hasPlayerBusinessKeys(player, business) && business.locked)
+                                    if (!Business.HasPlayerBusinessKeys(player, business) && business.locked)
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_BUSINESS_LOCKED);
                                     }
@@ -192,13 +192,13 @@ namespace WiredPlayers.globals
                         {
                             if (player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension)
                             {
-                                if (!House.hasPlayerHouseKeys(player, house) && house.locked)
+                                if (!House.HasPlayerHouseKeys(player, house) && house.locked)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOUSE_LOCKED);
                                 }
                                 else
                                 {
-                                    Vector3 pos = getHouseIplExit(house.ipl);
+                                    Vector3 pos = GetHouseIplExit(house.ipl);
                                     NAPI.World.RequestIpl(house.ipl);
                                     NAPI.Entity.SetEntityPosition(player, pos);
                                     NAPI.Entity.SetEntityDimension(player, Convert.ToUInt32(house.id));
@@ -209,10 +209,10 @@ namespace WiredPlayers.globals
                             }
                             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
                             {
-                                Vector3 exitPosition = House.getHouseExitPoint(house.ipl);
+                                Vector3 exitPosition = House.GetHouseExitPoint(house.ipl);
                                 if (player.Position.DistanceTo(exitPosition) < 2.5f)
                                 {
-                                    if (!House.hasPlayerHouseKeys(player, house) && house.locked)
+                                    if (!House.HasPlayerHouseKeys(player, house) && house.locked)
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOUSE_LOCKED);
                                     }
@@ -278,16 +278,16 @@ namespace WiredPlayers.globals
                                 String realName = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
                                 Vector3 spawnPosition = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SPAWN_POS);
                                 Vector3 spawnRotation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SPAWN_ROT);
-                                ItemModel rightHand = getItemInEntity(playerSqlId, Constants.ITEM_ENTITY_RIGHT_HAND);
-                                ItemModel leftHand = getItemInEntity(playerSqlId, Constants.ITEM_ENTITY_LEFT_HAND);
+                                ItemModel rightHand = GetItemInEntity(playerSqlId, Constants.ITEM_ENTITY_RIGHT_HAND);
+                                ItemModel leftHand = GetItemInEntity(playerSqlId, Constants.ITEM_ENTITY_LEFT_HAND);
 
                                 // Armamos al personaje
-                                Weapons.givePlayerWeaponItems(player);
+                                Weapons.GivePlayerWeaponItems(player);
 
                                 // Añadimos el objeto que tenga en la mano derecha
                                 if (rightHand != null)
                                 {
-                                    businessItem = Business.getBusinessItemFromHash(rightHand.hash);
+                                    businessItem = Business.GetBusinessItemFromHash(rightHand.hash);
 
                                     if (businessItem == null || businessItem.type == Constants.ITEM_TYPE_WEAPON)
                                     {
@@ -306,7 +306,7 @@ namespace WiredPlayers.globals
                                 // Añadimos el objeto que tenga en la mano izquierda
                                 if (leftHand != null)
                                 {
-                                    businessItem = Business.getBusinessItemFromHash(leftHand.hash);
+                                    businessItem = Business.GetBusinessItemFromHash(leftHand.hash);
                                     leftHand.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(leftHand.hash), leftHand.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)leftHand.dimension);
                                     NAPI.Entity.AttachEntityToEntity(leftHand.objectHandle, player, "PH_L_Hand", businessItem.position, businessItem.rotation);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LEFT_HAND, leftHand.id);
@@ -316,14 +316,14 @@ namespace WiredPlayers.globals
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
                                 {
                                     int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                                    HouseModel house = House.getHouseById(houseId);
+                                    HouseModel house = House.GetHouseById(houseId);
                                     NAPI.Entity.SetEntityDimension(player, Convert.ToUInt32(house.id));
                                     NAPI.World.RequestIpl(house.ipl);
                                 }
                                 else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
                                 {
                                     int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                                    BusinessModel business = Business.getBusinessById(businessId);
+                                    BusinessModel business = Business.GetBusinessById(businessId);
                                     NAPI.Entity.SetEntityDimension(player, Convert.ToUInt32(business.id));
                                     NAPI.World.RequestIpl(business.ipl);
                                 }
@@ -367,14 +367,14 @@ namespace WiredPlayers.globals
                                     if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
                                     {
                                         int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                                        HouseModel house = House.getHouseById(houseId);
+                                        HouseModel house = House.GetHouseById(houseId);
                                         deathPosition = house.position;
                                         deathPlace = house.name;
                                     }
                                     else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
                                     {
                                         int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                                        BusinessModel business = Business.getBusinessById(businessId);
+                                        BusinessModel business = Business.GetBusinessById(businessId);
                                         deathPosition = business.position;
                                         deathPlace = business.name;
                                     }
@@ -417,7 +417,7 @@ namespace WiredPlayers.globals
                                     //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
                                     
                                     NAPI.Entity.SetEntityInvincible(player, true);
-                                    NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, getTotalSeconds() + 240);
+                                    NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, GetTotalSeconds() + 240);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
                                 }
 
@@ -430,14 +430,14 @@ namespace WiredPlayers.globals
                 case "processMenuAction":
                     String message = String.Empty;
                     int itemId = (int)arguments[0];
-                    ItemModel item = getItemModelFromId(itemId);
-                    businessItem = Business.getBusinessItemFromHash(item.hash);
+                    ItemModel item = GetItemModelFromId(itemId);
+                    businessItem = Business.GetBusinessItemFromHash(item.hash);
 
                     switch (arguments[1].ToString().ToLower())
                     {
                         case "consumir":
                             item.amount--;
-                            Database.updateItem(item);
+                            Database.UpdateItem(item);
                             message = String.Format(Messages.INF_PLAYER_INVENTORY_CONSUME, businessItem.description.ToLower());
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
@@ -469,12 +469,12 @@ namespace WiredPlayers.globals
                             // Comprobamos si era el último
                             if (item.amount == 0)
                             {
-                                Database.removeItem(item.id);
+                                Database.RemoveItem(item.id);
                                 itemList.Remove(item);
                             }
 
                             // Actualizamos el inventario
-                            inventory = getPlayerInventory(player);
+                            inventory = GetPlayerInventory(player);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                             break;
                         case "abrir":
@@ -482,7 +482,7 @@ namespace WiredPlayers.globals
                             switch (item.hash)
                             {
                                 case Constants.ITEM_HASH_PACK_BEER_AM:
-                                    ItemModel itemModel = getPlayerItemModelFromHash(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID), Constants.ITEM_HASH_BOTTLE_BEER_AM);
+                                    ItemModel itemModel = GetPlayerItemModelFromHash(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID), Constants.ITEM_HASH_BOTTLE_BEER_AM);
                                     if (itemModel == null)
                                     {
                                         // El jugador no tiene el objeto, lo creamos
@@ -493,7 +493,7 @@ namespace WiredPlayers.globals
                                         itemModel.amount = Constants.ITEM_OPEN_BEER_AMOUNT;
                                         itemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
                                         itemModel.dimension = player.Dimension;
-                                        itemModel.id = Database.addNewItem(itemModel);
+                                        itemModel.id = Database.AddNewItem(itemModel);
 
                                         // Añadimos el objeto a la lista
                                         itemList.Add(itemModel);
@@ -502,20 +502,20 @@ namespace WiredPlayers.globals
                                     {
                                         // El jugador ya tiene el objeto, le añadimos la cantidad
                                         itemModel.amount += Constants.ITEM_OPEN_BEER_AMOUNT;
-                                        Database.updateItem(item);
+                                        Database.UpdateItem(item);
                                     }
                                     break;
                             }
 
                             // Restamos uno a la cantidad de objetos contenedores
-                            substractPlayerItems(item);
+                            SubstractPlayerItems(item);
 
                             // Mandamos el aviso al jugador
                             message = String.Format(Messages.INF_PLAYER_INVENTORY_OPEN, businessItem.description.ToLower());
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
                             // Actualizamos el inventario
-                            inventory = getPlayerInventory(player);
+                            inventory = GetPlayerInventory(player);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                             break;
                         case "equipar":
@@ -539,14 +539,14 @@ namespace WiredPlayers.globals
                         case "tirar":
                             // Quitamos una unidad del inventario
                             item.amount--;
-                            Database.updateItem(item);
+                            Database.UpdateItem(item);
 
                             // Miramos si hay más objetos en el suelo
-                            ItemModel closestItem = getClosestItemWithHash(player, item.hash);
+                            ItemModel closestItem = GetClosestItemWithHash(player, item.hash);
                             if (closestItem != null)
                             {
                                 closestItem.amount++;
-                                Database.updateItem(item);
+                                Database.UpdateItem(item);
                             }
                             else
                             {
@@ -556,14 +556,14 @@ namespace WiredPlayers.globals
                                 closestItem.dimension = player.Dimension;
                                 closestItem.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.8f);
                                 closestItem.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(closestItem.hash), closestItem.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)closestItem.dimension);
-                                closestItem.id = Database.addNewItem(closestItem);
+                                closestItem.id = Database.AddNewItem(closestItem);
                                 itemList.Add(closestItem);
                             }
 
                             // Comprobamos si era el último
                             if (item.amount == 0)
                             {
-                                Database.removeItem(item.id);
+                                Database.RemoveItem(item.id);
                                 itemList.Remove(item);
                             }
 
@@ -572,7 +572,7 @@ namespace WiredPlayers.globals
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
                             // Actualizamos el inventario
-                            inventory = getPlayerInventory(player);
+                            inventory = GetPlayerInventory(player);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                             break;
                         case "requisar":
@@ -582,10 +582,10 @@ namespace WiredPlayers.globals
                             // Traspasamos el objeto al jugador
                             item.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
                             item.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                            Database.updateItem(item);
+                            Database.UpdateItem(item);
 
                             // Actualizamos el inventario
-                            inventory = getPlayerInventoryAndWeapons(target);
+                            inventory = GetPlayerInventoryAndWeapons(target);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_PLAYER);
 
                             // Enviamos el mensaje
@@ -601,7 +601,7 @@ namespace WiredPlayers.globals
                             // Traspasamos el objeto al jugador
                             item.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
                             item.ownerIdentifier = NAPI.Data.GetEntityData(targetVehicle, EntityData.VEHICLE_ID);
-                            Database.updateItem(item);
+                            Database.UpdateItem(item);
 
                             // Si tiene un arma, se la quitamos
                             foreach (WeaponHash weapon in NAPI.Player.GetPlayerWeapons(player))
@@ -614,7 +614,7 @@ namespace WiredPlayers.globals
                             }
 
                             // Actualizamos el inventario
-                            inventory = getPlayerInventoryAndWeapons(player);
+                            inventory = GetPlayerInventoryAndWeapons(player);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_PLAYER);
 
                             // Enviamos el mensaje
@@ -640,14 +640,14 @@ namespace WiredPlayers.globals
                             }
 
                             item.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                            Database.updateItem(item);
+                            Database.UpdateItem(item);
 
                             // Actualizamos el inventario
-                            inventory = getVehicleTrunkInventory(sourceVehicle);
+                            inventory = GetVehicleTrunkInventory(sourceVehicle);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_TRUNK);
 
                             // Enviamos el mensaje
-                            Chat.sendMessageToNearbyPlayers(player, Messages.INF_TRUNK_ITEM_WITHDRAW, Constants.MESSAGE_ME, 20.0f);
+                            Chat.DendMessageToNearbyPlayers(player, Messages.INF_TRUNK_ITEM_WITHDRAW, Constants.MESSAGE_ME, 20.0f);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
                             break;
                     }
@@ -660,17 +660,17 @@ namespace WiredPlayers.globals
                     // Quitamos el link con el vehículo
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
                     break;
-                case "getPlayerTattoos":
+                case "GetPlayerTattoos":
                     NetHandle playerHandle = (NetHandle)arguments[0];
                     Client targetPlayer = NAPI.Player.GetPlayerFromHandle(playerHandle);
                     int targetId = NAPI.Data.GetEntityData(targetPlayer, EntityData.PLAYER_SQL_ID);
-                    List<TattooModel> playerTattooList = getPlayerTattoos(targetId);
+                    List<TattooModel> playerTattooList = GetPlayerTattoos(targetId);
                     NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerTattoos", NAPI.Util.ToJson(playerTattooList), targetPlayer);
                     break;
             }
         }
 
-        private void onResourceStart()
+        private void OnResourceStart()
         {
             areaList = new List<AreaModel>();
             scoreList = new List<ScoreModel>();
@@ -753,7 +753,7 @@ namespace WiredPlayers.globals
 
             // Definimos variables globales del servidor
             Random rnd = new Random();
-            //NAPI.SetWorldSharedData(EntityData.JOB_ORDERS_TIME, getTotalSeconds() + rnd.Next(0, 1) * 60);
+            //NAPI.SetWorldSharedData(EntityData.JOB_ORDERS_TIME, GetTotalSeconds() + rnd.Next(0, 1) * 60);
 
             // Añadimos la lista de pedidos de comida rápida
             //NAPI.SetWorldSharedData(EntityData.FASTFOOD_LIST, NAPI.Util.ToJson(fastFoodOrderList));
@@ -857,7 +857,7 @@ namespace WiredPlayers.globals
             }
         }
 
-        private void onPlayerDisconnected(Client player, byte type, string reason)
+        private void OnPlayerDisconnected(Client player, byte type, string reason)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
@@ -903,12 +903,12 @@ namespace WiredPlayers.globals
                 character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
                 // Guardamos en la base de datos
-                Database.saveCharacterInformation(character);
+                Database.SaveCharacterInformation(character);
 
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                    ItemModel item = getItemModelFromId(itemId);
+                    ItemModel item = GetItemModelFromId(itemId);
                     NAPI.Entity.DetachEntity(item.objectHandle);
                     NAPI.Entity.DeleteEntity(item.objectHandle);
                 }
@@ -938,7 +938,7 @@ namespace WiredPlayers.globals
             }
         }*/
 
-        public static NetHandle getClosestVehicle(Client player, float distance = 2.5f)
+        public static NetHandle GetClosestVehicle(Client player, float distance = 2.5f)
         {
             NetHandle vehicle = new NetHandle();
             foreach (NetHandle veh in NAPI.Pools.GetAllVehicles())
@@ -956,7 +956,7 @@ namespace WiredPlayers.globals
             return vehicle;
         }
 
-        public static int getTotalSeconds()
+        public static int GetTotalSeconds()
         {
             return (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
@@ -990,7 +990,7 @@ namespace WiredPlayers.globals
                 TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
                 //NAPI.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
 
-                int totalSeconds = getTotalSeconds();
+                int totalSeconds = GetTotalSeconds();
                 foreach (Client player in NAPI.Pools.GetAllPlayers())
                 {
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
@@ -1006,7 +1006,7 @@ namespace WiredPlayers.globals
                             }
 
                             // Generamos la paga
-                            generatePlayerPayday(player);
+                            GeneratePlayerPayday(player);
                         }
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, played + 1);
 
@@ -1116,7 +1116,7 @@ namespace WiredPlayers.globals
                         character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
                         // Guardado del personaje en base de datos
-                        Database.saveCharacterInformation(character);
+                        Database.SaveCharacterInformation(character);
                     }
                 }
 
@@ -1183,7 +1183,7 @@ namespace WiredPlayers.globals
                 }
 
                 // Guardamos la lista de vehículos
-                Database.saveAllVehicles(vehicleList);
+                Database.SaveAllVehicles(vehicleList);
             }
             catch (Exception ex)
             {
@@ -1191,7 +1191,7 @@ namespace WiredPlayers.globals
             }
         }
 
-        private void generatePlayerPayday(Client player)
+        private void GeneratePlayerPayday(Client player)
         {
             int total = 0;
             int bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
@@ -1226,7 +1226,7 @@ namespace WiredPlayers.globals
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Sueldo: " + total + "$");
 
             // Ingresos extra por nivel
-            int levelEarnings = getPlayerLevel(player) * Constants.PAID_PER_LEVEL;
+            int levelEarnings = GetPlayerLevel(player) * Constants.PAID_PER_LEVEL;
             total += levelEarnings;
             if(levelEarnings > 0)
             {
@@ -1286,10 +1286,10 @@ namespace WiredPlayers.globals
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank + total);
 
             // Añadimos el log de pago
-            Database.logPayment("Payday", player.Name, "Payday", total);
+            Database.LogPayment("Payday", player.Name, "Payday", total);
         }
 
-        public static ItemModel getItemModelFromId(int itemId)
+        public static ItemModel GetItemModelFromId(int itemId)
         {
             ItemModel item = null;
             foreach (ItemModel itemModel in itemList)
@@ -1303,7 +1303,7 @@ namespace WiredPlayers.globals
             return item;
         }
 
-        public static ItemModel getPlayerItemModelFromHash(int playerId, String hash)
+        public static ItemModel GetPlayerItemModelFromHash(int playerId, String hash)
         {
             ItemModel itemModel = null;
             foreach (ItemModel item in itemList)
@@ -1317,7 +1317,7 @@ namespace WiredPlayers.globals
             return itemModel;
         }
 
-        public static ItemModel getClosestItem(Client player)
+        public static ItemModel GetClosestItem(Client player)
         {
             ItemModel itemModel = null;
             foreach (ItemModel item in itemList)
@@ -1331,7 +1331,7 @@ namespace WiredPlayers.globals
             return itemModel;
         }
 
-        public static ItemModel getClosestItemWithHash(Client player, String hash)
+        public static ItemModel GetClosestItemWithHash(Client player, String hash)
         {
             ItemModel itemModel = null;
             foreach (ItemModel item in itemList)
@@ -1345,7 +1345,7 @@ namespace WiredPlayers.globals
             return itemModel;
         }
 
-        public static ItemModel getItemInEntity(int entityId, String entity)
+        public static ItemModel GetItemInEntity(int entityId, String entity)
         {
             ItemModel item = null;
             foreach (ItemModel itemModel in itemList)
@@ -1359,18 +1359,18 @@ namespace WiredPlayers.globals
             return item;
         }
 
-        private void substractPlayerItems(ItemModel item, int amount = 1)
+        private void SubstractPlayerItems(ItemModel item, int amount = 1)
         {
             item.amount -= amount;
             if (item.amount == 0)
             {
                 // Eliminamos el objeto del jugador
-                Database.removeItem(item.id);
+                Database.RemoveItem(item.id);
                 itemList.Remove(item);
             }
         }
 
-        private int getPlayerInventoryTotal(Client player)
+        private int GetPlayerInventoryTotal(Client player)
         {
             int totalItems = 0;
             foreach (ItemModel item in itemList)
@@ -1383,7 +1383,7 @@ namespace WiredPlayers.globals
             return totalItems;
         }
 
-        private List<InventoryModel> getPlayerInventory(Client player)
+        private List<InventoryModel> GetPlayerInventory(Client player)
         {
             List<InventoryModel> inventory = new List<InventoryModel>();
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
@@ -1391,7 +1391,7 @@ namespace WiredPlayers.globals
             {
                 if (item.ownerEntity == Constants.ITEM_ENTITY_PLAYER && item.ownerIdentifier == playerId)
                 {
-                    BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                    BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                     if (businessItem != null && businessItem.type != Constants.ITEM_TYPE_WEAPON)
                     {
                         // Creamos el objeto del inventario
@@ -1410,7 +1410,7 @@ namespace WiredPlayers.globals
             return inventory;
         }
 
-        public static List<InventoryModel> getPlayerInventoryAndWeapons(Client player)
+        public static List<InventoryModel> GetPlayerInventoryAndWeapons(Client player)
         {
             List<InventoryModel> inventory = new List<InventoryModel>();
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
@@ -1418,7 +1418,7 @@ namespace WiredPlayers.globals
             {
                 if (item.ownerEntity == Constants.ITEM_ENTITY_PLAYER && item.ownerIdentifier == playerId)
                 {
-                    BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                    BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                     if (businessItem != null)
                     {
                         // Creamos el objeto del inventario
@@ -1437,7 +1437,7 @@ namespace WiredPlayers.globals
             return inventory;
         }
 
-        public static List<InventoryModel> getVehicleTrunkInventory(NetHandle vehicle)
+        public static List<InventoryModel> GetVehicleTrunkInventory(NetHandle vehicle)
         {
             List<InventoryModel> inventory = new List<InventoryModel>();
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
@@ -1447,7 +1447,7 @@ namespace WiredPlayers.globals
                 {
                     // Miramos si es un objeto o un arma
                     InventoryModel inventoryItem = new InventoryModel();
-                    BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                    BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
                     if(businessItem != null)
                     {
@@ -1472,7 +1472,7 @@ namespace WiredPlayers.globals
             return inventory;
         }
 
-        public static List<ClothesModel> getPlayerClothes(int playerId)
+        public static List<ClothesModel> GetPlayerClothes(int playerId)
         {
             List<ClothesModel> clothesModelList = new List<ClothesModel>();
             foreach (ClothesModel clothes in clothesList)
@@ -1485,7 +1485,7 @@ namespace WiredPlayers.globals
             return clothesModelList;
         }
 
-        public static ClothesModel getDressedClothesInSlot(int playerId, int type, int slot)
+        public static ClothesModel GetDressedClothesInSlot(int playerId, int type, int slot)
         {
             ClothesModel clothesDressed = null;
             foreach (ClothesModel clothes in clothesList)
@@ -1499,7 +1499,7 @@ namespace WiredPlayers.globals
             return clothesDressed;
         }
 
-        public static List<String> getClothesNames(List<ClothesModel> clothesList)
+        public static List<String> GetClothesNames(List<ClothesModel> clothesList)
         {
             List<String> clothesNames = new List<String>();
             foreach (ClothesModel clothes in clothesList)
@@ -1516,20 +1516,20 @@ namespace WiredPlayers.globals
             return clothesNames;
         }
 
-        public static void undressClothes(int playerId, int type, int slot)
+        public static void UndressClothes(int playerId, int type, int slot)
         {
             foreach (ClothesModel clothes in clothesList)
             {
                 if (clothes.player == playerId && clothes.type == type && clothes.slot == slot && clothes.dressed)
                 {
                     clothes.dressed = false;
-                    Database.updateClothes(clothes);
+                    Database.UpdateClothes(clothes);
                     break;
                 }
             }
         }
 
-        public static void populateCharacterClothes(Client player)
+        public static void PopulateCharacterClothes(Client player)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
             foreach (ClothesModel clothes in Globals.clothesList)
@@ -1548,7 +1548,7 @@ namespace WiredPlayers.globals
             }
         }
 
-        public static List<TattooModel> getPlayerTattoos(int playerId)
+        public static List<TattooModel> GetPlayerTattoos(int playerId)
         {
             List<TattooModel> tattooModelList = new List<TattooModel>();
             foreach(TattooModel tattoo in tattooList)
@@ -1561,19 +1561,19 @@ namespace WiredPlayers.globals
             return tattooModelList;
         }
 
-        private int getPlayerLevel(Client player)
+        private int GetPlayerLevel(Client player)
         {
             float playedHours = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED) / 100;
             return (int)Math.Round(Math.Log(playedHours) * Constants.LEVEL_MULTIPLIER);
         }
 
         [Command("guardar")]
-        public void guardarCommand(Client player)
+        public void GuardarCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                ItemModel item = getItemModelFromId(itemId);
+                ItemModel item = GetItemModelFromId(itemId);
                 if (item.objectHandle.IsNull)
                 {
                     NAPI.Player.GivePlayerWeapon(player, WeaponHash.Unarmed, 1);
@@ -1585,7 +1585,7 @@ namespace WiredPlayers.globals
                 }
                 item.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                Database.updateItem(item);
+                Database.UpdateItem(item);
             }
             else
             {
@@ -1594,14 +1594,14 @@ namespace WiredPlayers.globals
         }
 
         [Command("consumir")]
-        public void consumirCommand(Client player)
+        public void ConsumirCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 // Obtenemos el objeto de la mano
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                ItemModel item = getItemModelFromId(itemId);
-                BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                ItemModel item = GetItemModelFromId(itemId);
+                BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
                 // Miramos si es un consumible
                 if (businessItem.type == Constants.ITEM_TYPE_CONSUMABLE)
@@ -1610,7 +1610,7 @@ namespace WiredPlayers.globals
 
                     // Consumimos una unidad
                     item.amount--;
-                    Database.updateItem(item);
+                    Database.UpdateItem(item);
 
                     // Miramos si cambia la vida
                     if (businessItem.health != 0)
@@ -1643,7 +1643,7 @@ namespace WiredPlayers.globals
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                         NAPI.Entity.DetachEntity(item.objectHandle);
                         NAPI.Entity.DeleteEntity(item.objectHandle);
-                        Database.removeItem(item.id);
+                        Database.RemoveItem(item.id);
                         itemList.Remove(item);
                     }
 
@@ -1662,11 +1662,11 @@ namespace WiredPlayers.globals
         }
 
         [Command("inventario")]
-        public void inventarioCommand(Client player)
+        public void InventarioCommand(Client player)
         {
-            if (getPlayerInventoryTotal(player) > 0)
+            if (GetPlayerInventoryTotal(player) > 0)
             {
-                List<InventoryModel> inventory = getPlayerInventory(player);
+                List<InventoryModel> inventory = GetPlayerInventory(player);
                 NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
             }
             else
@@ -1676,13 +1676,13 @@ namespace WiredPlayers.globals
         }
 
         [Command("comprar")]
-        public void comprarCommand(Client player, int amount = 0)
+        public void ComprarCommand(Client player, int amount = 0)
         {
             // Miramos si el jugador está dentro de un negocio
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
             {
                 int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                BusinessModel business = Business.getBusinessById(businessId);
+                BusinessModel business = Business.GetBusinessById(businessId);
 
                 // Mostramos el menú en función de la tienda
                 switch (business.type)
@@ -1699,11 +1699,11 @@ namespace WiredPlayers.globals
                     case Constants.BUSINESS_TYPE_TATTOO_SHOP:
                         // Cargamos la lista de tatuajes
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        List<TattooModel> tattooList = getPlayerTattoos(playerId);
+                        List<TattooModel> tattooList = GetPlayerTattoos(playerId);
                         NAPI.ClientEvent.TriggerClientEvent(player, "showTattooMenu", NAPI.Util.ToJson(tattooList), business.multiplier);
                         break;
                     default:
-                        List<BusinessItemModel> businessItems = Business.getBusinessSoldItems(business.type);
+                        List<BusinessItemModel> businessItems = Business.GetBusinessSoldItems(business.type);
                         NAPI.ClientEvent.TriggerClientEvent(player, "showBusinessPurchaseMenu", NAPI.Util.ToJson(businessItems), business.name, business.multiplier);
                         break;
                 }
@@ -1715,7 +1715,7 @@ namespace WiredPlayers.globals
                 {
                     if (player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension)
                     {
-                        House.buyHouse(player, house);
+                        House.BuyHouse(player, house);
                         return;
                     }
                 }
@@ -1731,7 +1731,7 @@ namespace WiredPlayers.globals
                             if(playerMoney >= amount)
                             {
                                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                                ItemModel item = getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                                ItemModel item = GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                                 if(item == null)
                                 {
@@ -1743,13 +1743,13 @@ namespace WiredPlayers.globals
                                     item.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
                                     item.ownerIdentifier = playerId;
                                     item.objectHandle = new NetHandle();
-                                    item.id = Database.addNewItem(item);
+                                    item.id = Database.AddNewItem(item);
                                     itemList.Add(item);
                                 }
                                 else
                                 {
                                     item.amount += amount;
-                                    Database.updateItem(item);
+                                    Database.UpdateItem(item);
                                 }
 
                                 // Restamos el dinero al jugador
@@ -1776,7 +1776,7 @@ namespace WiredPlayers.globals
         }
 
         [Command("vender", Messages.GEN_SELL_COMMAND, GreedyArg = true)]
-        public void venderCommand(Client player, String args) // /vender vehiculo id id/persona precio
+        public void VenderCommand(Client player, String args) // /vender vehiculo id id/persona precio
         {
             String[] arguments = args.Split(' ');
             int price = 0;
@@ -1794,7 +1794,7 @@ namespace WiredPlayers.globals
                             // Miramos si viene un id o un nombre
                             if (Int32.TryParse(arguments[2], out targetId) == true)
                             {
-                                target = getPlayerById(targetId);
+                                target = GetPlayerById(targetId);
                                 priceString = arguments[3];
                             }
                             else if (arguments.Length == 5)
@@ -1815,13 +1815,13 @@ namespace WiredPlayers.globals
                                 {
                                     if (Int32.TryParse(arguments[1], out objectId) == true)
                                     {
-                                        NetHandle vehicle = Vehicles.getVehicleById(objectId);
+                                        NetHandle vehicle = Vehicles.GetVehicleById(objectId);
 
                                         // Miramos si está en un parking
                                         if (vehicle.IsNull)
                                         {
                                             // Miramos si está aparcado
-                                            VehicleModel vehModel = Vehicles.getParkedVehicleById(objectId);
+                                            VehicleModel vehModel = Vehicles.GetParkedVehicleById(objectId);
 
                                             if (vehModel != null)
                                             {
@@ -1904,7 +1904,7 @@ namespace WiredPlayers.globals
                         {
                             if (Int32.TryParse(arguments[1], out objectId) == true)
                             {
-                                HouseModel house = House.getHouseById(objectId);
+                                HouseModel house = House.GetHouseById(objectId);
                                 if (house != null)
                                 {
                                     if (house.owner == player.Name)
@@ -1931,7 +1931,7 @@ namespace WiredPlayers.globals
                                             // Miramos si viene un id o un nombre
                                             if (Int32.TryParse(arguments[2], out targetId) == true)
                                             {
-                                                target = getPlayerById(targetId);
+                                                target = GetPlayerById(targetId);
                                                 priceString = arguments[3];
                                             }
                                             else if (arguments.Length == 5)
@@ -1995,12 +1995,12 @@ namespace WiredPlayers.globals
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
                         {
                             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                            BusinessModel business = Business.getBusinessById(businessId);
+                            BusinessModel business = Business.GetBusinessById(businessId);
 
                             if (business != null && business.type == Constants.BUSINESS_TYPE_FISHING)
                             {
                                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                                ItemModel fishModel = getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_FISH);
+                                ItemModel fishModel = GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_FISH);
 
                                 if(fishModel == null)
                                 {
@@ -2013,7 +2013,7 @@ namespace WiredPlayers.globals
                                     int amount = (int)Math.Round(fishModel.amount * Constants.PRICE_FISH / 1000.0);
 
                                     // Eliminamos el objeto al jugador
-                                    Database.removeItem(fishModel.id);
+                                    Database.RemoveItem(fishModel.id);
                                     itemList.Remove(fishModel);
 
                                     // Le damos el dinero en mano al jugador
@@ -2046,23 +2046,23 @@ namespace WiredPlayers.globals
         }
 
         [Command("ayuda")]
-        public void helpCommand(Client player)
+        public void AyudaCommand(Client player)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "helptext");
         }
 
         [Command("bienvenida")]
-        public void welcomehelpCommand(Client player)
+        public void BienvenidaCommand(Client player)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "welcomeHelp");
         }
 
         [Command("mostrar", Messages.GEN_SHOW_DOC_COMMAND)]
-        public void mostrarCommand(Client player, String targetString, String documentation)
+        public void MostrarCommand(Client player, String targetString, String documentation)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -2070,8 +2070,9 @@ namespace WiredPlayers.globals
                 int age = NAPI.Data.GetEntitySharedData(player, "PLAYER_AGE");
                 String sexDescription = NAPI.Data.GetEntitySharedData(player, "PLAYER_SEX") == Constants.SEX_MALE ? "Hombre" : "Mujer";
                 int currentLicense = 0;
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
+                Client target = Int32.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 switch (documentation.ToLower())
                 {
                     case "licencias":
@@ -2167,16 +2168,15 @@ namespace WiredPlayers.globals
         }
 
         [Command("pagar", Messages.GEN_PAY_COMMAND)]
-        public void pagarCommand(Client player, String targetString, int price)
+        public void PagarCommand(Client player, String targetString, int price)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 if (target == player)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOOKER_OFFERED_HIMSELF);
@@ -2192,12 +2192,11 @@ namespace WiredPlayers.globals
         }
 
         [Command("ceder", Messages.GEN_GIVE_COMMAND)]
-        public void cederCommand(Client player, String targetString)
+        public void CederCommand(Client player, String targetString)
         {
             if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if(target == null)
                 {
@@ -2217,7 +2216,7 @@ namespace WiredPlayers.globals
                     String targetMessage = String.Empty;
 
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                    ItemModel item = getItemModelFromId(itemId);
+                    ItemModel item = GetItemModelFromId(itemId);
 
                     // Miramos si es un arma
                     WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(item.hash);
@@ -2234,7 +2233,7 @@ namespace WiredPlayers.globals
                     }
                     else
                     {
-                        BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                        BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                         NAPI.Entity.DetachEntity(item.objectHandle);
                         NAPI.Entity.AttachEntityToEntity(item.objectHandle, target, "PH_R_Hand", businessItem.position, businessItem.rotation);
                         
@@ -2247,7 +2246,7 @@ namespace WiredPlayers.globals
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_RIGHT_HAND, item.id);
                     item.ownerIdentifier = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
-                    Database.updateItem(item);
+                    Database.UpdateItem(item);
 
                     // Mandamos los mensajes a los jugadores
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
@@ -2261,7 +2260,7 @@ namespace WiredPlayers.globals
         }
 
         [Command("cancelar", Messages.GEN_GLOBALS_CANCEL_COMMAND)]
-        public void cancelarCommand(Client player, String cancel)
+        public void CancelarCommand(Client player, String cancel)
         {
             switch (cancel.ToLower())
             {
@@ -2351,11 +2350,11 @@ namespace WiredPlayers.globals
         }
 
         [Command("aceptar", Messages.GEN_GLOBALS_ACCEPT_COMMAND)]
-        public void acceptCommand(Client player, String accept)
+        public void AceptarCommand(Client player, String accept)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -2381,7 +2380,7 @@ namespace WiredPlayers.globals
                                     // Obtenemos el dinero y productos del mecánico
                                     int mechanicId = NAPI.Data.GetEntityData(mechanic, EntityData.PLAYER_SQL_ID);
                                     int mechanicMoney = NAPI.Data.GetEntitySharedData(mechanic, EntityData.PLAYER_MONEY);
-                                    ItemModel item = getPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                                    ItemModel item = GetPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
                                     
                                     switch (type.ToLower())
                                     {
@@ -2424,7 +2423,7 @@ namespace WiredPlayers.globals
                                         NAPI.Data.SetEntitySharedData(mechanic, EntityData.PLAYER_MONEY, mechanicMoney + price);
                                     }
                                     item.amount -= NAPI.Data.GetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
-                                    Database.updateItem(item);
+                                    Database.UpdateItem(item);
 
                                     // Limpiamos las variables
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
@@ -2440,7 +2439,7 @@ namespace WiredPlayers.globals
                                     NAPI.Chat.SendChatMessageToPlayer(mechanic, Constants.COLOR_INFO + mechanicMessage);
 
                                     // Guardamos el registro en base de datos
-                                    Database.logPayment(player.Name, mechanic.Name, "Reparación", price);
+                                    Database.LogPayment(player.Name, mechanic.Name, "Reparación", price);
                                 }
                                 else
                                 {
@@ -2481,7 +2480,7 @@ namespace WiredPlayers.globals
                                     // Obtenemos el dinero y productos del mecánico
                                     int mechanicId = NAPI.Data.GetEntityData(mechanic, EntityData.PLAYER_SQL_ID);
                                     int mechanicMoney = NAPI.Data.GetEntitySharedData(mechanic, EntityData.PLAYER_MONEY);
-                                    ItemModel item = getPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                                    ItemModel item = GetPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                                     // Repintamos el vehículo
                                     NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE, colorType);
@@ -2496,7 +2495,7 @@ namespace WiredPlayers.globals
                                     vehicleModel.firstColor = firstColor;
                                     vehicleModel.secondColor = secondColor;
                                     vehicleModel.pearlescent = pearlescentColor;
-                                    Database.updateVehicleColor(vehicleModel);
+                                    Database.UpdateVehicleColor(vehicleModel);
 
                                     // Descontamos los productos y pagamos
                                     if (player != mechanic)
@@ -2505,7 +2504,7 @@ namespace WiredPlayers.globals
                                         NAPI.Data.SetEntitySharedData(mechanic, EntityData.PLAYER_MONEY, mechanicMoney + price);
                                     }
                                     item.amount -= NAPI.Data.GetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
-                                    Database.updateItem(item);
+                                    Database.UpdateItem(item);
 
                                     // Limpiamos las variables
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
@@ -2526,7 +2525,7 @@ namespace WiredPlayers.globals
                                     NAPI.ClientEvent.TriggerClientEvent(mechanic, "closeRepaintWindow");
 
                                     // Guardamos el registro en base de datos
-                                    Database.logPayment(player.Name, mechanic.Name, "Pintura", price);
+                                    Database.LogPayment(player.Name, mechanic.Name, "Pintura", price);
                                 }
                                 else
                                 {
@@ -2616,7 +2615,7 @@ namespace WiredPlayers.globals
                                             }
 
                                             // Añadimos el log del pago
-                                            Database.logPayment(player.Name, target.Name, "Servicio de prostitución", amount);
+                                            Database.LogPayment(player.Name, target.Name, "Servicio de prostitución", amount);
                                         }
                                     }
                                     else
@@ -2679,7 +2678,7 @@ namespace WiredPlayers.globals
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + target.Name + " te ha pagado " + amount + "$.");
 
                                     // Logeamos el pago en base de datos
-                                    Database.logPayment(target.Name, player.Name, "Pago entre jugadores", amount);
+                                    Database.LogPayment(target.Name, player.Name, "Pago entre jugadores", amount);
                                 }
                                 else
                                 {
@@ -2711,12 +2710,12 @@ namespace WiredPlayers.globals
 
                                     // Obtenemos el vehículo
                                     String vehicleModel = String.Empty;
-                                    NetHandle vehicle = Vehicles.getVehicleById(vehicleId);
+                                    NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
 
                                     // Cambiamos el dueño del vehículo
                                     if (vehicle.IsNull)
                                     {
-                                        VehicleModel vehModel = Vehicles.getParkedVehicleById(vehicleId);
+                                        VehicleModel vehModel = Vehicles.GetParkedVehicleById(vehicleId);
                                         vehModel.owner = player.Name;
                                         vehicleModel = vehModel.model;
                                     }
@@ -2744,7 +2743,7 @@ namespace WiredPlayers.globals
                                     NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetString);
 
                                     // Logeamos el pago en base de datos
-                                    Database.logPayment(target.Name, player.Name, "Venta de vehículo", amount);
+                                    Database.LogPayment(target.Name, player.Name, "Venta de vehículo", amount);
                                 }
                                 else
                                 {
@@ -2774,16 +2773,16 @@ namespace WiredPlayers.globals
                                 {
 
                                     // Obtenemos la casa
-                                    HouseModel house = House.getHouseById(houseId);
+                                    HouseModel house = House.GetHouseById(houseId);
                                     
                                     //SEGURIDAD ADICIONAL: Se podría abusar de vender a la vez la casa al estado y a una persona.
                                     if (house.owner == target.Name)
                                     {
                                         // Cambiamos el dueño de la casa
                                         house.owner = player.Name;
-                                        Database.kickTenantsOut(house.id);
+                                        Database.KickTenantsOut(house.id);
                                         house.tenants = 2;
-                                        Database.updateHouse(house);
+                                        Database.UpdateHouse(house);
 
                                         // Creamos los mensajes de venta
                                         String playerString = String.Format(Messages.INF_HOUSE_BUYTO, target.Name, amount);
@@ -2803,7 +2802,7 @@ namespace WiredPlayers.globals
                                         NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetString);
 
                                         // Logeamos el pago en base de datos
-                                        Database.logPayment(target.Name, player.Name, "Venta de casa", amount);
+                                        Database.LogPayment(target.Name, player.Name, "Venta de casa", amount);
                                     }
                                     else
                                     {
@@ -2822,7 +2821,7 @@ namespace WiredPlayers.globals
                     case "casaestado":
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_SELLING_HOUSE_STATE) == true)
                         {
-                            HouseModel house = House.getHouseById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SELLING_HOUSE_STATE));
+                            HouseModel house = House.GetHouseById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SELLING_HOUSE_STATE));
                             int amount = (int)Math.Round(house.price * 0.7);
 
                             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
@@ -2835,18 +2834,18 @@ namespace WiredPlayers.globals
                                     house.status = Constants.HOUSE_STATE_BUYABLE;
                                     house.owner = "";
                                     house.locked = true;
-                                    NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.getHouseLabelText(house));
+                                    NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
                                     NAPI.World.RemoveIpl(house.ipl);
-                                    Database.kickTenantsOut(house.id);
+                                    Database.KickTenantsOut(house.id);
                                     house.tenants = 2;
-                                    Database.updateHouse(house);
+                                    Database.UpdateHouse(house);
 
                                     //Metemos el dinero al jugador
                                     int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, playerMoney + amount);
 
                                     //Registramos la venta
-                                    Database.logPayment(player.Name, "El estado", "Venta de casa", amount);
+                                    Database.LogPayment(player.Name, "El estado", "Venta de casa", amount);
 
                                     //Se lo contamos
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + String.Format(Messages.SUC_HOUSE_SOLD, amount));
@@ -2866,7 +2865,7 @@ namespace WiredPlayers.globals
         }
 
         [Command("recoger")]
-        public void recogerCommand(Client player)
+        public void RecogerCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
@@ -2878,12 +2877,12 @@ namespace WiredPlayers.globals
             }
             else
             {
-                ItemModel item = getClosestItem(player);
+                ItemModel item = GetClosestItem(player);
                 if (item != null)
                 {
                     // Obtenemos el objeto del suelo
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    ItemModel playerItem = getPlayerItemModelFromHash(playerId, item.hash);
+                    ItemModel playerItem = GetPlayerItemModelFromHash(playerId, item.hash);
 
                     // Borramos el objeto
                     NAPI.Entity.DeleteEntity(item.objectHandle);
@@ -2892,7 +2891,7 @@ namespace WiredPlayers.globals
                     {
                         NAPI.Entity.DeleteEntity(item.objectHandle);
                         playerItem.amount += item.amount;
-                        Database.removeItem(item.id);
+                        Database.RemoveItem(item.id);
                         itemList.Remove(item);
                     }
                     else
@@ -2903,13 +2902,13 @@ namespace WiredPlayers.globals
                     // Cambiamos los datos del objeto
                     playerItem.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
                     playerItem.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    Database.updateItem(playerItem);
+                    Database.UpdateItem(playerItem);
 
                     // Ejecutamos la animación de recoger objetos
                     NAPI.Player.PlayPlayerAnimation(player, 0, "random@domestic", "pickup_low");
 
                     // Añadimos el objeto a la mano del personaje
-                    BusinessItemModel businessItem = Business.getBusinessItemFromHash(playerItem.hash);
+                    BusinessItemModel businessItem = Business.GetBusinessItemFromHash(playerItem.hash);
                     playerItem.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(playerItem.hash), playerItem.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)playerItem.dimension);
                     NAPI.Entity.AttachEntityToEntity(playerItem.objectHandle, player, "PH_R_Hand", businessItem.position, businessItem.rotation);
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, playerItem.id);
@@ -2917,7 +2916,7 @@ namespace WiredPlayers.globals
                 }
                 else
                 {
-                    WeaponCrateModel weaponCrate = Weapons.getClosestWeaponCrate(player);
+                    WeaponCrateModel weaponCrate = Weapons.GetClosestWeaponCrate(player);
                     if(weaponCrate != null)
                     {
                         int index = Weapons.weaponCrateList.IndexOf(weaponCrate);
@@ -2936,24 +2935,24 @@ namespace WiredPlayers.globals
         }
         
         [Command("tirar")]
-        public void tirarCommand(Client player)
+        public void TirarCommand(Client player)
         {
             if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                ItemModel item = getItemModelFromId(itemId);
-                BusinessItemModel businessItem = Business.getBusinessItemFromHash(item.hash);
+                ItemModel item = GetItemModelFromId(itemId);
+                BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
                 // Quitamos una unidad del inventario
                 item.amount--;
-                Database.updateItem(item);
+                Database.UpdateItem(item);
 
                 // Miramos si hay más objetos en el suelo
-                ItemModel closestItem = getClosestItemWithHash(player, item.hash);
+                ItemModel closestItem = GetClosestItemWithHash(player, item.hash);
                 if (closestItem != null)
                 {
                     closestItem.amount++;
-                    Database.updateItem(item);
+                    Database.UpdateItem(item);
                 }
                 else
                 {
@@ -2963,7 +2962,7 @@ namespace WiredPlayers.globals
                     closestItem.dimension = player.Dimension;
                     closestItem.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.8f);
                     closestItem.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(closestItem.hash), closestItem.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)closestItem.dimension);
-                    closestItem.id = Database.addNewItem(closestItem);
+                    closestItem.id = Database.AddNewItem(closestItem);
                     itemList.Add(closestItem);
                 }
 
@@ -2976,7 +2975,7 @@ namespace WiredPlayers.globals
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
 
                     // Actualizamos la lista
-                    Database.removeItem(item.id);
+                    Database.RemoveItem(item.id);
                     itemList.Remove(item);
                 }
 
@@ -2988,7 +2987,7 @@ namespace WiredPlayers.globals
             {
                 // Obtenemos el id del personaje
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                WeaponCrateModel weaponCrate = Weapons.getPlayerCarriedWeaponCrate(playerId);
+                WeaponCrateModel weaponCrate = Weapons.GetPlayerCarriedWeaponCrate(playerId);
 
                 if (weaponCrate != null)
                 {
@@ -3012,7 +3011,7 @@ namespace WiredPlayers.globals
         }
 
         [Command("duda", Messages.GEN_HELP_REQUEST, GreedyArg = true)]
-        public void dudaCommand(Client player, String message)
+        public void DudaCommand(Client player, String message)
         {
             // Obtenemos el id del jugador
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
@@ -3048,21 +3047,21 @@ namespace WiredPlayers.globals
         }
         
         [Command("puerta")]
-        public void puertaCommand(Client player)
+        public void PuertaCommand(Client player)
         {
             // Miramos si está en su casa
             foreach (HouseModel house in House.houseList)
             {
                 if ((player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
                 {
-                    if (House.hasPlayerHouseKeys(player, house) == false)
+                    if (House.HasPlayerHouseKeys(player, house) == false)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_HOUSE_OWNER);
                     }
                     else
                     {
                         house.locked = !house.locked;
-                        Database.updateHouse(house);
+                        Database.UpdateHouse(house);
 
                         // Mandamos el mensaje al jugador
                         NAPI.Chat.SendChatMessageToPlayer(player, house.locked ? Constants.COLOR_INFO + Messages.INF_HOUSE_LOCKED : Constants.COLOR_INFO + Messages.INF_HOUSE_OPENED);
@@ -3076,14 +3075,14 @@ namespace WiredPlayers.globals
             {
                 if ((player.Position.DistanceTo(business.position) <= 1.5f && player.Dimension == business.dimension) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) == business.id)
                 {
-                    if (Business.hasPlayerBusinessKeys(player, business) == false)
+                    if (Business.HasPlayerBusinessKeys(player, business) == false)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_BUSINESS_OWNER);
                     }
                     else
                     {
                         business.locked = !business.locked;
-                        Database.updateBusiness(business);
+                        Database.UpdateBusiness(business);
 
                         // Mandamos el mensaje al jugador
                         NAPI.Chat.SendChatMessageToPlayer(player, business.locked ? Constants.COLOR_INFO + Messages.INF_BUSINESS_LOCKED : Constants.COLOR_INFO + Messages.INF_BUSINESS_OPENED);
@@ -3097,7 +3096,7 @@ namespace WiredPlayers.globals
         }
 
         [Command("complemento", Messages.GEN_COMPLEMENT_COMMAND)]
-        public void complementoCommand(Client player, String type, String action)
+        public void ComplementoCommand(Client player, String type, String action)
         {
             // Obtenemos el identificador del personaje
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
@@ -3108,12 +3107,12 @@ namespace WiredPlayers.globals
                 switch (type.ToLower())
                 {
                     case "mascara":
-                        clothes = getDressedClothesInSlot(playerId, 0, Constants.CLOTHES_MASK);
+                        clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_MASK);
                         if (action.ToLower() == "poner")
                         {
                             if(clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_MASK && c.type == 0).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_MASK && c.type == 0).First();
                                 if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_MASK_BOUGHT);
@@ -3137,17 +3136,17 @@ namespace WiredPlayers.globals
                             else
                             {
                                 NAPI.Player.SetPlayerClothes(player, Constants.CLOTHES_MASK, 0, 0);
-                                undressClothes(playerId, 0, Constants.CLOTHES_MASK);
+                                UndressClothes(playerId, 0, Constants.CLOTHES_MASK);
                             }
                         }
                         break;
                     case "bolsa":
-                        clothes = getDressedClothesInSlot(playerId, 0, Constants.CLOTHES_BAGS);
+                        clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_BAGS);
                         if (action.ToLower() == "poner")
                         {
                             if (clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_BAGS && c.type == 0).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_BAGS && c.type == 0).First();
                                 if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_BAG_BOUGHT);
@@ -3171,17 +3170,17 @@ namespace WiredPlayers.globals
                             else
                             {
                                 NAPI.Player.SetPlayerClothes(player, Constants.CLOTHES_BAGS, 0, 0);
-                                undressClothes(playerId, 0, Constants.CLOTHES_BAGS);
+                                UndressClothes(playerId, 0, Constants.CLOTHES_BAGS);
                             }
                         }
                         break;
                     case "accesorio":
-                        clothes = getDressedClothesInSlot(playerId, 0, Constants.CLOTHES_ACCESSORIES);
+                        clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_ACCESSORIES);
                         if (action.ToLower() == "poner")
                         {
                             if (clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_ACCESSORIES && c.type == 0).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_ACCESSORIES && c.type == 0).First();
                                 if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_ACCESSORY_BOUGHT);
@@ -3205,17 +3204,17 @@ namespace WiredPlayers.globals
                             else
                             {
                                 NAPI.Player.SetPlayerClothes(player, Constants.CLOTHES_ACCESSORIES, 0, 0);
-                                undressClothes(playerId, 0, Constants.CLOTHES_ACCESSORIES);
+                                UndressClothes(playerId, 0, Constants.CLOTHES_ACCESSORIES);
                             }
                         }
                         break;
                     case "sombrero":
-                        clothes = getDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_HATS);
+                        clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_HATS);
                         if (action.ToLower() == "poner")
                         {
                             if (clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_HATS && c.type == 1).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_HATS && c.type == 1).First();
                                 if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_HAT_BOUGHT);
@@ -3246,17 +3245,17 @@ namespace WiredPlayers.globals
                                 {
                                     NAPI.Player.SetPlayerAccessory(player, Constants.ACCESSORY_HATS, 8, 0);
                                 }
-                                undressClothes(playerId, 1, Constants.ACCESSORY_HATS);
+                                UndressClothes(playerId, 1, Constants.ACCESSORY_HATS);
                             }
                         }
                         break;
                     case "gafas":
-                        clothes = getDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_GLASSES);
+                        clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_GLASSES);
                         if (action.ToLower() == "poner")
                         {
                             if (clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_GLASSES && c.type == 1).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_GLASSES && c.type == 1).First();
                                 if(clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_GLASSES_BOUGHT);
@@ -3287,17 +3286,17 @@ namespace WiredPlayers.globals
                                 {
                                     NAPI.Player.SetPlayerAccessory(player, Constants.ACCESSORY_GLASSES, 0, 0);
                                 }
-                                undressClothes(playerId, 1, Constants.ACCESSORY_GLASSES);
+                                UndressClothes(playerId, 1, Constants.ACCESSORY_GLASSES);
                             }
                         }
                         break;
                     case "pendientes":
-                        clothes = getDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_EARS);
+                        clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_EARS);
                         if (action.ToLower() == "poner")
                         {
                             if (clothes == null)
                             {
-                                clothes = getPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_EARS && c.type == 1).First();
+                                clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_EARS && c.type == 1).First();
                                 if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_EAR_BOUGHT);
@@ -3328,7 +3327,7 @@ namespace WiredPlayers.globals
                                 {
                                     NAPI.Player.SetPlayerAccessory(player, Constants.ACCESSORY_EARS, 3, 0);
                                 }
-                                undressClothes(playerId, 1, Constants.ACCESSORY_EARS);
+                                UndressClothes(playerId, 1, Constants.ACCESSORY_EARS);
                             }
                         }
                         break;

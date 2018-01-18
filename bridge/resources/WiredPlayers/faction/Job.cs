@@ -46,13 +46,13 @@ namespace WiredPlayers.faction
             }
         }
 
-        public static int getJobPoints(Client player, int job)
+        public static int GetJobPoints(Client player, int job)
         {
             String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
             return Int32.Parse(jobPointsString.Split(',')[job]);
         }
 
-        public static void setJobPoints(Client player, int job, int points)
+        public static void SetJobPoints(Client player, int job, int points)
         {
             String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
             String[] jobPointsArray = jobPointsString.Split(',');
@@ -62,7 +62,7 @@ namespace WiredPlayers.faction
         }
 
         [Command("empleo", Messages.GEN_JOB_COMMAND)]
-        public void trabajoCommand(Client player, String action)
+        public void EmpleoCommand(Client player, String action)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
             int job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
@@ -132,7 +132,7 @@ namespace WiredPlayers.faction
         }
 
         [Command("deservicio")]
-        public void deservicioCommand(Client player)
+        public void DeservicioCommand(Client player)
         {
             // Obtenemos el sexo, trabajo y la facción
             int playerSex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
@@ -141,7 +141,7 @@ namespace WiredPlayers.faction
 
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (playerJob == 0 && playerFaction == 0)
             {
@@ -150,7 +150,7 @@ namespace WiredPlayers.faction
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 1)
             {
                 // Generación de la ropa del personaje
-                Globals.populateCharacterClothes(player);
+                Globals.PopulateCharacterClothes(player);
 
                 // Quitamos el estado de servicio
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_ON_DUTY, 0);

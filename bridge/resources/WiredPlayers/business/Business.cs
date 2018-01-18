@@ -56,11 +56,11 @@ namespace WiredPlayers.business
             {
                 case "businessPurchaseMade":
                     businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                    business = getBusinessById(businessId);
-                    BusinessItemModel businessItem = getBusinessItemFromName((String)arguments[0]);
+                    business = GetBusinessById(businessId);
+                    BusinessItemModel businessItem = GetBusinessItemFromName((String)arguments[0]);
                     int amount = Int32.Parse(arguments[1].ToString());
 
-                    if (business.type == Constants.BUSINESS_TYPE_AMMUNATION && businessItem.type == Constants.ITEM_TYPE_WEAPON && NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE) < Globals.getTotalSeconds())
+                    if (business.type == Constants.BUSINESS_TYPE_AMMUNATION && businessItem.type == Constants.ITEM_TYPE_WEAPON && NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE) < Globals.GetTotalSeconds())
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_WEAPON_LICENSE_EXPIRED);
                     }
@@ -73,7 +73,7 @@ namespace WiredPlayers.business
                         playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
                         // Miramos si tiene el objeto ya en el inventario
-                        ItemModel itemModel = Globals.getPlayerItemModelFromHash(playerId, businessItem.hash);
+                        ItemModel itemModel = Globals.GetPlayerItemModelFromHash(playerId, businessItem.hash);
                         if (itemModel == null)
                         {
                             // Creamos el objeto que ha comprado
@@ -93,7 +93,7 @@ namespace WiredPlayers.business
                             itemModel.dimension = 0;
 
                             // Añadimos el objeto a la base de datos y a la lista
-                            itemModel.id = Database.addNewItem(itemModel);
+                            itemModel.id = Database.AddNewItem(itemModel);
                             Globals.itemList.Add(itemModel);
                         }
                         else
@@ -103,7 +103,7 @@ namespace WiredPlayers.business
                                 itemModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
                             }
                             itemModel.amount += (businessItem.uses * amount);
-                            Database.updateItem(itemModel);
+                            Database.UpdateItem(itemModel);
                         }
 
                         // Si tiene hash, le entregamos en mano el objeto
@@ -121,7 +121,7 @@ namespace WiredPlayers.business
                             // Miramos si ha comprado en el Ammu-Nation
                             if (business.type == Constants.BUSINESS_TYPE_AMMUNATION)
                             {
-                                Database.addLicensedWeapon(itemModel.id, player.Name);
+                                Database.AddLicensedWeapon(itemModel.id, player.Name);
                             }
                         }
 
@@ -148,7 +148,7 @@ namespace WiredPlayers.business
                         {
                             business.funds += price;
                             business.products -= businessItem.products;
-                            Database.updateBusiness(business);
+                            Database.UpdateBusiness(business);
                         }
 
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - price);
@@ -159,10 +159,10 @@ namespace WiredPlayers.business
                     type = Int32.Parse(arguments[0].ToString());
                     slot = Int32.Parse(arguments[1].ToString());
                     sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
-                    List<BusinessClothesModel> clothesList = getBusinessClothesFromSlotType(sex, type, slot);
+                    List<BusinessClothesModel> clothesList = GetBusinessClothesFromSlotType(sex, type, slot);
                     if (clothesList.Count > 0)
                     {
-                        business = getBusinessById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED));
+                        business = GetBusinessById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED));
                         NAPI.ClientEvent.TriggerClientEvent(player, "showClothesFromSelectedType", NAPI.Util.ToJson(clothesList), business.multiplier);
                     }
                     else
@@ -174,7 +174,7 @@ namespace WiredPlayers.business
                     type = Int32.Parse(arguments[0].ToString());
                     slot = Int32.Parse(arguments[1].ToString());
                     playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    ClothesModel clothes = Globals.getDressedClothesInSlot(playerId, type, slot);
+                    ClothesModel clothes = Globals.GetDressedClothesInSlot(playerId, type, slot);
 
                     // Miramos si llevaba algo o no
                     if (clothes != null)
@@ -207,8 +207,8 @@ namespace WiredPlayers.business
                     type = Int32.Parse(arguments[1].ToString());
                     slot = Int32.Parse(arguments[2].ToString());
                     sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
-                    int products = getClothesProductsPrice(clothesId, sex, type, slot);
-                    business = getBusinessById(businessId);
+                    int products = GetClothesProductsPrice(clothesId, sex, type, slot);
+                    business = GetBusinessById(businessId);
                     price = (int)Math.Round(products * business.multiplier);
 
                     // Miramos si tiene dinero suficiente
@@ -226,11 +226,11 @@ namespace WiredPlayers.business
                         {
                             business.funds += price;
                             business.products -= products;
-                            Database.updateBusiness(business);
+                            Database.UpdateBusiness(business);
                         }
 
                         // Desequipamos la ropa anterior
-                        Globals.undressClothes(playerId, type, slot);
+                        Globals.UndressClothes(playerId, type, slot);
 
                         // Creamos el modelo de ropa
                         ClothesModel clothesModel = new ClothesModel();
@@ -241,7 +241,7 @@ namespace WiredPlayers.business
                         clothesModel.dressed = true;
 
                         // Añadimos el objeto a la base de datos
-                        clothesModel.id = Database.addClothes(clothesModel);
+                        clothesModel.id = Database.AddClothes(clothesModel);
                         Globals.clothesList.Add(clothesModel);
 
                         // Enviamos el mensaje al jugador
@@ -256,7 +256,7 @@ namespace WiredPlayers.business
                 case "hairStyleChanged":
                     playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                     businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                    business = getBusinessById(businessId);
+                    business = GetBusinessById(businessId);
                     price = (int)Math.Round(business.multiplier * Constants.PRICE_BARBER_SHOP);
 
                     if (playerMoney >= price)
@@ -275,7 +275,7 @@ namespace WiredPlayers.business
                         skin.eyebrowsColor = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_EYEBROWS_COLOR);
 
                         // Recogemos los datos de peluquería
-                        Database.updateCharacterHair(playerId, skin);
+                        Database.UpdateCharacterHair(playerId, skin);
 
                         // Restamos el dinero al jugador
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
@@ -285,7 +285,7 @@ namespace WiredPlayers.business
                         {
                             business.funds += price;
                             business.products -= Constants.PRICE_BARBER_SHOP;
-                            Database.updateBusiness(business);
+                            Database.UpdateBusiness(business);
                         }
 
                         // Avisamos al jugador
@@ -304,7 +304,7 @@ namespace WiredPlayers.business
                 case "loadZoneTattoos":
                     int zone = Int32.Parse(arguments[0].ToString());
                     sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
-                    List<BusinessTattooModel> tattooList = getBusinessZoneTattoos(sex, zone);
+                    List<BusinessTattooModel> tattooList = GetBusinessZoneTattoos(sex, zone);
                     
                     // Actualizamos el menú de tatuajes
                     NAPI.ClientEvent.TriggerClientEvent(player, "showZoneTattoos", NAPI.Util.ToJson(tattooList));
@@ -317,10 +317,10 @@ namespace WiredPlayers.business
                     // Obtenemos los datos del negocio y sexo
                     sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
                     businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                    business = getBusinessById(businessId);
+                    business = GetBusinessById(businessId);
 
                     // Obtenemos el tatuaje seleccionado y su precio
-                    BusinessTattooModel businessTattoo = getBusinessZoneTattoos(sex, tattooZone).ElementAt(tattooIndex);
+                    BusinessTattooModel businessTattoo = GetBusinessZoneTattoos(sex, tattooZone).ElementAt(tattooIndex);
                     playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                     price = (int)Math.Round(business.multiplier * businessTattoo.price);
 
@@ -334,7 +334,7 @@ namespace WiredPlayers.business
                         tattoo.hash = sex == Constants.SEX_MALE ? businessTattoo.maleHash : businessTattoo.femaleHash;
 
                         // Intentamos insertar el tatuaje en la base de datos
-                        bool inserted = Database.addTattoo(tattoo);
+                        bool inserted = Database.AddTattoo(tattoo);
 
                         if(inserted)
                         {
@@ -349,7 +349,7 @@ namespace WiredPlayers.business
                             {
                                 business.funds += price;
                                 business.products -= businessTattoo.price;
-                                Database.updateBusiness(business);
+                                Database.UpdateBusiness(business);
                             }
 
                             // Avisamos al jugador
@@ -372,14 +372,14 @@ namespace WiredPlayers.business
                     break;
                 case "loadCharacterClothes":
                     // Generación de la ropa del personaje
-                    Globals.populateCharacterClothes(player);
+                    Globals.PopulateCharacterClothes(player);
                     break;
             }
         }
 
-        public void loadDatabaseBusiness()
+        public void LoadDatabaseBusiness()
         {
-            businessList = Database.loadAllBusiness();
+            businessList = Database.LoadAllBusiness();
             foreach (BusinessModel businessModel in businessList)
             {
                 // Creamos la etiqueta de entrada
@@ -400,7 +400,7 @@ namespace WiredPlayers.business
             }
         }
 
-        public static BusinessModel getBusinessById(int businessId)
+        public static BusinessModel GetBusinessById(int businessId)
         {
             BusinessModel business = null;
             foreach(BusinessModel businessModel in businessList)
@@ -414,7 +414,7 @@ namespace WiredPlayers.business
             return business;
         }
 
-        public static BusinessModel getClosestBusiness(Client player, float distance = 2.0f)
+        public static BusinessModel GetClosestBusiness(Client player, float distance = 2.0f)
         {
             BusinessModel business = null;
             foreach(BusinessModel businessModel in businessList)
@@ -428,7 +428,7 @@ namespace WiredPlayers.business
             return business;
         }
 
-        public static List<BusinessItemModel> getBusinessSoldItems(int business)
+        public static List<BusinessItemModel> GetBusinessSoldItems(int business)
         {
             List<BusinessItemModel> businessItems = new List<BusinessItemModel>();
             foreach(BusinessItemModel businessItem in Constants.BUSINESS_ITEM_LIST)
@@ -441,7 +441,7 @@ namespace WiredPlayers.business
             return businessItems;
         }
 
-        public static BusinessItemModel getBusinessItemFromName(String itemName)
+        public static BusinessItemModel GetBusinessItemFromName(String itemName)
         {
             BusinessItemModel item = null;
             foreach (BusinessItemModel businessItem in Constants.BUSINESS_ITEM_LIST)
@@ -455,7 +455,7 @@ namespace WiredPlayers.business
             return item;
         }
 
-        public static BusinessItemModel getBusinessItemFromHash(String itemHash)
+        public static BusinessItemModel GetBusinessItemFromHash(String itemHash)
         {
             BusinessItemModel item = null;
             foreach (BusinessItemModel businessItem in Constants.BUSINESS_ITEM_LIST)
@@ -469,7 +469,7 @@ namespace WiredPlayers.business
             return item;
         }
 
-        public static List<BusinessClothesModel> getBusinessClothesFromSlotType(int sex, int type, int slot)
+        public static List<BusinessClothesModel> GetBusinessClothesFromSlotType(int sex, int type, int slot)
         {
             List<BusinessClothesModel> businessClothesList = new List<BusinessClothesModel>();
             foreach(BusinessClothesModel clothes in Constants.BUSINESS_CLOTHES_LIST)
@@ -482,7 +482,7 @@ namespace WiredPlayers.business
             return businessClothesList;
         }
 
-        public static int getClothesProductsPrice(int id, int sex, int type, int slot)
+        public static int GetClothesProductsPrice(int id, int sex, int type, int slot)
         {
             int productsPrice = 0;
             foreach (BusinessClothesModel clothesModel in Constants.BUSINESS_CLOTHES_LIST)
@@ -496,7 +496,7 @@ namespace WiredPlayers.business
             return productsPrice;
         }
 
-        public static String getBusinessTypeIpl(int type)
+        public static String GetBusinessTypeIpl(int type)
         {
             String businessIpl = String.Empty;
             foreach(BusinessIplModel iplModel in Constants.BUSINESS_IPL_LIST)
@@ -511,7 +511,7 @@ namespace WiredPlayers.business
             return businessIpl;
         }
 
-        public static Vector3 getBusinessExitPoint(String ipl)
+        public static Vector3 GetBusinessExitPoint(String ipl)
         {
             Vector3 exit = null;
             foreach (BusinessIplModel businessIpl in Constants.BUSINESS_IPL_LIST)
@@ -525,12 +525,12 @@ namespace WiredPlayers.business
             return exit;
         }
 
-        public static bool hasPlayerBusinessKeys(Client player, BusinessModel business)
+        public static bool HasPlayerBusinessKeys(Client player, BusinessModel business)
         {
             return (player.Name == business.owner);
         }
 
-        private List<BusinessTattooModel> getBusinessZoneTattoos(int sex, int zone)
+        private List<BusinessTattooModel> GetBusinessZoneTattoos(int sex, int zone)
         {
             List<BusinessTattooModel> tattooList = new List<BusinessTattooModel>();
 

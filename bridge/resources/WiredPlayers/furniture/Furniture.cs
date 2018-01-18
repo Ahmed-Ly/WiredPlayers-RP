@@ -25,22 +25,22 @@ namespace WiredPlayers.furniture
                 float posX = float.Parse(((String)args[1]).Replace(",", "."));
                 float posY = float.Parse(((String)args[2]).Replace(",", "."));
                 float posZ = float.Parse(((String)args[3]).Replace(",", "."));
-                FurnitureModel furniture = getFurnitureById(furnitureId);
+                FurnitureModel furniture = GetFurnitureById(furnitureId);
                 Vector3 position = new Vector3(posX, posY, posZ);
                 NAPI.Entity.SetEntityPosition(furniture.handle, position);
             }
         }
 
-        public void loadDatabaseFurniture()
+        public void LoadDatabaseFurniture()
         {
-            furnitureList = Database.loadAllFurniture();
+            furnitureList = Database.LoadAllFurniture();
             foreach (FurnitureModel furnitureModel in furnitureList)
             {
                 furnitureModel.handle = NAPI.Object.CreateObject(furnitureModel.hash, furnitureModel.position, furnitureModel.rotation, (byte)furnitureModel.house);
             }
         }
 
-        public List<FurnitureModel> getFurnitureInHouse(int houseId)
+        public List<FurnitureModel> GetFurnitureInHouse(int houseId)
         {
             List<FurnitureModel> list = new List<FurnitureModel>();
             foreach (FurnitureModel furniture in furnitureList)
@@ -53,7 +53,7 @@ namespace WiredPlayers.furniture
             return list;
         }
 
-        public FurnitureModel getFurnitureById(int id)
+        public FurnitureModel GetFurnitureById(int id)
         {
             FurnitureModel furniture = null;
             foreach (FurnitureModel furnitureModel in furnitureList)
@@ -68,12 +68,12 @@ namespace WiredPlayers.furniture
         }
 
         [Command("muebles")]
-        public void mueblesCommand(Client player, String action)
+        public void MueblesCommand(Client player, String action)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == true)
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                HouseModel house = House.getHouseById(houseId);
+                HouseModel house = House.GetHouseById(houseId);
                 if(house != null && house.owner == player.Name)
                 {
                     switch(action.ToLower())
@@ -88,7 +88,7 @@ namespace WiredPlayers.furniture
                             furnitureList.Add(furniture);
                             break;
                         case "mover":
-                            String furnitureJson = NAPI.Util.ToJson(getFurnitureInHouse(houseId));
+                            String furnitureJson = NAPI.Util.ToJson(GetFurnitureInHouse(houseId));
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MOVING_FURNITURE, true);
                             NAPI.ClientEvent.TriggerClientEvent(player, "moveFurniture", furnitureJson);
                             break;

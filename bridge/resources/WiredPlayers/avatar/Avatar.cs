@@ -14,7 +14,7 @@ namespace WiredPlayers.avatar
         }
 
         [Command("jugador")]
-        public void jugadorCommand(Client player)
+        public void JugadorCommand(Client player)
         {
             String sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
             String age = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_AGE) + " años";

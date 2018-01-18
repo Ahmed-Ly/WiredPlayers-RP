@@ -20,7 +20,7 @@ namespace WiredPlayers.admin
 
         public Admin() { }
 
-        private bool hasUserCommandPermission(Client player, String command, String option = "")
+        private bool HasUserCommandPermission(Client player, String command, String option = "")
         {
             bool hasPermission = false;
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
@@ -42,7 +42,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("skin", Messages.GEN_SKIN_COMMAND)]
-        public void skinCommand(Client player, String pedModel)
+        public void SkinCommand(Client player, String pedModel)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -52,7 +52,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("aviso", Messages.GEN_AVISO_COMMAND, GreedyArg = true)]
-        public void avisoCommand(Client player, String message)
+        public void AvisoCommand(Client player, String message)
         {
             if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -89,12 +89,12 @@ namespace WiredPlayers.admin
         }
 
         [Command("tpa", Messages.GEN_TP_COMMAND, GreedyArg = true)]
-        public void tpaCommand(Client player, String targetString)
+        public void TpaCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (target != null)
                 {
@@ -123,13 +123,13 @@ namespace WiredPlayers.admin
         }
 
         [Command("traer", Messages.GEN_BRING_COMMAND, GreedyArg = true)]
-        public void traerCommand(Client player, String targetString)
+        public void TraerCommand(Client player, String targetString)
         {
 
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (target != null)
                 {
@@ -163,7 +163,7 @@ namespace WiredPlayers.admin
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (target != null)
                 {
@@ -175,7 +175,7 @@ namespace WiredPlayers.admin
                     else
                     {
                         // Le damos el arma al jugador
-                        Weapons.givePlayerNewWeapon(target, weapon, ammo, false);
+                        Weapons.GivePlayerNewWeapon(target, weapon, ammo, false);
                     }
                 }
                 else
@@ -186,7 +186,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("vehiculo", Messages.GEN_VEHICLE_COMMAND, GreedyArg = true)]
-        public void vehiculoCommand(Client player, String args)
+        public void VehiculoCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -201,7 +201,7 @@ namespace WiredPlayers.admin
                         case "info":
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
-                                veh = Globals.getClosestVehicle(player);
+                                veh = Globals.GetClosestVehicle(player);
                                 if (veh.IsNull)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
@@ -245,7 +245,7 @@ namespace WiredPlayers.admin
                                             vehicle.parked = 0;
                                             vehicle.gas = 50.0f;
                                             vehicle.kms = 0.0f;
-                                            Vehicles.createVehicle(player, vehicle, true);
+                                            Vehicles.CreateVehicle(player, vehicle, true);
                                         }
                                         catch (Exception ex)
                                         {
@@ -274,7 +274,7 @@ namespace WiredPlayers.admin
                                         {
                                             if (arguments.Length == 4)
                                             {
-                                                veh = Globals.getClosestVehicle(player);
+                                                veh = Globals.GetClosestVehicle(player);
                                                 if (veh.IsNull)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
@@ -293,7 +293,7 @@ namespace WiredPlayers.admin
                                                             NAPI.SetVehicleCustomSecondaryColor(veh, vehicle.secondColor.red, vehicle.secondColor.green, vehicle.secondColor.blue);
                                                             NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_FIRST_COLOR, vehicle.firstColor.ToString());
                                                             NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_SECOND_COLOR, vehicle.secondColor.ToString());
-                                                            Database.updateVehicleColor(vehicle);*/
+                                                            Database.UpdateVehicleColor(vehicle);*/
                                                         }
                                                         catch (Exception ex)
                                                         {
@@ -318,7 +318,7 @@ namespace WiredPlayers.admin
                                         {
                                             if (Int32.TryParse(arguments[2], out vehicleId) == true)
                                             {
-                                                veh = Vehicles.getVehicleById(vehicleId);
+                                                veh = Vehicles.GetVehicleById(vehicleId);
                                                 if (veh.IsNull)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
@@ -333,7 +333,7 @@ namespace WiredPlayers.admin
                                                         vehicleId = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
                                                         NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_DIMENSION, dimension);
                                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
-                                                        Database.updateVehicleSingleValue("dimension", Convert.ToInt32(dimension), vehicleId);
+                                                        Database.UpdateVehicleSingleValue("dimension", Convert.ToInt32(dimension), vehicleId);
                                                     }
                                                     else
                                                     {
@@ -357,7 +357,7 @@ namespace WiredPlayers.admin
 
                                             if (arguments.Length == 3)
                                             {
-                                                veh = Globals.getClosestVehicle(player);
+                                                veh = Globals.GetClosestVehicle(player);
                                                 if (veh.IsNull)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
@@ -371,7 +371,7 @@ namespace WiredPlayers.admin
                                                         vehicleId = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
                                                         NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_FACTION, faction);
                                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
-                                                        Database.updateVehicleSingleValue("faction", faction, vehicleId);
+                                                        Database.UpdateVehicleSingleValue("faction", faction, vehicleId);
                                                     }
                                                     else
                                                     {
@@ -396,7 +396,7 @@ namespace WiredPlayers.admin
                                                 vehicle.id = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
                                                 NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_POSITION, vehicle.position);
                                                 NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_ROTATION, vehicle.rotation);
-                                                Database.updateVehiclePosition(vehicle);
+                                                Database.UpdateVehiclePosition(vehicle);
                                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_VEHICLE_POS_UPDATED);
                                             }
                                             else
@@ -410,7 +410,7 @@ namespace WiredPlayers.admin
                                         {
                                             if (arguments.Length == 4)
                                             {
-                                                veh = Globals.getClosestVehicle(player);
+                                                veh = Globals.GetClosestVehicle(player);
                                                 if (veh.IsNull)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
@@ -422,7 +422,7 @@ namespace WiredPlayers.admin
                                                     vehicleId = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
                                                     NAPI.Data.SetEntityData(veh, EntityData.VEHICLE_OWNER, owner);
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
-                                                    Database.updateVehicleSingleString("owner", owner, vehicleId);
+                                                    Database.UpdateVehicleSingleString("owner", owner, vehicleId);
                                                 }
                                             }
                                             else
@@ -446,11 +446,11 @@ namespace WiredPlayers.admin
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
-                                    veh = Vehicles.getVehicleById(vehicleId);
+                                    veh = Vehicles.GetVehicleById(vehicleId);
                                     if (!veh.IsNull)
                                     {
                                         NAPI.Entity.DeleteEntity(veh);
-                                        Database.removeVehicle(vehicleId);
+                                        Database.RemoveVehicle(vehicleId);
                                     }
                                 }
                                 else
@@ -469,7 +469,7 @@ namespace WiredPlayers.admin
                         case "bloquear":
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
-                                veh = Globals.getClosestVehicle(player);
+                                veh = Globals.GetClosestVehicle(player);
                                 if (veh.IsNull)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
@@ -505,7 +505,7 @@ namespace WiredPlayers.admin
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
-                                    veh = Vehicles.getVehicleById(vehicleId);
+                                    veh = Vehicles.GetVehicleById(vehicleId);
                                     if (!veh.IsNull)
                                     {
                                         // Traemos el vehículo a la posición
@@ -532,10 +532,10 @@ namespace WiredPlayers.admin
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
-                                    veh = Vehicles.getVehicleById(vehicleId);
+                                    veh = Vehicles.GetVehicleById(vehicleId);
                                     if (veh.IsNull)
                                     {
-                                        VehicleModel vehModel = Vehicles.getParkedVehicleById(vehicleId);
+                                        VehicleModel vehModel = Vehicles.GetParkedVehicleById(vehicleId);
 
                                         if (vehModel == null)
                                         {
@@ -544,7 +544,7 @@ namespace WiredPlayers.admin
                                         else
                                         {
                                             // Vamos a la posición del parking
-                                            ParkingModel parking = Parking.getParkingById(vehModel.parking);
+                                            ParkingModel parking = Parking.GetParkingById(vehModel.parking);
                                             NAPI.Entity.SetEntityPosition(player, parking.position);
 
                                             // Informamos al jugador
@@ -578,7 +578,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("ir", Messages.GEN_GO_COMMAND)]
-        public void irCommand(Client player, String location)
+        public void IrCommand(Client player, String location)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -659,9 +659,9 @@ namespace WiredPlayers.admin
         }
 
         [Command("negocio", Messages.GEN_BUSINESS_COMMAND, GreedyArg = true)]
-        public void negocioCommand(Client player, String args)
+        public void NegocioCommand(Client player, String args)
         {
-            if (hasUserCommandPermission(player, "negocio") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+            if (HasUserCommandPermission(player, "negocio") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 if (args.Trim().Length > 0)
                 {
@@ -673,7 +673,7 @@ namespace WiredPlayers.admin
                         case "info":
                             break;
                         case "crear":
-                            if (hasUserCommandPermission(player, "negocio", "crear") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
+                            if (HasUserCommandPermission(player, "negocio", "crear") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 if (arguments.Length == 2)
                                 {
@@ -681,14 +681,14 @@ namespace WiredPlayers.admin
                                     if (Int32.TryParse(arguments[1], out int type) == true)
                                     {
                                         business.type = type;
-                                        business.ipl = Business.getBusinessTypeIpl(type);
+                                        business.ipl = Business.GetBusinessTypeIpl(type);
                                         business.position = player.Position;
                                         business.dimension = player.Dimension;
                                         business.multiplier = 3.0f;
                                         business.owner = String.Empty;
                                         business.locked = false;
                                         business.name = "Negocio";
-                                        business.id = Database.addNewBusiness(business);
+                                        business.id = Database.AddNewBusiness(business);
                                         business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 0, new Color(255, 255, 255), false, business.dimension);
                                         Business.businessList.Add(business);
                                     }
@@ -710,9 +710,9 @@ namespace WiredPlayers.admin
                             }
                             break;
                         case "modificar":
-                            if (hasUserCommandPermission(player, "negocio", "modificar") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                            if (HasUserCommandPermission(player, "negocio", "modificar") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
-                                business = Business.getClosestBusiness(player);
+                                business = Business.GetClosestBusiness(player);
                                 if (business != null)
                                 {
                                     if (arguments.Length > 1)
@@ -726,7 +726,7 @@ namespace WiredPlayers.admin
                                                     String businessName = String.Join(" ", arguments.Skip(2));
                                                     business.name = businessName;
                                                     NAPI.TextLabel.SetTextLabelText(business.businessLabel, businessName);
-                                                    Database.updateBusiness(business);
+                                                    Database.UpdateBusiness(business);
 
                                                     // Mandamos el mensaje
                                                     message = String.Format(Messages.ADM_BUSINESS_NAME_MODIFIED, businessName);
@@ -745,8 +745,8 @@ namespace WiredPlayers.admin
                                                     {
                                                         // Cambiamos el tipo
                                                         business.type = businessType;
-                                                        business.ipl = Business.getBusinessTypeIpl(businessType);
-                                                        Database.updateBusiness(business);
+                                                        business.ipl = Business.GetBusinessTypeIpl(businessType);
+                                                        Database.UpdateBusiness(business);
 
                                                         // Mandamos el mensaje
                                                         message = String.Format(Messages.ADM_BUSINESS_TYPE_MODIFIED, businessType);
@@ -783,11 +783,11 @@ namespace WiredPlayers.admin
                         case "eliminar":
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
-                                business = Business.getClosestBusiness(player);
+                                business = Business.GetClosestBusiness(player);
                                 if (business != null)
                                 {
                                     NAPI.Entity.DeleteEntity(business.businessLabel);
-                                    Database.deleteBusiness(business.id);
+                                    Database.DeleteBusiness(business.id);
                                     Business.businessList.Remove(business);
                                 }
                             }
@@ -805,7 +805,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("personaje", Messages.GEN_CHARACTER_COMMAND)]
-        public void personajeCommand(Client player, String action, String name = "", String surname = "", String amount = "")
+        public void PersonajeCommand(Client player, String action, String name = "", String surname = "", String amount = "")
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -814,7 +814,7 @@ namespace WiredPlayers.admin
                 // Miramos si viene un id o un nombre
                 if (Int32.TryParse(name, out int targetId) == true)
                 {
-                    target = Globals.getPlayerById(targetId);
+                    target = Globals.GetPlayerById(targetId);
                     amount = surname;
                 }
                 else
@@ -894,11 +894,11 @@ namespace WiredPlayers.admin
         }
 
         [Command("casa", Messages.GEN_HOUSE_COMMAND, GreedyArg = true)]
-        public void casaCommand(Client player, String args)
+        public void CasaCommand(Client player, String args)
         {
-            if (hasUserCommandPermission(player, "casa") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+            if (HasUserCommandPermission(player, "casa") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                HouseModel house = House.getClosestHouse(player);
+                HouseModel house = House.GetClosestHouse(player);
                 String[] arguments = args.Split(' ');
                 switch (arguments[0].ToLower())
                 {
@@ -908,10 +908,10 @@ namespace WiredPlayers.admin
                             // Obtenemos el identificador de la casa
                             if (arguments.Length == 2 && int.TryParse(arguments[1], out int houseId) == true) //Se ha metido ID.
                             {
-                                house = House.getHouseById(houseId);
+                                house = House.GetHouseById(houseId);
                                 if (house != null)
                                 {
-                                    sendHouseInfo(player, house);
+                                    SendHouseInfo(player, house);
                                 }
                                 else
                                 {
@@ -920,7 +920,7 @@ namespace WiredPlayers.admin
                             }
                             else if (arguments.Length == 1) //No se ha metido,  la mas cercana
                             {
-                                sendHouseInfo(player, house);
+                                SendHouseInfo(player, house);
                             }
                             else
                             {
@@ -929,7 +929,7 @@ namespace WiredPlayers.admin
                         }
                         break;
                     case "crear":
-                        if (hasUserCommandPermission(player, "casa", "crear") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
+                        if (HasUserCommandPermission(player, "casa", "crear") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                         {
                             String houseLabel = String.Empty;
                             house = new HouseModel();
@@ -943,8 +943,8 @@ namespace WiredPlayers.admin
                             house.tenants = 2;
                             house.rental = 0;
                             house.locked = true;
-                            house.id = Database.addHouse(house);
-                            house.houseLabel = NAPI.TextLabel.CreateTextLabel(House.getHouseLabelText(house), house.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                            house.id = Database.AddHouse(house);
+                            house.houseLabel = NAPI.TextLabel.CreateTextLabel(House.GetHouseLabelText(house), house.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_HOUSE_CREATED);
                             House.houseList.Add(house);
                         }
@@ -960,12 +960,12 @@ namespace WiredPlayers.admin
                                 switch (arguments[1].ToLower())
                                 {
                                     case "interior":
-                                        if (hasUserCommandPermission(player, "casa", "interior") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                        if (HasUserCommandPermission(player, "casa", "interior") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (value >= 0 && value < Constants.HOUSE_IPL_LIST.Count)
                                             {
                                                 house.ipl = Constants.HOUSE_IPL_LIST[value].ipl;
-                                                Database.updateHouse(house);
+                                                Database.UpdateHouse(house);
 
                                                 // Mandamos el mensaje al administrador
                                                 message = String.Format(Messages.ADM_HOUSE_INTERIOR_MODIFIED, value);
@@ -979,14 +979,14 @@ namespace WiredPlayers.admin
                                         }
                                         break;
                                     case "precio":
-                                        if (hasUserCommandPermission(player, "casa", "precio") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                        if (HasUserCommandPermission(player, "casa", "precio") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (value > 0)
                                             {
                                                 house.price = value;
                                                 house.status = Constants.HOUSE_STATE_BUYABLE;
-                                                NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.getHouseLabelText(house));
-                                                Database.updateHouse(house);
+                                                NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
+                                                Database.UpdateHouse(house);
 
                                                 // Mandamos el mensaje al administrador
                                                 message = String.Format(Messages.ADM_HOUSE_PRICE_MODIFIED, value);
@@ -1002,8 +1002,8 @@ namespace WiredPlayers.admin
                                         if (value >= 0 && value < 3)
                                         {
                                             house.status = value;
-                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.getHouseLabelText(house));
-                                            Database.updateHouse(house);
+                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
+                                            Database.UpdateHouse(house);
 
                                             // Mandamos el mensaje al administrador
                                             message = String.Format(Messages.ADM_HOUSE_STATUS_MODIFIED, value);
@@ -1019,8 +1019,8 @@ namespace WiredPlayers.admin
                                         {
                                             house.rental = value;
                                             house.status = Constants.HOUSE_STATE_RENTABLE;
-                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.getHouseLabelText(house));
-                                            Database.updateHouse(house);
+                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
+                                            Database.UpdateHouse(house);
 
                                             // Mandamos el mensaje al administrador
                                             message = String.Format(Messages.ADM_HOUSE_RENTAL_MODIFIED, value);
@@ -1048,10 +1048,10 @@ namespace WiredPlayers.admin
                                 switch (arguments[1].ToLower())
                                 {
                                     case "dueño":
-                                        if (hasUserCommandPermission(player, "casa", "dueño") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                        if (HasUserCommandPermission(player, "casa", "dueño") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             house.owner = name.Trim();
-                                            Database.updateHouse(house);
+                                            Database.UpdateHouse(house);
 
                                             // Mandamos el mensaje al administrador
                                             message = String.Format(Messages.ADM_HOUSE_OWNER_MODIFIED);
@@ -1059,11 +1059,11 @@ namespace WiredPlayers.admin
                                         }
                                         break;
                                     case "nombre":
-                                        if (hasUserCommandPermission(player, "casa", "nombre") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                        if (HasUserCommandPermission(player, "casa", "nombre") || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             house.name = name.Trim();
-                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.getHouseLabelText(house));
-                                            Database.updateHouse(house);
+                                            NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
+                                            Database.UpdateHouse(house);
 
                                             // Mandamos el mensaje al administrador
                                             message = String.Format(Messages.ADM_HOUSE_NAME_MODIFIED, value);
@@ -1088,7 +1088,7 @@ namespace WiredPlayers.admin
                             if (house != null)
                             {
                                 NAPI.Entity.DeleteEntity(house.houseLabel);
-                                Database.deleteHouse(house.id);
+                                Database.DeleteHouse(house.id);
                                 House.houseList.Remove(house);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_HOUSE_DELETED);
                             }
@@ -1104,7 +1104,7 @@ namespace WiredPlayers.admin
                             // Obtenemos la casa
                             if (arguments.Length == 2 && int.TryParse(arguments[1], out int houseId) == true)
                             {
-                                house = House.getHouseById(houseId);
+                                house = House.GetHouseById(houseId);
                                 if (house != null)
                                 {
                                     NAPI.Entity.SetEntityPosition(player, house.position);
@@ -1128,7 +1128,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        private void sendHouseInfo(Client player, HouseModel house)
+        private void SendHouseInfo(Client player, HouseModel house)
         {
             NAPI.Chat.SendChatMessageToPlayer(player, "__________Información de la casa:__________");
             NAPI.Chat.SendChatMessageToPlayer(player, "ID: " + house.id);
@@ -1140,12 +1140,12 @@ namespace WiredPlayers.admin
         }
 
         [Command("parking", Messages.GEN_PARKING_COMMAND, GreedyArg = true)]
-        public void parkingCommand(Client player, String args)
+        public void ParkingCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 String[] arguments = args.Split(' ');
-                ParkingModel parking = Parking.getClosestParking(player);
+                ParkingModel parking = Parking.GetClosestParking(player);
                 switch (arguments[0].ToLower())
                 {
                     case "info":
@@ -1196,8 +1196,8 @@ namespace WiredPlayers.admin
                                         parking = new ParkingModel();
                                         parking.type = type;
                                         parking.position = player.Position;
-                                        parking.id = Database.addParking(parking);
-                                        parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.getParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                                        parking.id = Database.AddParking(parking);
+                                        parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_PARKING_CREATED);
                                         Parking.parkingList.Add(parking);
                                     }
@@ -1227,7 +1227,7 @@ namespace WiredPlayers.admin
                                             if (Int32.TryParse(arguments[2], out int houseId) == true)
                                             {
                                                 parking.houseId = houseId;
-                                                Database.updateParking(parking);
+                                                Database.UpdateParking(parking);
 
                                                 // Mandamos el mensaje al administrador
                                                 String message = String.Format(Messages.ADM_PARKING_HOUSE_MODIFIED, houseId);
@@ -1248,8 +1248,8 @@ namespace WiredPlayers.admin
                                         if (Int32.TryParse(arguments[2], out slots) == true)
                                         {
                                             parking.capacity = slots;
-                                            Database.updateParking(parking);
-                                            parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.getParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                                            Database.UpdateParking(parking);
+                                            parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
 
                                             // Mandamos el mensaje al administrador
                                             String message = String.Format(Messages.ADM_PARKING_SLOTS_MODIFIED, slots);
@@ -1265,7 +1265,7 @@ namespace WiredPlayers.admin
                                         if (Int32.TryParse(arguments[2], out type) == true)
                                         {
                                             parking.type = type;
-                                            Database.updateParking(parking);
+                                            Database.UpdateParking(parking);
 
                                             // Mandamos el mensaje al administrador
                                             String message = String.Format(Messages.ADM_PARKING_TYPE_MODIFIED, type);
@@ -1297,7 +1297,7 @@ namespace WiredPlayers.admin
                             if (parking != null)
                             {
                                 NAPI.Entity.DeleteEntity(parking.parkingLabel);
-                                Database.deleteParking(parking.id);
+                                Database.DeleteParking(parking.id);
                                 Parking.parkingList.Remove(parking);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_PARKING_DELETED);
                             }
@@ -1325,18 +1325,18 @@ namespace WiredPlayers.admin
         }
 
         [Command("revivir", Messages.GEN_REVIVE_COMMAND)]
-        public void revivirCommand(Client player, String targetString)
+        public void RevivirCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (target != null)
                 {
                     if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_KILLED) != 0)
                     {
-                        Emergency.destroyDeathTimer(target);
+                        Emergency.DestroyDeathTimer(target);
                         String playerMessage = String.Format(Messages.ADM_PLAYER_REVIVED, target.Name);
                         String targetMessage = String.Format(Messages.SUC_ADMIN_REVIVED, player.SocialClubName);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
@@ -1372,7 +1372,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("jail", Messages.GEN_JAIL_COMMAND, GreedyArg = true)]
-        public void jailCommand(Client player, String args)
+        public void JailCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -1386,7 +1386,7 @@ namespace WiredPlayers.admin
 
                     if (Int32.TryParse(arguments[0], out int targetId) == true)
                     {
-                        target = Globals.getPlayerById(targetId);
+                        target = Globals.GetPlayerById(targetId);
                         if (Int32.TryParse(arguments[1], out jailTime) == true)
                         {
                             reason = String.Join(" ", arguments.Skip(2));
@@ -1427,7 +1427,7 @@ namespace WiredPlayers.admin
                     NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + message);
 
                     // Añadimos el log administrativo
-                    Database.addAdminLog(player.SocialClubName, target.Name, "jail", jailTime, reason);
+                    Database.AddAdminLog(player.SocialClubName, target.Name, "jail", jailTime, reason);
                 }
                 else
                 {
@@ -1442,14 +1442,14 @@ namespace WiredPlayers.admin
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Player.KickPlayer(target, reason);
                 NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + target.Name + " ha sido expulsado por " + player.Name + " motivo: " + reason);
             }
         }
 
         [Command("kickall")]
-        public void kickAllCommand(Client player)
+        public void KickAllCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -1472,19 +1472,19 @@ namespace WiredPlayers.admin
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Player.BanPlayer(target, reason);
                 NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + target.Name + " ha sido baneado por " + player.Name + " motivo: " + reason);
             }
         }
 
         [Command("vida")]
-        public void vidaCommand(Client player, String targetString, int health)
+        public void VidaCommand(Client player, String targetString, int health)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
             {
                 // Obtenemos el jugador objetivo
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + "Has cambiado la salud de " + target.Name + " por " + health);
                 NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + "El miembro del staff " + player.Name + " te ha cambiado la salud por " + health);
                 NAPI.Player.SetPlayerHealth(target, health);
@@ -1492,7 +1492,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("save")]
-        public void saveCommand(Client player)
+        public void SaveCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -1503,7 +1503,7 @@ namespace WiredPlayers.admin
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_SAVE_START);
 
                 // Guardamos todos los negocios
-                Database.updateAllBusiness(Business.businessList);
+                Database.UpdateAllBusiness(Business.businessList);
                 message = String.Format(Messages.ADM_SAVE_BUSINESS, Business.businessList.Count);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
 
@@ -1547,7 +1547,7 @@ namespace WiredPlayers.admin
                         character.bank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK);
 
                         // Guardado del personaje en base de datos
-                        Database.saveCharacterInformation(character);
+                        Database.SaveCharacterInformation(character);
                     }
                 }
 
@@ -1587,7 +1587,7 @@ namespace WiredPlayers.admin
                 }
 
                 // Guardamos la lista de vehículos
-                Database.saveAllVehicles(vehicleList);
+                Database.SaveAllVehicles(vehicleList);
 
                 // Indicamos el fin
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + "Todos los vehículos guardados.");
@@ -1598,7 +1598,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("aservicio")]
-        public void aservicioCommand(Client player)
+        public void AservicioCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -1620,14 +1620,14 @@ namespace WiredPlayers.admin
         }
 
         [Command("dudas")]
-        public void dudasCommand(Client player)
+        public void DudasCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Lista de dudas");
                 foreach (AdminTicketModel adminTicket in Globals.adminTicketList)
                 {
-                    Client target = Globals.getPlayerById(adminTicket.playerId);
+                    Client target = Globals.GetPlayerById(adminTicket.playerId);
                     String ticket = target.Name + " (" + adminTicket.playerId + "): " + adminTicket.question;
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + ticket);
                 }
@@ -1635,7 +1635,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("rduda", Messages.GEN_ANSWER_HELP_REQUEST, GreedyArg = true)]
-        public void rdudaCommand(Client player, int ticket, String message)
+        public void RdudaCommand(Client player, int ticket, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -1643,7 +1643,7 @@ namespace WiredPlayers.admin
                 {
                     if (adminTicket.playerId == ticket)
                     {
-                        Client target = Globals.getPlayerById(adminTicket.playerId);
+                        Client target = Globals.GetPlayerById(adminTicket.playerId);
 
                         // Respondemos al jugador
                         String targetMessage = String.Format(Messages.INF_TICKET_ANSWER, message);
@@ -1665,7 +1665,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("a", Messages.GEN_ADMIN_TEXT_COMMAND, GreedyArg = true)]
-        public void aCommand(Client player, String message)
+        public void ACommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
@@ -1697,11 +1697,11 @@ namespace WiredPlayers.admin
         }
 
         [Command("recon", Messages.GEN_RECON_COMMAND, GreedyArg = true)]
-        public void reconCommand(Client player, String targetString)
+        public void ReconCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == false)
                 {
@@ -1726,7 +1726,7 @@ namespace WiredPlayers.admin
         }
 
         [Command("recoff")]
-        public void recoffCommand(Client player)
+        public void RecoffCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
@@ -1743,11 +1743,11 @@ namespace WiredPlayers.admin
         }
 
         [Command("info", "USO: /info [Id | Nombre jugador]")]
-        public void infoCommand(Client player, String targetString)
+        public void InfoCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
-                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
                 String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";

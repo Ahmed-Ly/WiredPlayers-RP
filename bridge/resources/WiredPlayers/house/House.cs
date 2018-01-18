@@ -13,10 +13,10 @@ namespace WiredPlayers.house
 
         public House()
         {
-            Event.OnClientEventTrigger += onClientEventHandler;
+            Event.OnClientEventTrigger += OnClientEventTrigger;
         }
 
-        private void onClientEventHandler(Client player, string eventName, params object[] arguments)
+        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
         {
             if (eventName == "wardrobeClothesItemSelected")
             {
@@ -41,30 +41,30 @@ namespace WiredPlayers.house
                         }
 
                         // Actualizamos la ropa en la base de datos
-                        Database.updateClothes(clothes);
+                        Database.UpdateClothes(clothes);
                     }
                     else if(clothes.id != clothesId && clothes.player == playerId && clothes.type == type && clothes.slot == slot && clothes.dressed)
                     {
                         clothes.dressed = false;
 
                         // Actualizamos la ropa en la base de datos
-                        Database.updateClothes(clothes);
+                        Database.UpdateClothes(clothes);
                     }
                 }
             }
         }
 
-        public void loadDatabaseHouses()
+        public void LoadDatabaseHouses()
         {
-            houseList = Database.loadAllHouses();
+            houseList = Database.LoadAllHouses();
             foreach (HouseModel houseModel in houseList)
             {
-                String houseLabelText = getHouseLabelText(houseModel);
+                String houseLabelText = GetHouseLabelText(houseModel);
                 houseModel.houseLabel = NAPI.TextLabel.CreateTextLabel(houseLabelText, houseModel.position, 20.0f, 0.75f, 0, new Color(255, 255, 255), false, houseModel.dimension);
             }
         }
 
-        public static HouseModel getHouseById(int id)
+        public static HouseModel GetHouseById(int id)
         {
             HouseModel house = null;
             foreach (HouseModel houseModel in houseList)
@@ -78,7 +78,7 @@ namespace WiredPlayers.house
             return house;
         }
 
-        public static HouseModel getClosestHouse(Client player, float distance = 1.5f)
+        public static HouseModel GetClosestHouse(Client player, float distance = 1.5f)
         {
             HouseModel house = null;
             foreach(HouseModel houseModel in houseList)
@@ -92,7 +92,7 @@ namespace WiredPlayers.house
             return house;
         }
 
-        public static Vector3 getHouseExitPoint(String ipl)
+        public static Vector3 GetHouseExitPoint(String ipl)
         {
             Vector3 exit = null;
             foreach(HouseIplModel houseIpl in Constants.HOUSE_IPL_LIST)
@@ -106,12 +106,12 @@ namespace WiredPlayers.house
             return exit;
         }
 
-        public static bool hasPlayerHouseKeys(Client player, HouseModel house)
+        public static bool HasPlayerHouseKeys(Client player, HouseModel house)
         {
             return (player.Name == house.owner || NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE) == house.id);
         }
 
-        public static String getHouseLabelText(HouseModel house)
+        public static String GetHouseLabelText(HouseModel house)
         {
             String label = String.Empty;
             switch(house.status)
@@ -129,7 +129,7 @@ namespace WiredPlayers.house
             return label;
         }
 
-        public static void buyHouse(Client player, HouseModel house)
+        public static void BuyHouse(Client player, HouseModel house)
         {
             if(house.status == Constants.HOUSE_STATE_BUYABLE)
             {
@@ -137,14 +137,14 @@ namespace WiredPlayers.house
                 {
                     int bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) - house.price;
                     String message = String.Format(Messages.INF_HOUSE_BUY, house.name, house.price);
-                    String labelText = getHouseLabelText(house);
+                    String labelText = GetHouseLabelText(house);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank);
                     house.status = Constants.HOUSE_STATE_NONE;
-                    NAPI.TextLabel.SetTextLabelText(house.houseLabel, getHouseLabelText(house));
+                    NAPI.TextLabel.SetTextLabelText(house.houseLabel, GetHouseLabelText(house));
                     house.owner = player.Name;
                     house.locked = true;
-                    Database.updateHouse(house);
+                    Database.UpdateHouse(house);
                 }
                 else
                 {
@@ -158,7 +158,7 @@ namespace WiredPlayers.house
         }
 
         [Command("alquilable", Messages.GEN_RENTABLE_COMMAND)]
-        public void alquilableCommand(Client player, int amount = 0)
+        public void AlquilableCommand(Client player, int amount = 0)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == 0)
             {
@@ -167,7 +167,7 @@ namespace WiredPlayers.house
             else
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                HouseModel house = getHouseById(houseId);
+                HouseModel house = GetHouseById(houseId);
                 if(house == null || house.owner != player.Name)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_HOUSE_OWNER);
@@ -177,10 +177,10 @@ namespace WiredPlayers.house
                     house.rental = amount;
                     house.status = Constants.HOUSE_STATE_RENTABLE;
                     house.tenants = 2;
-                    Database.updateHouse(house);
+                    Database.UpdateHouse(house);
 
                     // Actualizamos el label de la casa
-                    String labelText = getHouseLabelText(house);
+                    String labelText = GetHouseLabelText(house);
                     NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
 
                     // Mandamos el mensaje al jugador
@@ -190,18 +190,18 @@ namespace WiredPlayers.house
                 else if (house.status == Constants.HOUSE_STATE_RENTABLE)
                 {
                     house.status = Constants.HOUSE_STATE_NONE;
-                    Database.updateHouse(house);
+                    Database.UpdateHouse(house);
 
                     // Actualizamos el label de la casa
-                    String labelText = getHouseLabelText(house);
+                    String labelText = GetHouseLabelText(house);
                     NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
 
                     // Mandamos el mensaje al jugador
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOUSE_RENT_CANCEL);
 
-                    Database.kickTenantsOut(house.id);
+                    Database.KickTenantsOut(house.id);
                     house.tenants = 2;
-                    Database.updateHouse(house);
+                    Database.UpdateHouse(house);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace WiredPlayers.house
         }
 
         [Command("alquilar")]
-        public void alquilarCommand(Client player)
+        public void AlquilarCommand(Client player)
         {
             // Recorremos la lista de casas
             foreach (HouseModel house in houseList)
@@ -239,12 +239,12 @@ namespace WiredPlayers.house
                             if (house.tenants == 0)
                             {
                                 house.status = Constants.HOUSE_STATE_NONE;
-                                String labelText = getHouseLabelText(house);
+                                String labelText = GetHouseLabelText(house);
                                 NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
                             }
 
                             // Actualizamos los inquilinos
-                            Database.updateHouse(house);
+                            Database.UpdateHouse(house);
                         }
                         break;
                     }
@@ -254,7 +254,7 @@ namespace WiredPlayers.house
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_RENT_HOUSE, 0);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + String.Format(Messages.INF_HOUSE_RENT_STOP, house.name));
                         house.tenants++;
-                        Database.updateHouse(house);
+                        Database.UpdateHouse(house);
                     }
                     else
                     {
@@ -265,17 +265,17 @@ namespace WiredPlayers.house
         }
 
         [Command("armario")]
-        public void armarioCommand(Client player)
+        public void ArmarioCommand(Client player)
         {
             int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
             if(houseId > 0)
             {
-                HouseModel house = getHouseById(houseId);
-                if (hasPlayerHouseKeys(player, house) == true)
+                HouseModel house = GetHouseById(houseId);
+                if (HasPlayerHouseKeys(player, house) == true)
                 {
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    List<ClothesModel> clothesList = Globals.getPlayerClothes(playerId);
-                    List<String> clothesNames = Globals.getClothesNames(clothesList);
+                    List<ClothesModel> clothesList = Globals.GetPlayerClothes(playerId);
+                    List<String> clothesNames = Globals.GetClothesNames(clothesList);
                     if(clothesList.Count > 0)
                     {
                         NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerWardrobe", NAPI.Util.ToJson(clothesList), NAPI.Util.ToJson(clothesNames));

@@ -37,9 +37,8 @@ namespace WiredPlayers.fastfood
                 }
                 else
                 {
-                    Timer fastFoodTimer = null;
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    if (fastFoodTimerList.TryGetValue(playerId, out fastFoodTimer) == true)
+                    if (fastFoodTimerList.TryGetValue(playerId, out Timer fastFoodTimer) == true)
                     {
                         fastFoodTimer.Dispose();
                         fastFoodTimerList.Remove(playerId);
@@ -89,8 +88,8 @@ namespace WiredPlayers.fastfood
                         else
                         {
                             order.taken = true;
-                            int start = Globals.getTotalSeconds();
-                            HouseModel house = getPlayerFastFoodDeliveryDestination();
+                            int start = Globals.GetTotalSeconds();
+                            HouseModel house = GetPlayerFastFoodDeliveryDestination();
                             int time = (int)Math.Round(player.Position.DistanceTo(house.position) / 9.5f);
                             String orderMessage = String.Format(Messages.INF_DELIVER_ORDER, time);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + orderMessage);
@@ -123,9 +122,9 @@ namespace WiredPlayers.fastfood
                             NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
                             Vector3 vehiclePosition = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
                             NAPI.Entity.SetEntityPosition(playerDeliverColShape, vehiclePosition);
-                            int elapsed = Globals.getTotalSeconds() - NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_START);
+                            int elapsed = Globals.GetTotalSeconds() - NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_START);
                             int extra = (int)Math.Round((NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_TIME) - elapsed) / 2.0f);
-                            int amount = getFastFoodOrderAmount(player) + extra;
+                            int amount = GetFastFoodOrderAmount(player) + extra;
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_START);
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ORDER_DESTINATION);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_WON, amount > 0 ? amount : 25);
@@ -158,7 +157,7 @@ namespace WiredPlayers.fastfood
                             NAPI.Player.WarpPlayerOutOfVehicle(player);
 
                             // Devolvemos la moto a su sitio
-                            respawnFastfoodVehicle(vehicle);
+                            RespawnFastfoodVehicle(vehicle);
                         }
                         else
                         {
@@ -174,10 +173,9 @@ namespace WiredPlayers.fastfood
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Miramos si tiene el timer activo
-                Timer fastFoodTimer = null;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
-                if (fastFoodTimerList.TryGetValue(playerId, out fastFoodTimer) == true)
+                if (fastFoodTimerList.TryGetValue(playerId, out Timer fastFoodTimer) == true)
                 {
                     // Eliminamos el timer
                     fastFoodTimer.Dispose();
@@ -186,7 +184,7 @@ namespace WiredPlayers.fastfood
             }
         }
 
-        private HouseModel getPlayerFastFoodDeliveryDestination()
+        private HouseModel GetPlayerFastFoodDeliveryDestination()
         {
             HouseModel house = null;
             Random random = new Random();
@@ -204,7 +202,7 @@ namespace WiredPlayers.fastfood
             return house;
         }
 
-        private int getFastFoodOrderAmount(Client player)
+        private int GetFastFoodOrderAmount(Client player)
         {
             int amount = 0;
             int orderId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
@@ -221,7 +219,7 @@ namespace WiredPlayers.fastfood
             return amount;
         }
 
-        private void respawnFastfoodVehicle(NetHandle vehicle)
+        private void RespawnFastfoodVehicle(NetHandle vehicle)
         {
             NAPI.Vehicle.RepairVehicle(vehicle);
             NAPI.Entity.SetEntityPosition(vehicle, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
@@ -237,7 +235,7 @@ namespace WiredPlayers.fastfood
                 NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
 
                 // Respawneamos el vehículo
-                respawnFastfoodVehicle(vehicle);
+                RespawnFastfoodVehicle(vehicle);
 
                 // Cancelamos el pedido
                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
@@ -266,11 +264,11 @@ namespace WiredPlayers.fastfood
         }
 
         [Command("pedidos")]
-        public void fastFoodRepartosCommand(Client player)
+        public void PedidosCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {

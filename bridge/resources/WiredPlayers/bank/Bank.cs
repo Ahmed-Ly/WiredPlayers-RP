@@ -24,9 +24,7 @@ namespace WiredPlayers.bank
                 String name = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
 
                 // Verificamos que la cantidad es válida
-                int amount = 0;
-
-                if(Int32.TryParse(arguments[1].ToString(), out amount) == true)
+                if(Int32.TryParse(arguments[1].ToString(), out int amount) == true)
                 {
                     if(amount > 0)
                     {
@@ -39,7 +37,7 @@ namespace WiredPlayers.bank
                                     money += amount;
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money);
-                                    Database.logPayment("ATM", name, "Retiro", amount);
+                                    Database.LogPayment("ATM", name, "Retiro", amount);
                                 }
                                 else
                                 {
@@ -53,14 +51,14 @@ namespace WiredPlayers.bank
                                     money -= amount;
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money);
-                                    Database.logPayment(name, "ATM", "Depósito", amount);
+                                    Database.LogPayment(name, "ATM", "Depósito", amount);
                                 }
                                 else
                                 {
                                     bank += money;
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, 0);
-                                    Database.logPayment(name, "ATM", "Depósito", money);
+                                    Database.LogPayment(name, "ATM", "Depósito", money);
                                 }
                                 break;
                             case Constants.OPERATION_TRANSFER:
@@ -71,7 +69,7 @@ namespace WiredPlayers.bank
                                 else
                                 {
                                     String targetName = arguments[2].ToString();
-                                    if (Database.findCharacter(targetName) == true)
+                                    if (Database.FindCharacter(targetName) == true)
                                     {
                                         Client target = NAPI.Pools.GetAllPlayers().Find(x => x.Name == targetName);
                                         if(target == player)
@@ -92,9 +90,9 @@ namespace WiredPlayers.bank
                                             {
                                                 bank -= amount;
                                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank);
-                                                Database.transferMoneyToPlayer(targetName, amount);
+                                                Database.TransferMoneyToPlayer(targetName, amount);
                                             }
-                                            Database.logPayment(name, targetName, "Transferencia", amount);
+                                            Database.LogPayment(name, targetName, "Transferencia", amount);
                                         }
                                     }
                                     else
@@ -120,7 +118,7 @@ namespace WiredPlayers.bank
             }
             else if(eventName == "loadPlayerBankBalance")
             {
-                List<BankOperationModel> operations = Database.getBankOperations(player.Name, 1, Constants.MAX_BANK_OPERATIONS);
+                List<BankOperationModel> operations = Database.GetBankOperations(player.Name, 1, Constants.MAX_BANK_OPERATIONS);
                 NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerBankBalance", NAPI.Util.ToJson(operations), player.Name);
             }
         }

@@ -77,7 +77,7 @@ NAPI.OnEntityStreamIn.connect(function (ent, entType) {
             updatePlayerFace(ent);
 
 			// Obtenemos los tatuajes del jugador
-			NAPI.TriggerServerEvent("getPlayerTattoos", ent);
+			NAPI.TriggerServerEvent("GetPlayerTattoos", ent);
 
 			// Miramos si el jugador está borracho
 			if(NAPI.Data.HasEntitySharedData(ent, "PLAYER_WALKING_STYLE") == true) {
@@ -278,7 +278,7 @@ function updatePlayerTattoos(tattooArray, player) {
 
 function acceptCharacterCreation(name, age) {
 	// Llamamos a la función para crear el personaje
-    NAPI.TriggerServerEvent("createCharacter", name, age);
+    NAPI.TriggerServerEvent("CreateCharacter", name, age);
 }
 
 function cancelCharacterCreation() {

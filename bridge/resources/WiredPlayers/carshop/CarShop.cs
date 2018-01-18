@@ -48,9 +48,9 @@ namespace WiredPlayers.carshop
         {
             if(eventName == "purchaseVehicle")
             {
-                int carShop = getClosestCarShop(player);
+                int carShop = GetClosestCarShop(player);
                 VehicleHash vehicleHash = (VehicleHash)UInt32.Parse(arguments[0].ToString());
-                int vehiclePrice = getVehiclePrice(vehicleHash);
+                int vehiclePrice = GetVehiclePrice(vehicleHash);
                 if (vehiclePrice > 0 && NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) >= vehiclePrice)
                 {
                     switch(carShop)
@@ -72,7 +72,7 @@ namespace WiredPlayers.carshop
                                 {
                                     // Rellenamos los datos básicos del vehículo para su creación
                                     VehicleModel vehicleModel = new VehicleModel();
-                                    vehicleModel.model = getVehicleModel(vehicleHash);
+                                    vehicleModel.model = GetVehicleModel(vehicleHash);
                                     vehicleModel.plate = String.Empty;
                                     vehicleModel.position = Constants.CARSHOP_SPAWNS[i];
                                     vehicleModel.rotation = new Vector3(0.0, 0.0, 0.0);
@@ -90,7 +90,7 @@ namespace WiredPlayers.carshop
                                     vehicleModel.kms = 0.0f;
 
                                     // Creamos el vehículo comprado
-                                    Vehicles.createVehicle(player, vehicleModel, false);
+                                    Vehicles.CreateVehicle(player, vehicleModel, false);
                                     return;
                                 }
                             }
@@ -112,7 +112,7 @@ namespace WiredPlayers.carshop
                                 {
                                     // Rellenamos los datos básicos del vehículo para su creación
                                     VehicleModel vehicleModel = new VehicleModel();
-                                    vehicleModel.model = getVehicleModel(vehicleHash);
+                                    vehicleModel.model = GetVehicleModel(vehicleHash);
                                     vehicleModel.plate = String.Empty;
                                     vehicleModel.position = Constants.BIKESHOP_SPAWNS[i];
                                     vehicleModel.rotation = new Vector3(0.0, 0.0, 0.0);
@@ -130,7 +130,7 @@ namespace WiredPlayers.carshop
                                     vehicleModel.kms = 0.0f;
 
                                     // Creamos el vehículo comprado
-                                    Vehicles.createVehicle(player, vehicleModel, false);
+                                    Vehicles.CreateVehicle(player, vehicleModel, false);
                                     return;
                                 }
                             }
@@ -152,7 +152,7 @@ namespace WiredPlayers.carshop
                                 {
                                     // Rellenamos los datos básicos del vehículo para su creación
                                     VehicleModel vehicleModel = new VehicleModel();
-                                    vehicleModel.model = getVehicleModel(vehicleHash);
+                                    vehicleModel.model = GetVehicleModel(vehicleHash);
                                     vehicleModel.plate = String.Empty;
                                     vehicleModel.position = Constants.SHIP_SPAWNS[i];
                                     vehicleModel.rotation = new Vector3(0.0, 0.0, 0.0);
@@ -170,7 +170,7 @@ namespace WiredPlayers.carshop
                                     vehicleModel.kms = 0.0f;
 
                                     // Creamos el vehículo comprado
-                                    Vehicles.createVehicle(player, vehicleModel, false);
+                                    Vehicles.CreateVehicle(player, vehicleModel, false);
                                     return;
                                 }
                             }
@@ -193,7 +193,7 @@ namespace WiredPlayers.carshop
                 Checkpoint testFinishCheckpoint = null;
                 VehicleHash vehicleModel = (VehicleHash)UInt32.Parse(arguments[0].ToString());
 
-                switch (getClosestCarShop(player))
+                switch (GetClosestCarShop(player))
                 {
                     case 0:
                         vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-51.54087f, -1076.941f, 26.94754f), 75.0f, new Color(0, 0, 0), new Color(0, 0, 0));
@@ -253,7 +253,7 @@ namespace WiredPlayers.carshop
             }
         }
 
-        private int getClosestCarShop(Client player, float distance = 2.0f)
+        private int GetClosestCarShop(Client player, float distance = 2.0f)
         {        
             int carShop = 0;
             if (player.Position.DistanceTo(carShopTextLabel.Position) < distance)
@@ -271,7 +271,7 @@ namespace WiredPlayers.carshop
             return carShop;
         }
 
-        private List<CarShopVehicleModel> getVehicleListInCarShop(int carShop)
+        private List<CarShopVehicleModel> GetVehicleListInCarShop(int carShop)
         {
             List<CarShopVehicleModel> vehicleList = new List<CarShopVehicleModel>();
             foreach(CarShopVehicleModel vehicle in Constants.CARSHOP_VEHICLE_LIST)
@@ -284,7 +284,7 @@ namespace WiredPlayers.carshop
             return vehicleList;
         }
 
-        private int getVehiclePrice(VehicleHash vehicleHash)
+        private int GetVehiclePrice(VehicleHash vehicleHash)
         {
             int price = 0;
             foreach (CarShopVehicleModel vehicle in Constants.CARSHOP_VEHICLE_LIST)
@@ -298,7 +298,7 @@ namespace WiredPlayers.carshop
             return price;
         }
 
-        private String getVehicleModel(VehicleHash vehicleHash)
+        private String GetVehicleModel(VehicleHash vehicleHash)
         {
             String model = String.Empty;
             foreach (CarShopVehicleModel vehicle in Constants.CARSHOP_VEHICLE_LIST)
@@ -313,13 +313,13 @@ namespace WiredPlayers.carshop
         }
 
         [Command("catalogo")]
-        public void catalogoCommand(Client player)
+        public void CatalogoCommand(Client player)
         {
-            int carShop = getClosestCarShop(player);
+            int carShop = GetClosestCarShop(player);
             if(carShop > -1)
             {
                 // Obtenemos la lista de vehículos
-                List<CarShopVehicleModel> carList = getVehicleListInCarShop(carShop);
+                List<CarShopVehicleModel> carList = GetVehicleListInCarShop(carShop);
 
                 // Calculamos la velocidad de cada uno de ellos
                 foreach (CarShopVehicleModel carShopVehicle in carList)

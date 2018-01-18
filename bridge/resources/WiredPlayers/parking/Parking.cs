@@ -20,17 +20,17 @@ namespace WiredPlayers.parking
 
         }
 
-        public void loadDatabaseParkings()
+        public void LoadDatabaseParkings()
         {
-            parkingList = Database.loadAllParkings();
+            parkingList = Database.LoadAllParkings();
             foreach (ParkingModel parking in parkingList)
             {
-                String parkingLabelText = getParkingLabelText(parking.type);
+                String parkingLabelText = GetParkingLabelText(parking.type);
                 parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(parkingLabelText, parking.position, 30.0f, 0.75f, 0, new Color(255, 255, 255));
             }
         }
 
-        public static ParkingModel getClosestParking(Client player, float distance = 1.5f)
+        public static ParkingModel GetClosestParking(Client player, float distance = 1.5f)
         {
             ParkingModel parking = null;
             foreach(ParkingModel parkingModel in parkingList)
@@ -44,7 +44,7 @@ namespace WiredPlayers.parking
             return parking;
         }
 
-        public static int getParkedCarAmount(ParkingModel parking)
+        public static int GetParkedCarAmount(ParkingModel parking)
         {
             int totalVehicles = 0;
             foreach(ParkedCarModel parkedCar in parkedCars)
@@ -57,7 +57,7 @@ namespace WiredPlayers.parking
             return totalVehicles;
         }
 
-        public static String getParkingLabelText(int type)
+        public static String GetParkingLabelText(int type)
         {
             String labelText = String.Empty;
             switch(type)
@@ -78,7 +78,7 @@ namespace WiredPlayers.parking
             return labelText;
         }
 
-        public static ParkingModel getParkingById(int parkingId)
+        public static ParkingModel GetParkingById(int parkingId)
         {
             ParkingModel parking = null;
             foreach(ParkingModel parkingModel in parkingList)
@@ -92,7 +92,7 @@ namespace WiredPlayers.parking
             return parking;
         }
 
-        private static ParkedCarModel getParkedVehicle(int vehicleId)
+        private static ParkedCarModel GetParkedVehicle(int vehicleId)
         {
             ParkedCarModel vehicle = null;
             foreach (ParkedCarModel parkedCar in parkedCars)
@@ -106,7 +106,7 @@ namespace WiredPlayers.parking
             return vehicle;
         }
 
-        private void playerParkVehicle(Client player, ParkingModel parking)
+        private void PlayerParkVehicle(Client player, ParkingModel parking)
         {
             // Obtenemos el vehículo
             NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
@@ -144,7 +144,7 @@ namespace WiredPlayers.parking
             parkedCars.Add(parkedCarModel);
 
             // Guardamos el vehículo
-            Database.saveVehicle(vehicleModel);
+            Database.SaveVehicle(vehicleModel);
 
             // Eliminamos el vehículo
             NAPI.Player.WarpPlayerOutOfVehicle(player);
@@ -152,7 +152,7 @@ namespace WiredPlayers.parking
         }
 
         [Command("aparcar")]
-        public void aparcarCommand(Client player)
+        public void AparcarCommand(Client player)
         {
             if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
             {
@@ -165,7 +165,7 @@ namespace WiredPlayers.parking
             else
             {
                 NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
-                if (Vehicles.hasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
+                if (Vehicles.HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
                 } 
@@ -180,22 +180,22 @@ namespace WiredPlayers.parking
                                 case Constants.PARKING_TYPE_PUBLIC:
                                     String message = String.Format(Messages.INF_PARKING_COST, Constants.PRICE_PARKING_PUBLIC);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                                    playerParkVehicle(player, parking);
+                                    PlayerParkVehicle(player, parking);
                                     break;
                                 case Constants.PARKING_TYPE_GARAGE:
-                                    HouseModel house = House.getHouseById(parking.houseId);
-                                    if (house == null || House.hasPlayerHouseKeys(player, house) == false)
+                                    HouseModel house = House.GetHouseById(parking.houseId);
+                                    if (house == null || House.HasPlayerHouseKeys(player, house) == false)
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_GARAGE_ACCESS);
                                     }
-                                    else if (getParkedCarAmount(parking) == parking.capacity)
+                                    else if (GetParkedCarAmount(parking) == parking.capacity)
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PARKING_FULL);
                                     }
                                     else
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_GARAGE_PARKED);
-                                        playerParkVehicle(player, parking);
+                                        PlayerParkVehicle(player, parking);
                                     }
                                     break;
                                 case Constants.PARKING_TYPE_DEPOSIT:
@@ -206,7 +206,7 @@ namespace WiredPlayers.parking
                                     else
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_DEPOSIT_PARKED);
-                                        playerParkVehicle(player, parking);
+                                        PlayerParkVehicle(player, parking);
                                     }
                                     break;
                                 default:
@@ -224,17 +224,17 @@ namespace WiredPlayers.parking
         }
 
         [Command("desaparcar", Messages.GEN_UNPARK_COMMAND)]
-        public void desaparcarCommand(Client player, int vehicleId)
+        public void DesaparcarCommand(Client player, int vehicleId)
         {
             // Buscamos el vehículo
-            VehicleModel vehicle = Vehicles.getParkedVehicleById(vehicleId);
+            VehicleModel vehicle = Vehicles.GetParkedVehicleById(vehicleId);
 
             if (vehicle == null)
             {
                 // No existe ningún vehículo con ese identificador
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
             }
-            else if (Vehicles.hasPlayerVehicleKeys(player, vehicle) == false)
+            else if (Vehicles.HasPlayerVehicleKeys(player, vehicle) == false)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
             }
@@ -278,7 +278,7 @@ namespace WiredPlayers.parking
                             }
 
                             // Obtenemos el modelo de vehículo aparcado
-                            ParkedCarModel parkedCar = getParkedVehicle(vehicleId);
+                            ParkedCarModel parkedCar = GetParkedVehicle(vehicleId);
 
                             // Recreamos el vehículo
                             NetHandle newVehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicle.model), parking.position, vehicle.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
@@ -322,7 +322,7 @@ namespace WiredPlayers.parking
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_PARKED, 0);
 
                             // Añadimos el tunning
-                            Mechanic.addTunningToVehicle(newVehicle);
+                            Mechanic.AddTunningToVehicle(newVehicle);
 
                             // Eliminamos el vehículo del parking
                             parkedCars.Remove(parkedCar);

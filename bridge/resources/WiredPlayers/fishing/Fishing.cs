@@ -64,7 +64,7 @@ namespace WiredPlayers.fishing
                     int successChance = random.Next(100);
 
                     // Obtenemos el nivel del jugador
-                    int fishingLevel = getPlayerFishingLevel(player);
+                    int fishingLevel = GetPlayerFishingLevel(player);
 
                     switch(fishingLevel)
                     {
@@ -85,7 +85,7 @@ namespace WiredPlayers.fishing
                         // Obtenemos la ganancia del jugador
                         int fishWeight = random.Next(fishingLevel * 100, fishingLevel * 750);
                         int playerDatabaseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        ItemModel fishItem = Globals.getPlayerItemModelFromHash(playerDatabaseId, Constants.ITEM_HASH_FISH);
+                        ItemModel fishItem = Globals.GetPlayerItemModelFromHash(playerDatabaseId, Constants.ITEM_HASH_FISH);
 
                         if(fishItem == null)
                         {
@@ -98,13 +98,13 @@ namespace WiredPlayers.fishing
                             fishItem.dimension = 0;
 
                             // Añadimos el objeto
-                            fishItem.id = Database.addNewItem(fishItem);
+                            fishItem.id = Database.AddNewItem(fishItem);
                             Globals.itemList.Add(fishItem);
                         }
                         else
                         {
                             fishItem.amount += fishWeight;
-                            Database.updateItem(fishItem);
+                            Database.UpdateItem(fishItem);
                         }
 
                         // Mandamos el mensaje al jugador
@@ -117,8 +117,8 @@ namespace WiredPlayers.fishing
                     }
 
                     // Sumamos un punto al nivel de habilidad
-                    int fishingPoints = Job.getJobPoints(player, Constants.JOB_FISHERMAN);
-                    Job.setJobPoints(player, Constants.JOB_FISHERMAN, fishingPoints + 1);
+                    int fishingPoints = Job.GetJobPoints(player, Constants.JOB_FISHERMAN);
+                    Job.SetJobPoints(player, Constants.JOB_FISHERMAN, fishingPoints + 1);
 
                     // Cancelamos el estado de pesca del jugador
                     NAPI.Player.StopPlayerAnimation(player);
@@ -143,10 +143,9 @@ namespace WiredPlayers.fishing
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Miramos si tiene el timer activo
-                Timer fishingTimer = null;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
-                if (fishingTimerList.TryGetValue(playerId, out fishingTimer) == true)
+                if (fishingTimerList.TryGetValue(playerId, out Timer fishingTimer) == true)
                 {
                     // Eliminamos el timer
                     fishingTimer.Dispose();
@@ -159,7 +158,6 @@ namespace WiredPlayers.fishing
         {
             try
             {
-                Timer fishingTimer = null;
                 Client player = (Client)playerObject;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
@@ -168,7 +166,7 @@ namespace WiredPlayers.fishing
                 NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
 
                 // Borramos el timer de la lista
-                if (fishingTimerList.TryGetValue(playerId, out fishingTimer) == true)
+                if (fishingTimerList.TryGetValue(playerId, out Timer fishingTimer) == true)
                 {
                     // Eliminamos el timer
                     fishingTimer.Dispose();
@@ -184,10 +182,10 @@ namespace WiredPlayers.fishing
             }
         }
 
-        private int getPlayerFishingLevel(Client player)
+        private int GetPlayerFishingLevel(Client player)
         {
             // Obtenemos los puntos del jugador
-            int fishingPoints = Job.getJobPoints(player, Constants.JOB_FISHERMAN);
+            int fishingPoints = Job.GetJobPoints(player, Constants.JOB_FISHERMAN);
 
             // Calculamos el nivel
             if (fishingPoints > 600) return 5;
@@ -198,7 +196,7 @@ namespace WiredPlayers.fishing
         }
 
         [Command("pescar")]
-        public void pescarCommand(Client player)
+        public void PescarCommand(Client player)
         {
             if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHING) == true)
             {
@@ -231,12 +229,12 @@ namespace WiredPlayers.fishing
             else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int fishingRodId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                ItemModel fishingRod = Globals.getItemModelFromId(fishingRodId);
+                ItemModel fishingRod = Globals.GetItemModelFromId(fishingRodId);
 
                 if(fishingRod != null && fishingRod.hash == Constants.ITEM_HASH_FISHING_ROD)
                 {
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    ItemModel bait = Globals.getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BAIT);
+                    ItemModel bait = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BAIT);
                     if(bait != null && bait.amount > 0)
                     {
                         foreach(Vector3 fishingPosition in Constants.FISHING_POSITION_LIST)
@@ -249,12 +247,12 @@ namespace WiredPlayers.fishing
                             if(bait.amount == 1)
                             {
                                 Globals.itemList.Remove(bait);
-                                Database.removeItem(bait.id);
+                                Database.RemoveItem(bait.id);
                             }
                             else
                             {
                                 bait.amount--;
-                                Database.updateItem(bait);
+                                Database.UpdateItem(bait);
                             }
 
                             // Iniciamos la pesca

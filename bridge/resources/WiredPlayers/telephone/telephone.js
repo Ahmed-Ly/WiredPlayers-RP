@@ -31,7 +31,7 @@ contactsMenu.OnItemSelect.connect(function (sender, item, index) {
 				break;
 			case 3:
 				// Opción de borrar
-				NAPI.TriggerServerEvent("deleteContact", contact);
+				NAPI.TriggerServerEvent("DeleteContact", contact);
 				
 				// Ocultamos el menú
 				contactsMenu.Visible = false;
@@ -125,10 +125,10 @@ function setContactData(number, name) {
 
 	if(action == 4) {
 		// Nuevo Contactos
-		NAPI.TriggerServerEvent("addNewContact", number, name);
+		NAPI.TriggerServerEvent("AddNewContact", number, name);
 	} else {
 		// Edición de Contactos
-		NAPI.TriggerServerEvent("modifyContact", contact, number, name);
+		NAPI.TriggerServerEvent("ModifyContact", contact, number, name);
 	}
 }
 

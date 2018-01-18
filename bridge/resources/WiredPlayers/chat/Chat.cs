@@ -24,11 +24,11 @@ namespace WiredPlayers.chat
                 }
                 else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
                 {
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
                 }
                 else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ON_AIR) == true)
                 {
-                    WeazelNews.sendNewsMessage(player, message);
+                    WeazelNews.SendNewsMessage(player, message);
                 }
                 else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PHONE_TALKING) == true)
                 {
@@ -55,12 +55,12 @@ namespace WiredPlayers.chat
                     }
 
                     // Mandamos el mensaje a los jugadores cercanos
-                    sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
+                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
                 }
                 else
                 {
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
+                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
                     NAPI.Util.ConsoleOutput("[ID:" + playerId + "]" + player.Name + " dice: " + message);
                 }
             }
@@ -87,11 +87,11 @@ namespace WiredPlayers.chat
                 }
 
                 // Avisamos a los jugadores cercanos de la desconexión
-                sendMessageToNearbyPlayers(player, " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
+                DendMessageToNearbyPlayers(player, " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
             }
         }
 
-        public static void sendMessageToNearbyPlayers(Client player, String message, int type, float range, bool excludePlayer = false)
+        public static void DendMessageToNearbyPlayers(Client player, String message, int type, float range, bool excludePlayer = false)
         {
             if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_ID) == true) {
                 // División en rangos de distancia
@@ -121,8 +121,8 @@ namespace WiredPlayers.chat
                             if (distance <= range)
                             {
                                 // Obtención del color del mensaje
-                                String chatMessageColor = getChatMessageColor(distance, distanceGap);
-                                String oocMessageColor = getOocMessageColor(distance, distanceGap);
+                                String chatMessageColor = GetChatMessageColor(distance, distanceGap);
+                                String oocMessageColor = GetOocMessageColor(distance, distanceGap);
 
                                 switch (type)
                                 {
@@ -225,7 +225,7 @@ namespace WiredPlayers.chat
         }
 
         // Función para obtener el color de chat en función de la distancia
-        private static String getChatMessageColor(float distance, float distanceGap)
+        private static String GetChatMessageColor(float distance, float distanceGap)
         {
             String color = null;
             if (distance < distanceGap)
@@ -252,7 +252,7 @@ namespace WiredPlayers.chat
         }
 
         // Función para obtener el color OOC en función de la distancia
-        private static String getOocMessageColor(float distance, float distanceGap)
+        private static String GetOocMessageColor(float distance, float distanceGap)
         {
             String color = null;
             if (distance < distanceGap)
@@ -279,79 +279,79 @@ namespace WiredPlayers.chat
         }
 
         [Command("decir", Messages.GEN_SAY_COMMAND, GreedyArg = true)]
-        public void decirCommand(Client player, String message)
+        public void DecirCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
-                sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
+                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
             }
         }
 
         [Command("gritar", Messages.GEN_YELL_COMMAND, Alias = "gr", GreedyArg = true)]
-        public void gritarCommand(Client player, String message)
+        public void GritarCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
-                sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_YELL, 45.0f);
+                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_YELL, 45.0f);
             }
         }
 
         [Command("susurrar", Messages.GEN_WHISPER_COMMAND, Alias = "sus", GreedyArg = true)]
-        public void susurrarCommand(Client player, String message)
+        public void SusurrarCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
-                sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_WHISPER, 3.0f);
+                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_WHISPER, 3.0f);
             }
         }
 
         [Command("me", Messages.GEN_ME_COMMAND, GreedyArg = true)]
-        public void meCommand(Client player, String message)
+        public void MeCommand(Client player, String message)
         {
-            sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
+            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
         [Command("do", Messages.GEN_DO_COMMAND, GreedyArg = true)]
-        public void doCommand(Client player, String message)
+        public void DoCommand(Client player, String message)
         {
-            sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
+            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
         [Command("ooc", Messages.GEN_OOC_COMMAND, GreedyArg = true)]
-        public void oocCommand(Client player, String message)
+        public void OocCommand(Client player, String message)
         {
-            sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_OOC, NAPI.Entity.GetEntityDimension(player) > 0 ? 5.0f : 10.0f);
+            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_OOC, NAPI.Entity.GetEntityDimension(player) > 0 ? 5.0f : 10.0f);
         }
 
         [Command("su")]
-        public void suCommand(Client player)
+        public void SuCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
                 Random random = new Random();
                 int messageType = random.Next(0, 2) > 0 ? Constants.MESSAGE_SU_TRUE : Constants.MESSAGE_SU_FALSE;
-                sendMessageToNearbyPlayers(player, String.Empty, messageType, 20.0f);
+                DendMessageToNearbyPlayers(player, String.Empty, messageType, 20.0f);
             }
         }
 
         [Command("ame", Messages.GEN_AME_COMMAND, GreedyArg = true)]
-        public void ameCommand(Client player, String message = "")
+        public void AmeCommand(Client player, String message = "")
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_AME) == true)
             {
@@ -381,7 +381,7 @@ namespace WiredPlayers.chat
         }
 
         [Command("megafono", Messages.GEN_MEGAPHONE_COMMAND, Alias = "m", GreedyArg = true)]
-        public void megafonoCommand(Client player, String message)
+        public void MegafonoCommand(Client player, String message)
         {
             if(NAPI.Player.IsPlayerInAnyVehicle(player) == true)
             {
@@ -390,7 +390,7 @@ namespace WiredPlayers.chat
 
                 if(vehicleFaction == Constants.FACTION_POLICE || vehicleFaction == Constants.FACTION_EMERGENCY)
                 {
-                    sendMessageToNearbyPlayers(player, message, Constants.MESSAGE_MEGAPHONE, 45.0f);
+                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_MEGAPHONE, 45.0f);
                 }
                 else
                 {
@@ -404,15 +404,15 @@ namespace WiredPlayers.chat
         }
 
         [Command("mp", Messages.GEN_MP_COMMAND, GreedyArg = true)]
-        public void mpCommand(Client player, String arguments)
+        public void MpCommand(Client player, String arguments)
         {
-            int targetId = 0;
             Client target = null;
             String[] args = arguments.Trim().Split(' ');
-            if(Int32.TryParse(args[0], out targetId) == true)
+
+            if(Int32.TryParse(args[0], out int targetId) == true)
             {
                 // Hemos recibido el id del jugador
-                target = Globals.getPlayerById(targetId);
+                target = Globals.GetPlayerById(targetId);
                 args = args.Where(w => w != args[0]).ToArray();
                 if (args.Length < 1)
                 {

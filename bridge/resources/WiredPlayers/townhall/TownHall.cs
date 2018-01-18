@@ -48,14 +48,14 @@ namespace WiredPlayers.TownHall
                             {
                                 String message = String.Format(Messages.INF_PLAYER_HAS_INDENTIFICATION, Constants.PRICE_IDENTIFICATION);
                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_IDENTIFICATION);
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, Globals.getTotalSeconds());
+                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, Globals.GetTotalSeconds());
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                                Database.logPayment(player.Name, "Ayuntamiento", "Documentación", Constants.PRICE_IDENTIFICATION);
+                                Database.LogPayment(player.Name, "Ayuntamiento", "Documentación", Constants.PRICE_IDENTIFICATION);
                             }
                         }
                         break;
                     case Constants.TRAMITATE_MEDICAL_INSURANCE:
-                        if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE) > Globals.getTotalSeconds())
+                        if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE) > Globals.GetTotalSeconds())
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_HAS_MEDICAL_INSURANCE);
                         }
@@ -71,14 +71,14 @@ namespace WiredPlayers.TownHall
                             {
                                 String message = String.Format(Messages.INF_PLAYER_HAS_MEDICAL_INSURANCE, Constants.PRICE_MEDICAL_INSURANCE);
                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_MEDICAL_INSURANCE);
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, Globals.getTotalSeconds() + 1209600);
+                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, Globals.GetTotalSeconds() + 1209600);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                                Database.logPayment(player.Name, "Ayuntamiento", "Seguro médico", Constants.PRICE_MEDICAL_INSURANCE);
+                                Database.LogPayment(player.Name, "Ayuntamiento", "Seguro médico", Constants.PRICE_MEDICAL_INSURANCE);
                             }
                         }
                         break;
                     case Constants.TRAMITATE_TAXI_LICENSE:
-                        if (DrivingSchool.getPlayerLicenseStatus(player, Constants.LICENSE_TAXI) > 0)
+                        if (DrivingSchool.GetPlayerLicenseStatus(player, Constants.LICENSE_TAXI) > 0)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_HAS_TAXI_LICENSE);
                         }
@@ -95,13 +95,13 @@ namespace WiredPlayers.TownHall
                                 String message = String.Format(Messages.INF_PLAYER_HAS_TAXI_LICENSE, Constants.PRICE_TAXI_LICENSE);
                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_TAXI_LICENSE);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                                DrivingSchool.setPlayerLicense(player, Constants.LICENSE_TAXI, 1);
-                                Database.logPayment(player.Name, "Ayuntamiento", "Licencia de taxis", Constants.PRICE_TAXI_LICENSE);
+                                DrivingSchool.SetPlayerLicense(player, Constants.LICENSE_TAXI, 1);
+                                Database.LogPayment(player.Name, "Ayuntamiento", "Licencia de taxis", Constants.PRICE_TAXI_LICENSE);
                             }
                         }
                         break;
                     case Constants.TRAMITATE_FINE_LIST:
-                        List<FineModel> fineList = Database.loadPlayerFines(player.Name);
+                        List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
                         if (fineList.Count > 0)
                         {
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerFineList", NAPI.Util.ToJson(fineList));
@@ -115,7 +115,7 @@ namespace WiredPlayers.TownHall
             }
             else if (eventName == "payPlayerFines")
             {
-                int amount = Database.getAllFinesAmount(player.Name);
+                int amount = Database.GetAllFinesAmount(player.Name);
                 int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                 if(amount == 0)
                 {
@@ -130,14 +130,14 @@ namespace WiredPlayers.TownHall
                     String message = String.Format(Messages.INF_PLAYER_FINES_PAID, amount);
                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - amount);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                    Database.logPayment(player.Name, "Ayuntamiento", "Pago de multas", amount);
-                    Database.removeAllFines(player.Name);
+                    Database.LogPayment(player.Name, "Ayuntamiento", "Pago de multas", amount);
+                    Database.RemoveAllFines(player.Name);
                 }
             }
         }
 
         [Command("ayuntamiento")]
-        public void townHallCommand(Client player)
+        public void AyuntamientoCommand(Client player)
         {
             if (player.Position.DistanceTo(townHallTextLabel.Position) < 2.0f)
             {

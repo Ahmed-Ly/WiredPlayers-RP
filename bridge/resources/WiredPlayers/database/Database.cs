@@ -37,56 +37,56 @@ namespace WiredPlayers.database
         {
             // Carga de negocios
             Business businessClass = new Business();
-            businessClass.loadDatabaseBusiness();
+            businessClass.LoadDatabaseBusiness();
 
             // Carga de casas
             House houseClass = new House();
-            houseClass.loadDatabaseHouses();
+            houseClass.LoadDatabaseHouses();
 
             // Carga de muebles
             Furniture furnitureClass = new Furniture();
-            furnitureClass.loadDatabaseFurniture();
+            furnitureClass.LoadDatabaseFurniture();
 
             // Carga del tunning
-            Mechanic.tunningList = loadAllTunning();
+            Mechanic.tunningList = LoadAllTunning();
 
             // Carga de parkings
             Parking parkingClass = new Parking();
-            parkingClass.loadDatabaseParkings();
+            parkingClass.LoadDatabaseParkings();
 
             // Carga de vehículos
             Vehicles vehiclesClass = new Vehicles();
-            vehiclesClass.loadDatabaseVehicles();
+            vehiclesClass.LoadDatabaseVehicles();
 
             // Carga de objetos
-            Globals.itemList = loadAllItems();
+            Globals.itemList = LoadAllItems();
 
             // Carga de los controles policiales
-            Police.policeControlList = loadAllPoliceControls();
+            Police.policeControlList = LoadAllPoliceControls();
 
             // Carga de las frecuencias de radio
-            Faction.channelList = loadAllChannels();
+            Faction.channelList = LoadAllChannels();
 
             // Carga de las unidades de sangre
-            Emergency.bloodList = loadAllBlood();
+            Emergency.bloodList = LoadAllBlood();
 
             // Carga de la lista de anuncios
-            WeazelNews.annoucementList = loadAllAnnoucements();
+            WeazelNews.annoucementList = LoadAllAnnoucements();
 
             // Carga de la ropa
-            Globals.clothesList = loadAllClothes();
+            Globals.clothesList = LoadAllClothes();
 
             // Carga de los tatuajes
-            Globals.tattooList = loadAllTattoos();
+            Globals.tattooList = LoadAllTattoos();
 
             // Carga de los contactos de móvil
-            Telephone.contactList = loadAllContacts();
+            Telephone.contactList = LoadAllContacts();
 
             // Carga de los permsisos especiales
-            Admin.permissionList = loadAllPermissions();
+            Admin.permissionList = LoadAllPermissions();
         }
 
-        public static AccountModel getAccount(String socialName)
+        public static AccountModel GetAccount(String socialName)
         {
 
             AccountModel account = new AccountModel();
@@ -114,14 +114,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getAccount] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAccount] " + ex.Message);
                 }
             }
 
             return account;
         }
 
-        public static bool loginAccount(String socialName, String password)
+        public static bool LoginAccount(String socialName, String password)
         {
             bool login = false;
 
@@ -142,14 +142,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loginAccount] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoginAccount] " + ex.Message);
                 }
             }
 
             return login;
         }
 
-        public static int getPlayerStatus(String name)
+        public static int GetPlayerStatus(String name)
         {
             int status = 0;
 
@@ -172,14 +172,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getPlayerStatus] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
                 }
             }
 
             return status;
         }
 
-        public static List<String> getAccountCharacters(String account)
+        public static List<String> GetAccountCharacters(String account)
         {
             List<String> characters = new List<String>();
 
@@ -203,14 +203,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getPlayerStatus] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
                 }
             }
 
             return characters;
         }
 
-        public static int createCharacter(Client player, PlayerModel playerModel, SkinModel skin)
+        public static int CreateCharacter(Client player, PlayerModel playerModel, SkinModel skin)
         {
             // Inicializamos el id
             int playerId = 0;
@@ -288,7 +288,7 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION createCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION CreateCharacter] " + ex.Message);
                     NAPI.ClientEvent.TriggerClientEvent(player, "characterNameDuplicated", playerModel.realName);
                 }
             }
@@ -296,7 +296,7 @@ namespace WiredPlayers.database
             return playerId;
         }
 
-        public static SkinModel getCharacterSkin(int characterId)
+        public static SkinModel GetCharacterSkin(int characterId)
         {
             SkinModel skin = new SkinModel();
 
@@ -365,14 +365,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getCharacterSkin] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetCharacterSkin] " + ex.Message);
                 }
             }
 
             return skin;
         }
 
-        public static void updateCharacterHair(int playerId, SkinModel skin)
+        public static void UpdateCharacterHair(int playerId, SkinModel skin)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -394,12 +394,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateCharacterHair] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateCharacterHair] " + ex.Message);
                 }
             }
         }
 
-        public static PlayerModel loadCharacterInformationById(int characterId)
+        public static PlayerModel LoadCharacterInformationById(int characterId)
         {
             PlayerModel character = new PlayerModel();
 
@@ -461,14 +461,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadCharacterInformationById] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationById] " + ex.Message);
                 }
             }
 
             return character;
         }
 
-        public static PlayerModel loadCharacterInformationByName(String characterName)
+        public static PlayerModel LoadCharacterInformationByName(String characterName)
         {
             PlayerModel character = new PlayerModel();
 
@@ -530,14 +530,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadCharacterInformationByName] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationByName] " + ex.Message);
                 }
             }
 
             return character;
         }
 
-        public static void saveCharacterInformation(PlayerModel player)
+        public static void SaveCharacterInformation(PlayerModel player)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -585,12 +585,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION saveCharacterInformation] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveCharacterInformation] " + ex.Message);
                 }
             }
         }
 
-        public static void updateLastCharacter(String socialName, int playerId)
+        public static void UpdateLastCharacter(String socialName, int playerId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -605,12 +605,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateLastCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateLastCharacter] " + ex.Message);
                 }
             }
         }
 
-        public static bool findCharacter(String name)
+        public static bool FindCharacter(String name)
         {
             bool found = false;
 
@@ -630,14 +630,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION findCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION FindCharacter] " + ex.Message);
                 }
             }
 
             return found;
         }
 
-        public static List<BankOperationModel> getBankOperations(String playerName, int start, int count)
+        public static List<BankOperationModel> GetBankOperations(String playerName, int start, int count)
         {
             List<BankOperationModel> operations = new List<BankOperationModel>();
 
@@ -670,14 +670,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getBankOperations] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetBankOperations] " + ex.Message);
                 }
             }
 
             return operations;
         }
 
-        public static List<VehicleModel> loadAllVehicles()
+        public static List<VehicleModel> LoadAllVehicles()
         {
             List<VehicleModel> vehicleList = new List<VehicleModel>();
 
@@ -725,14 +725,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllVehicles] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllVehicles] " + ex.Message);
                 }
             }
 
             return vehicleList;
         }
 
-        public static int addNewVehicle(VehicleModel vehicle)
+        public static int AddNewVehicle(VehicleModel vehicle)
         {
             int vehId = 0;
 
@@ -762,14 +762,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addNewVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewVehicle] " + ex.Message);
                 }
             }
 
             return vehId;
         }
 
-        public static void updateVehicleColor(VehicleModel vehicle)
+        public static void UpdateVehicleColor(VehicleModel vehicle)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -790,12 +790,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateVehicleColor] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleColor] " + ex.Message);
                 }
             }
         }
 
-        public static void updateVehiclePosition(VehicleModel vehicle)
+        public static void UpdateVehiclePosition(VehicleModel vehicle)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -815,12 +815,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateVehiclePosition] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehiclePosition] " + ex.Message);
                 }
             }
         }
 
-        public static void updateVehicleSingleValue(String table, int value, int vehicleId)
+        public static void UpdateVehicleSingleValue(String table, int value, int vehicleId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -837,12 +837,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateVehicleSingleValue] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleValue] " + ex.Message);
                 }
             }
         }
 
-        public static void updateVehicleSingleString(String table, String value, int vehicleId)
+        public static void UpdateVehicleSingleString(String table, String value, int vehicleId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -859,12 +859,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateVehicleSingleString] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleString] " + ex.Message);
                 }
             }
         }
 
-        public static void saveVehicle(VehicleModel vehicle)
+        public static void SaveVehicle(VehicleModel vehicle)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -902,12 +902,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION saveVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveVehicle] " + ex.Message);
                 }
             }
         }
 
-        public static void saveAllVehicles(List<VehicleModel> vehicleList)
+        public static void SaveAllVehicles(List<VehicleModel> vehicleList)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -956,12 +956,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION saveAllVehicles] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveAllVehicles] " + ex.Message);
                 }
             }
         }
 
-        public static void removeVehicle(int vehicleId)
+        public static void RemoveVehicle(int vehicleId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -977,12 +977,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION removeVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveVehicle] " + ex.Message);
                 }
             }
         }
 
-        public static List<TunningModel> loadAllTunning()
+        public static List<TunningModel> LoadAllTunning()
         {
             List<TunningModel> tunningList = new List<TunningModel>();
 
@@ -1011,14 +1011,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTunning] " + ex.Message);
                 }
             }
 
             return tunningList;
         }
 
-        public static int addTunning(TunningModel tunning)
+        public static int AddTunning(TunningModel tunning)
         {
             int tunningId = 0;
 
@@ -1039,14 +1039,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddTunning] " + ex.Message);
                 }
             }
 
             return tunningId;
         }
 
-        public static void removeTunning(int tunningId)
+        public static void RemoveTunning(int tunningId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1062,12 +1062,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION removeTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveTunning] " + ex.Message);
                 }
             }
         }
 
-        public static void transferMoneyToPlayer(String name, int amount)
+        public static void TransferMoneyToPlayer(String name, int amount)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1084,12 +1084,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION transferMoneyToPlayer] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION TransferMoneyToPlayer] " + ex.Message);
                 }
             }
         }
 
-        public static void logPayment(String source, String receiver, String type, int amount)
+        public static void LogPayment(String source, String receiver, String type, int amount)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1108,12 +1108,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION logPayment] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LogPayment] " + ex.Message);
                 }
             }
         }
 
-        public static void logHotwire(String playerName, int vehicleId, Vector3 position)
+        public static void LogHotwire(String playerName, int vehicleId, Vector3 position)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1133,12 +1133,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION logHotwire] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LogHotwire] " + ex.Message);
                 }
             }
         }
 
-        public static List<ItemModel> loadAllItems()
+        public static List<ItemModel> LoadAllItems()
         {
             List<ItemModel> itemList = new List<ItemModel>();
 
@@ -1173,14 +1173,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllItems] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllItems] " + ex.Message);
                 }
             }
 
             return itemList;
         }
 
-        public static int addNewItem(ItemModel item)
+        public static int AddNewItem(ItemModel item)
         {
             int itemId = 0;
 
@@ -1202,14 +1202,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addNewItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewItem] " + ex.Message);
                 }
             }
 
             return itemId;
         }
 
-        public static void updateItem(ItemModel item)
+        public static void UpdateItem(ItemModel item)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1233,12 +1233,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateItem] " + ex.Message);
                 }
             }
         }
 
-        public static void removeItem(int id)
+        public static void RemoveItem(int id)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1254,12 +1254,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION removeItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveItem] " + ex.Message);
                 }
             }
         }
 
-        public static List<BusinessModel> loadAllBusiness()
+        public static List<BusinessModel> LoadAllBusiness()
         {
             List<BusinessModel> businessList = new List<BusinessModel>();
 
@@ -1296,14 +1296,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBusiness] " + ex.Message);
                 }
             }
 
             return businessList;
         }
 
-        public static void updateBusiness(BusinessModel business)
+        public static void UpdateBusiness(BusinessModel business)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1332,12 +1332,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateBusiness] " + ex.Message);
                 }
             }
         }
 
-        public static void updateAllBusiness(List<BusinessModel> businessList)
+        public static void UpdateAllBusiness(List<BusinessModel> businessList)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1377,12 +1377,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateAllBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateAllBusiness] " + ex.Message);
                 }
             }
         }
 
-        public static int addNewBusiness(BusinessModel business)
+        public static int AddNewBusiness(BusinessModel business)
         {
             int businessId = 0;
 
@@ -1406,14 +1406,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addNewBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.Message);
                 }
             }
 
             return businessId;
         }
 
-        public static void deleteBusiness(int businessId)
+        public static void DeleteBusiness(int businessId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1429,12 +1429,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addNewBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.Message);
                 }
             }
         }
 
-        public static List<HouseModel> loadAllHouses()
+        public static List<HouseModel> LoadAllHouses()
         {
             List<HouseModel> houseList = new List<HouseModel>();
 
@@ -1473,14 +1473,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllHouses] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllHouses] " + ex.Message);
                 }
             }
 
             return houseList;
         }
 
-        public static int addHouse(HouseModel house)
+        public static int AddHouse(HouseModel house)
         {
             int houseId = 0;
 
@@ -1503,14 +1503,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddHouse] " + ex.Message);
                 }
             }
 
             return houseId;
         }
 
-        public static void updateHouse(HouseModel house)
+        public static void UpdateHouse(HouseModel house)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1539,12 +1539,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateHouse] " + ex.Message);
                 }
             }
         }
 
-        public static void deleteHouse(int houseId)
+        public static void DeleteHouse(int houseId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1560,12 +1560,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION deleteHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteHouse] " + ex.Message);
                 }
             }
         }
 
-        public static void kickTenantsOut(int houseId)
+        public static void KickTenantsOut(int houseId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1581,12 +1581,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION kickTenantsOut] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION KickTenantsOut] " + ex.Message);
                 }
             }
         }
 
-        public static List<FurnitureModel> loadAllFurniture()
+        public static List<FurnitureModel> LoadAllFurniture()
         {
             List<FurnitureModel> furnitureList = new List<FurnitureModel>();
 
@@ -1620,14 +1620,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllFurniture] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllFurniture] " + ex.Message);
                 }
             }
 
             return furnitureList;
         }
 
-        public static List<PoliceControlModel> loadAllPoliceControls()
+        public static List<PoliceControlModel> LoadAllPoliceControls()
         {
             List<PoliceControlModel> policeControlList = new List<PoliceControlModel>();
 
@@ -1661,14 +1661,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllPoliceControls] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPoliceControls] " + ex.Message);
                 }
             }
 
             return policeControlList;
         }
 
-        public static List<ParkingModel> loadAllParkings()
+        public static List<ParkingModel> LoadAllParkings()
         {
             List<ParkingModel> parkingList = new List<ParkingModel>();
 
@@ -1701,14 +1701,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllParkings] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllParkings] " + ex.Message);
                 }
             }
 
             return parkingList;
         }
 
-        public static int addParking(ParkingModel parking)
+        public static int AddParking(ParkingModel parking)
         {
             int parkingId = 0;
 
@@ -1730,14 +1730,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddParking] " + ex.Message);
                 }
             }
 
             return parkingId;
         }
 
-        public static void updateParking(ParkingModel parking)
+        public static void UpdateParking(ParkingModel parking)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1759,12 +1759,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateParking] " + ex.Message);
                 }
             }
         }
 
-        public static void deleteParking(int parkingId)
+        public static void DeleteParking(int parkingId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1780,12 +1780,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION deleteParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteParking] " + ex.Message);
                 }
             }
         }
 
-        public static void renamePoliceControl(String sourceName, String targetName)
+        public static void RenamePoliceControl(String sourceName, String targetName)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1802,12 +1802,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION renamePoliceControl] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RenamePoliceControl] " + ex.Message);
                 }
             }
         }
 
-        public static void deletePoliceControl(String name)
+        public static void DeletePoliceControl(String name)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1823,12 +1823,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION deletePoliceControl] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControl] " + ex.Message);
                 }
             }
         }
 
-        public static int addPoliceControlItem(PoliceControlModel policeControlItem)
+        public static int AddPoliceControlItem(PoliceControlModel policeControlItem)
         {
             int policeControlId = 0;
 
@@ -1852,14 +1852,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addPoliceControlItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddPoliceControlItem] " + ex.Message);
                 }
             }
 
             return policeControlId;
         }
 
-        public static void deletePoliceControlItem(int policeControlItemId)
+        public static void DeletePoliceControlItem(int policeControlItemId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1875,12 +1875,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION deletePoliceControlItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControlItem] " + ex.Message);
                 }
             }
         }
 
-        public static List<FineModel> loadPlayerFines(String name)
+        public static List<FineModel> LoadPlayerFines(String name)
         {
             List<FineModel> fineList = new List<FineModel>();
 
@@ -1910,14 +1910,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadPlayerFines] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadPlayerFines] " + ex.Message);
                 }
             }
 
             return fineList;
         }
 
-        public static int getAllFinesAmount(String name)
+        public static int GetAllFinesAmount(String name)
         {
             int amount = 0;
 
@@ -1940,14 +1940,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getAllFinesAmount] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAllFinesAmount] " + ex.Message);
                 }
             }
 
             return amount;
         }
 
-        public static void insertFine(FineModel fine)
+        public static void InsertFine(FineModel fine)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1966,12 +1966,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION insertFine] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION InsertFine] " + ex.Message);
                 }
             }
         }
 
-        public static void removeAllFines(String name)
+        public static void RemoveAllFines(String name)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1987,12 +1987,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION removeAllFines] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveAllFines] " + ex.Message);
                 }
             }
         }
 
-        public static List<ChannelModel> loadAllChannels()
+        public static List<ChannelModel> LoadAllChannels()
         {
             List<ChannelModel> channelList = new List<ChannelModel>();
 
@@ -2019,14 +2019,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllChannels] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllChannels] " + ex.Message);
                 }
             }
 
             return channelList;
         }
 
-        public static int addChannel(ChannelModel channel)
+        public static int AddChannel(ChannelModel channel)
         {
             int channelId = 0;
 
@@ -2046,14 +2046,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddChannel] " + ex.Message);
                 }
             }
 
             return channelId;
         }
 
-        public static void updateChannel(ChannelModel channel)
+        public static void UpdateChannel(ChannelModel channel)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2070,12 +2070,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateChannel] " + ex.Message);
                 }
             }
         }
 
-        public static void removeChannel(int channelId)
+        public static void RemoveChannel(int channelId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2091,12 +2091,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION removeChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveChannel] " + ex.Message);
                 }
             }
         }
 
-        public static void disconnectFromChannel(int channelId)
+        public static void DisconnectFromChannel(int channelId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2112,12 +2112,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION disconnectFromChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DisconnectFromChannel] " + ex.Message);
                 }
             }
         }
 
-        public static List<BloodModel> loadAllBlood()
+        public static List<BloodModel> LoadAllBlood()
         {
             List<BloodModel> bloodList = new List<BloodModel>();
 
@@ -2145,14 +2145,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllBlood] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBlood] " + ex.Message);
                 }
             }
 
             return bloodList;
         }
 
-        public static List<AnnoucementModel> loadAllAnnoucements()
+        public static List<AnnoucementModel> LoadAllAnnoucements()
         {
             List<AnnoucementModel> annoucementList = new List<AnnoucementModel>();
 
@@ -2182,14 +2182,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllAnnoucements] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllAnnoucements] " + ex.Message);
                 }
             }
 
             return annoucementList;
         }
 
-        public static int addBloodTransaction(BloodModel blood)
+        public static int AddBloodTransaction(BloodModel blood)
         {
             int bloodId = 0;
 
@@ -2211,14 +2211,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addBloodTransaction] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddBloodTransaction] " + ex.Message);
                 }
             }
 
             return bloodId;
         }
 
-        public static int sendAnnoucement(AnnoucementModel annoucement)
+        public static int SendAnnoucement(AnnoucementModel annoucement)
         {
             int annoucementId = 0;
 
@@ -2240,14 +2240,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION sendAnnoucement] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SendAnnoucement] " + ex.Message);
                 }
             }
 
             return annoucementId;
         }
 
-        public static int givePrize(AnnoucementModel prize)
+        public static int GivePrize(AnnoucementModel prize)
         {
             int prizeId = 0;
 
@@ -2270,14 +2270,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION givePrize] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GivePrize] " + ex.Message);
                 }
             }
 
             return prizeId;
         }
 
-        public static List<ClothesModel> loadAllClothes()
+        public static List<ClothesModel> LoadAllClothes()
         {
             List<ClothesModel> clothesList = new List<ClothesModel>();
 
@@ -2307,14 +2307,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllClothes] " + ex.Message);
                 }
             }
 
             return clothesList;
         }
 
-        public static int addClothes(ClothesModel clothes)
+        public static int AddClothes(ClothesModel clothes)
         {
             int clothesId = 0;
 
@@ -2337,14 +2337,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddClothes] " + ex.Message);
                 }
             }
 
             return clothesId;
         }
 
-        public static void updateClothes(ClothesModel clothes)
+        public static void UpdateClothes(ClothesModel clothes)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2361,12 +2361,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION updateClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateClothes] " + ex.Message);
                 }
             }
         }
 
-        public static List<TattooModel> loadAllTattoos()
+        public static List<TattooModel> LoadAllTattoos()
         {
             List<TattooModel> tattooList = new List<TattooModel>();
 
@@ -2394,14 +2394,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllTattoos] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTattoos] " + ex.Message);
                 }
             }
 
             return tattooList;
         }
 
-        public static bool addTattoo(TattooModel tattoo)
+        public static bool AddTattoo(TattooModel tattoo)
         {
             bool inserted = false;
 
@@ -2423,14 +2423,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addTattoo] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddTattoo] " + ex.Message);
                 }
             }
 
             return inserted;
         }
 
-        public static List<ContactModel> loadAllContacts()
+        public static List<ContactModel> LoadAllContacts()
         {
             List<ContactModel> contactList = new List<ContactModel>();
 
@@ -2458,14 +2458,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllContacts] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllContacts] " + ex.Message);
                 }
             }
 
             return contactList;
         }
 
-        public static int addNewContact(ContactModel contact)
+        public static int AddNewContact(ContactModel contact)
         {
             int contactId = 0;
 
@@ -2486,14 +2486,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addNewContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewContact] " + ex.Message);
                 }
             }
 
             return contactId;
         }
 
-        public static void modifyContact(ContactModel contact)
+        public static void ModifyContact(ContactModel contact)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2511,12 +2511,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION modifyContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION ModifyContact] " + ex.Message);
                 }
             }
         }
 
-        public static void deleteContact(int contactId)
+        public static void DeleteContact(int contactId)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2532,12 +2532,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION deleteContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteContact] " + ex.Message);
                 }
             }
         }
 
-        public static void addCallLog(int phone, int target, int time)
+        public static void AddCallLog(int phone, int target, int time)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2555,12 +2555,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addCallLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddCallLog] " + ex.Message);
                 }
             }
         }
 
-        public static void addSMSLog(int phone, int target, String message)
+        public static void AddSMSLog(int phone, int target, String message)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2578,12 +2578,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addSMSLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddSMSLog] " + ex.Message);
                 }
             }
         }
 
-        public static List<TestModel> getRandomQuestions(int license)
+        public static List<TestModel> GetRandomQuestions(int license)
         {
             List<TestModel> testList = new List<TestModel>();
 
@@ -2611,14 +2611,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getRandomQuestions] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetRandomQuestions] " + ex.Message);
                 }
             }
 
             return testList;
         }
 
-        public static List<TestModel> getQuestionAnswers(int question)
+        public static List<TestModel> GetQuestionAnswers(int question)
         {
             List<TestModel> testList = new List<TestModel>();
 
@@ -2646,14 +2646,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION getQuestionAnswers] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetQuestionAnswers] " + ex.Message);
                 }
             }
 
             return testList;
         }
 
-        public static bool checkAnswerCorrect(int answer)
+        public static bool CheckAnswerCorrect(int answer)
         {
             bool correct = false;
 
@@ -2677,14 +2677,14 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION checkAnswerCorrect] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION CheckAnswerCorrect] " + ex.Message);
                 }
             }
 
             return correct;
         }
 
-        public static void addAdminLog(String admin, String player, String action, int time, String reason)
+        public static void AddAdminLog(String admin, String player, String action, int time, String reason)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2704,12 +2704,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addAdminLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddAdminLog] " + ex.Message);
                 }
             }
         }
 
-        public static void addLicensedWeapon(int itemId, String buyer)
+        public static void AddLicensedWeapon(int itemId, String buyer)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -2726,12 +2726,12 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION addLicensedWeapon] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddLicensedWeapon] " + ex.Message);
                 }
             }
         }
 
-        public static List<PermissionModel> loadAllPermissions()
+        public static List<PermissionModel> LoadAllPermissions()
         {
             List<PermissionModel> permissionList = new List<PermissionModel>();
 
@@ -2758,7 +2758,7 @@ namespace WiredPlayers.database
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION loadAllPermissions] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPermissions] " + ex.Message);
                 }
             }
 

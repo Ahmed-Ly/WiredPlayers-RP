@@ -1,4 +1,9 @@
-﻿function populateInventory(inventoryJson, title) {
+﻿function getInventoryItems() {
+	// Obtenemos la lista de objetos a mostrar
+    mp.trigger('getInventoryItems');
+}
+
+function populateInventory(inventoryJson, title) {
 	// Obtenemos el array de objetos
 	let inventory = JSON.parse(inventoryJson);
 	
@@ -17,9 +22,14 @@
 		
 		// Añadimos las clases a cada elemento
 		itemContainer.classList.add('inventory-item');
+		amountContainer.classList.add('inventory-amount');
 		
 		// Añadimos el contenido de cada elemento
 		itemImage.src = '../img/inventory/' + item.hash + '.png';
 		amountContainer.textContent = item.amount;
+		
+		inventoryContainer.appendChild(itemContainer);
+		itemContainer.appendChild(amountContainer);
+		itemContainer.appendChild(itemImage);		
 	}
 }

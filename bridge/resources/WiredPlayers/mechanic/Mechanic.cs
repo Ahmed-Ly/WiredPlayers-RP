@@ -19,7 +19,7 @@ namespace WiredPlayers.mechanic
             Event.OnClientEventTrigger += OnClientEventTrigger;
         }
 
-        public static void addTunningToVehicle(NetHandle vehicle)
+        public static void AddTunningToVehicle(NetHandle vehicle)
         {
             foreach(TunningModel tunning in tunningList)
             {
@@ -30,7 +30,7 @@ namespace WiredPlayers.mechanic
             }
         }
 
-        public static bool playerInValidRepairPlace(Client player)
+        public static bool PlayerInValidRepairPlace(Client player)
         {
             // Miramos si está en algún taller
             foreach(BusinessModel business in Business.businessList)
@@ -54,7 +54,7 @@ namespace WiredPlayers.mechanic
             return false;
         }
 
-        private TunningModel getVehicleTunningComponent(int vehicleId, int slot, int component)
+        private TunningModel GetVehicleTunningComponent(int vehicleId, int slot, int component)
         {
             TunningModel tunning = null;
             foreach(TunningModel tunningModel in tunningList)
@@ -115,7 +115,7 @@ namespace WiredPlayers.mechanic
                     {
                         // Miramos si tiene suficientes productos
                         playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        item = Globals.getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                        item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                         if(item != null && item.amount >= 250)
                         {
@@ -125,7 +125,7 @@ namespace WiredPlayers.mechanic
                             // Buscamos a alguien con llaves del vehículo
                             foreach (Client target in NAPI.Pools.GetAllPlayers())
                             {
-                                if (Vehicles.hasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
+                                if (Vehicles.HasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
                                 {
                                     if (target.Position.DistanceTo(player.Position) < 4.0f)
                                     {
@@ -198,7 +198,7 @@ namespace WiredPlayers.mechanic
 
                         if (vehicleMod > 0)
                         {
-                            TunningModel tunningModel = getVehicleTunningComponent(vehicleId, i, vehicleMod);
+                            TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
                             if(tunningModel == null)
                             {
                                 totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
@@ -233,7 +233,7 @@ namespace WiredPlayers.mechanic
                     {
                         // Obtenemos el componente
                         int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
-                        TunningModel tunningModel = getVehicleTunningComponent(vehicleId, i, vehicleMod);
+                        TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
 
                         if (tunningModel == null)
                         {
@@ -255,7 +255,7 @@ namespace WiredPlayers.mechanic
 
                     // Obtenemos los productos del jugador
                     playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    item = Globals.getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                    item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                     // Obtenemos el gasto
                     for (int i = 0; i < 49; i++)
@@ -265,7 +265,7 @@ namespace WiredPlayers.mechanic
 
                         if (vehicleMod > 0)
                         {
-                            TunningModel tunningModel = getVehicleTunningComponent(vehicleId, i, vehicleMod);
+                            TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
                             if (tunningModel == null)
                             {
                                 totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
@@ -282,7 +282,7 @@ namespace WiredPlayers.mechanic
 
                             if (vehicleMod > 0)
                             {
-                                TunningModel tunningModel = getVehicleTunningComponent(vehicleId, i, vehicleMod);
+                                TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
                                 if (tunningModel == null)
                                 {
                                     // Añadimos la pieza
@@ -290,7 +290,7 @@ namespace WiredPlayers.mechanic
                                     tunningModel.slot = i;
                                     tunningModel.component = vehicleMod;
                                     tunningModel.vehicle = vehicleId;
-                                    tunningModel.id = Database.addTunning(tunningModel);
+                                    tunningModel.id = Database.AddTunning(tunningModel);
                                     tunningList.Add(tunningModel);
                                 }
                             }
@@ -298,7 +298,7 @@ namespace WiredPlayers.mechanic
 
                         // Descontamos los productos
                         item.amount -= totalProducts;
-                        Database.updateItem(item);
+                        Database.UpdateItem(item);
 
                         // Cerramos la ventana de tunning
                         NAPI.ClientEvent.TriggerClientEvent(player, "closeTunningMenu");
@@ -316,7 +316,7 @@ namespace WiredPlayers.mechanic
         }
         
         [Command("reparar", Messages.GEN_MECHANIC_REPAIR_COMMAND)]
-        public void repararCommand(Client player, int vehicleId, String type, int price = 0)
+        public void RepararCommand(Client player, int vehicleId, String type, int price = 0)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
             {
@@ -328,15 +328,15 @@ namespace WiredPlayers.mechanic
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
-            else if(playerInValidRepairPlace(player) == false)
+            else if(PlayerInValidRepairPlace(player) == false)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VALID_REPAIR_PLACE);
             }
             else
             {
-                NetHandle vehicle = Vehicles.getVehicleById(vehicleId);
+                NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
                 if(vehicle.IsNull)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
@@ -391,7 +391,7 @@ namespace WiredPlayers.mechanic
                     {
                         // Obtenemos los productos del mecánico
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        ItemModel item = Globals.getPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+                        ItemModel item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                         if(item != null && item.amount >= spentProducts)
                         {
@@ -401,7 +401,7 @@ namespace WiredPlayers.mechanic
                             // Buscamos a alguien con llaves del vehículo
                             foreach (Client target in NAPI.Pools.GetAllPlayers())
                             {
-                                if (Vehicles.hasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
+                                if (Vehicles.HasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
                                 {
                                     if (target.Position.DistanceTo(player.Position) < 4.0f)
                                     {
@@ -442,7 +442,7 @@ namespace WiredPlayers.mechanic
         }
 
         [Command("repintar", Messages.GEN_MECHANIC_REPAINT_COMMAND)]
-        public void repintarCommand(Client player, int vehicleId)
+        public void RepintarCommand(Client player, int vehicleId)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
             {
@@ -454,7 +454,7 @@ namespace WiredPlayers.mechanic
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -462,7 +462,7 @@ namespace WiredPlayers.mechanic
                 {
                     if(business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
                     {
-                        NetHandle vehicle = Vehicles.getVehicleById(vehicleId);
+                        NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
                         if(!vehicle.IsNull)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
@@ -482,7 +482,7 @@ namespace WiredPlayers.mechanic
         }
 
         [Command("tunning")]
-        public void tunningCommand(Client player)
+        public void TunningCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
             {
@@ -494,7 +494,7 @@ namespace WiredPlayers.mechanic
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {

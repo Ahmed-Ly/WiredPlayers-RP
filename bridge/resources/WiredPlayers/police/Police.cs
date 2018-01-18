@@ -83,18 +83,18 @@ namespace WiredPlayers.police
                             {
                                 PoliceControlModel policeControlCopy = policeControlModel;
                                 policeControlCopy.name = policeControl;
-                                policeControlCopy.id = Database.addPoliceControlItem(policeControlCopy);
+                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
                                 copiedPoliceControlModels.Add(policeControlCopy);
                             }
                             else
                             {
                                 policeControlModel.name = policeControl;
-                                policeControlModel.id = Database.addPoliceControlItem(policeControlModel);
+                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
                             }
                         }
                         else if (!NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
                         {
-                            Database.deletePoliceControlItem(policeControlModel.id);
+                            Database.DeletePoliceControlItem(policeControlModel.id);
                             deletedPoliceControlModels.Add(policeControlModel);
                         }
                     }
@@ -111,7 +111,7 @@ namespace WiredPlayers.police
                         }
                     }
                     policeControlList.RemoveAll(control => control.name == policeControl);
-                    Database.deletePoliceControl(policeControl);
+                    Database.DeletePoliceControl(policeControl);
                 }
             }
             else if (eventName == "policeControlNamed")
@@ -131,13 +131,13 @@ namespace WiredPlayers.police
                                 PoliceControlModel policeControlCopy = policeControlModel.Copy();
                                 policeControlModel.controlObject = new NetHandle();
                                 policeControlCopy.name = policeControlTarget;
-                                policeControlCopy.id = Database.addPoliceControlItem(policeControlCopy);
+                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
                                 copiedPoliceControlModels.Add(policeControlCopy);
                             }
                             else
                             {
                                 policeControlModel.name = policeControlTarget;
-                                policeControlModel.id = Database.addPoliceControlItem(policeControlModel);
+                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
                             }
                         }
                     }
@@ -146,7 +146,7 @@ namespace WiredPlayers.police
                 else
                 {
                     policeControlList.Where(s => s.name == policeControlSource).ToList().ForEach(t => t.name = policeControlTarget);
-                    Database.renamePoliceControl(policeControlSource, policeControlTarget);
+                    Database.RenamePoliceControl(policeControlSource, policeControlTarget);
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace WiredPlayers.police
             }
         }
 
-        private List<String> getDifferentPoliceControls()
+        private List<String> GetDifferentPoliceControls()
         {
             List<String> policeControls = new List<String>();
             foreach (PoliceControlModel policeControl in policeControlList)
@@ -175,7 +175,7 @@ namespace WiredPlayers.police
             return policeControls;
         }
 
-        private void removeClosestPoliceControlItem(Client player, int hash)
+        private void RemoveClosestPoliceControlItem(Client player, int hash)
         {
             foreach (PoliceControlModel policeControl in policeControlList)
             {
@@ -219,11 +219,11 @@ namespace WiredPlayers.police
         }
 
         [Command("comprobar")]
-        public void comprobarCommand(Client player)
+        public void ComprobarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -235,7 +235,7 @@ namespace WiredPlayers.police
             }
             else
             {
-                NetHandle vehicle = Globals.getClosestVehicle(player, 3.5f);
+                NetHandle vehicle = Globals.GetClosestVehicle(player, 3.5f);
                 if(!vehicle.IsNull)
                 {
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
@@ -261,11 +261,11 @@ namespace WiredPlayers.police
         }
 
         [Command("cachear")]
-        public void cachearCommand(Client player, String targetString)
+        public void CachearCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -277,8 +277,8 @@ namespace WiredPlayers.police
             }
             else
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     if (target == player)
@@ -293,7 +293,7 @@ namespace WiredPlayers.police
                             NAPI.Chat.SendChatMessageToPlayer(playerItem, Constants.COLOR_CHAT_ME + player.Name + " realiza un cacheo a " + target.Name);
                         }
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_SEARCHED_TARGET, target);
-                        List<InventoryModel> inventory = Globals.getPlayerInventoryAndWeapons(target);
+                        List<InventoryModel> inventory = Globals.GetPlayerInventoryAndWeapons(target);
                         NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_PLAYER);
                     }
                 }
@@ -305,7 +305,7 @@ namespace WiredPlayers.police
         }
 
         [Command("inculpar")]
-        public void inculparCommand(Client player, String targetString)
+        public void InculparCommand(Client player, String targetString)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAIL_AREA) == false)
             {
@@ -317,7 +317,7 @@ namespace WiredPlayers.police
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
             {
@@ -325,8 +325,8 @@ namespace WiredPlayers.police
             }
             else
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     if (target == player)
@@ -348,11 +348,11 @@ namespace WiredPlayers.police
         }
 
         [Command("multar", Messages.GEN_FINE_COMMAND)]
-        public void multarCommand(Client player, String name = "", String surname = "", String amount = "", String reason = "")
+        public void MultarCommand(Client player, String name = "", String surname = "", String amount = "", String reason = "")
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -364,11 +364,11 @@ namespace WiredPlayers.police
             }
             else
             {
-                int targetId = 0;
                 Client target = null;
-                if (Int32.TryParse(name, out targetId) == true)
+
+                if (Int32.TryParse(name, out int targetId) == true)
                 {
-                    target = Globals.getPlayerById(targetId);
+                    target = Globals.GetPlayerById(targetId);
                     reason = amount;
                     amount = surname;
                 }
@@ -397,7 +397,7 @@ namespace WiredPlayers.police
                         fine.reason = reason;
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                         NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
-                        Database.insertFine(fine);
+                        Database.InsertFine(fine);
                     }
                 }
                 else
@@ -408,11 +408,11 @@ namespace WiredPlayers.police
         }
 
         [Command("esposar", Messages.GEN_HANDCUFF_COMMAND)]
-        public void esposarCommand(Client player, String targetString)
+        public void EsposarCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -424,8 +424,8 @@ namespace WiredPlayers.police
             }
             else
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (target != null)
                 {
                     if (player.Position.DistanceTo(target.Position) > 1.5f)
@@ -476,11 +476,11 @@ namespace WiredPlayers.police
         }
 
         [Command("equipo", Messages.GEN_EQUIPMENT_COMMAND, GreedyArg = true)]
-        public void equipoCommand(Client player, String action, String type = "")
+        public void EquipoCommand(Client player, String action, String type = "")
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA) == false)
             {
@@ -496,9 +496,9 @@ namespace WiredPlayers.police
                 {
                     case "basico":
                         NAPI.Player.SetPlayerArmor(player, 100);
-                        Weapons.givePlayerNewWeapon(player, WeaponHash.Flashlight, 0, false);
-                        Weapons.givePlayerNewWeapon(player, WeaponHash.Nightstick, 0, true);
-                        Weapons.givePlayerNewWeapon(player, WeaponHash.StunGun, 0, true);
+                        Weapons.GivePlayerNewWeapon(player, WeaponHash.Flashlight, 0, false);
+                        Weapons.GivePlayerNewWeapon(player, WeaponHash.Nightstick, 0, true);
+                        Weapons.GivePlayerNewWeapon(player, WeaponHash.StunGun, 0, true);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EQUIP_BASIC_RECEIVED);
                         break;
                     case "municion":
@@ -507,9 +507,9 @@ namespace WiredPlayers.police
                             WeaponHash[] playerWeaps = NAPI.Player.GetPlayerWeapons(player);
                             foreach (WeaponHash playerWeap in playerWeaps)
                             {
-                                String ammunition = Weapons.getGunAmmunitionType(playerWeap);
+                                String ammunition = Weapons.GetGunAmmunitionType(playerWeap);
                                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                                ItemModel bulletItem = Globals.getPlayerItemModelFromHash(playerId, ammunition);
+                                ItemModel bulletItem = Globals.GetPlayerItemModelFromHash(playerId, ammunition);
                                 if (bulletItem != null)
                                 {
                                     switch (playerWeap)
@@ -530,7 +530,7 @@ namespace WiredPlayers.police
                                             bulletItem.amount += Constants.STACK_SNIPERRIFLE_CAPACITY;
                                             break;
                                     }
-                                    Database.updateItem(bulletItem);
+                                    Database.UpdateItem(bulletItem);
                                 }
                                 else
                                 {
@@ -541,7 +541,7 @@ namespace WiredPlayers.police
                                     bulletItem.amount = 30;
                                     bulletItem.position = new Vector3(0.0f, 0.0f, 0.0f);
                                     bulletItem.dimension = 0;
-                                    bulletItem.id = Database.addNewItem(bulletItem);
+                                    bulletItem.id = Database.AddNewItem(bulletItem);
                                     Globals.itemList.Add(bulletItem);
                                 }
                             }
@@ -581,7 +581,7 @@ namespace WiredPlayers.police
 
                             if (selectedWeap != 0)
                             {
-                                Weapons.givePlayerNewWeapon(player, selectedWeap, 0, true);
+                                Weapons.GivePlayerNewWeapon(player, selectedWeap, 0, true);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EQUIP_WEAP_RECEIVED);
                             }
                         }
@@ -598,11 +598,11 @@ namespace WiredPlayers.police
         }
 
         [Command("control", Messages.GEN_POLICE_CONTROL_COMMAND)]
-        public void controlCommand(Client player, String action)
+        public void ControlCommand(Client player, String action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -614,7 +614,7 @@ namespace WiredPlayers.police
             }
             else
             {
-                List<String> policeControls = getDifferentPoliceControls();
+                List<String> policeControls = GetDifferentPoliceControls();
                 switch (action.ToLower())
                 {
                     case "cargar":
@@ -679,11 +679,11 @@ namespace WiredPlayers.police
         }
 
         [Command("poner", Messages.GEN_POLICE_PUT_COMMAND)]
-        public void ponerCommand(Client player, String item)
+        public void PonerCommand(Client player, String item)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -733,11 +733,11 @@ namespace WiredPlayers.police
         }
 
         [Command("quitar", Messages.GEN_POLICE_REMOVE_COMMAND)]
-        public void quitarCommand(Client player, String item)
+        public void QuitarCommand(Client player, String item)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
@@ -752,16 +752,16 @@ namespace WiredPlayers.police
                 switch (item.ToLower())
                 {
                     case "cono":
-                        removeClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_CONE);
+                        RemoveClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_CONE);
                         break;
                     case "baliza":
-                        removeClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_BEACON);
+                        RemoveClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_BEACON);
                         break;
                     case "barrera":
-                        removeClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_BARRIER);
+                        RemoveClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_BARRIER);
                         break;
                     case "clavos":
-                        removeClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_SPIKES);
+                        RemoveClosestPoliceControlItem(player, Constants.POLICE_DEPLOYABLE_SPIKES);
                         break;
                     default:
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_POLICE_REMOVE_COMMAND);
@@ -771,7 +771,7 @@ namespace WiredPlayers.police
         }
 
         [Command("refuerzos", Alias = "sr")]
-        public void refuerzosCommand(Client player)
+        public void RefuerzosCommand(Client player)
         {
             if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
             {
@@ -783,7 +783,7 @@ namespace WiredPlayers.police
             }
             else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEATH);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
             else
             {
@@ -846,20 +846,19 @@ namespace WiredPlayers.police
         }
 
         [Command("licencia", Messages.GEN_LICENSE_COMMAND, GreedyArg = true)]
-        public void licenciaCommand(Client player, String args)
+        public void LicenciaCommand(Client player, String args)
         {
             if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) == 6)
             {
                 String[] arguments = args.Trim().Split(' ');
                 if(arguments.Length == 3 || arguments.Length == 4)
                 {
-                    int targetId = 0;
                     Client target = null;
 
                     // Miramos cuál es el jugador objetivo
-                    if(Int32.TryParse(arguments[2], out targetId) && arguments.Length == 3)
+                    if(Int32.TryParse(arguments[2], out int targetId) && arguments.Length == 3)
                     {
-                        target = Globals.getPlayerById(targetId);
+                        target = Globals.GetPlayerById(targetId);
                     }
                     else
                     {
@@ -888,7 +887,7 @@ namespace WiredPlayers.police
                                 {
                                     case "armas":
                                         // Añadimos un mes a la licencia
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_WEAPON_LICENSE, Globals.getTotalSeconds() + 2628000);
+                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_WEAPON_LICENSE, Globals.GetTotalSeconds() + 2628000);
 
                                         // Mandamos el mensaje a los jugadores
                                         playerMessage = String.Format(Messages.INF_WEAPON_LICENSE_GIVEN, target.Name);
@@ -906,7 +905,7 @@ namespace WiredPlayers.police
                                 {
                                     case "armas":
                                         // Añadimos un mes a la licencia
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_WEAPON_LICENSE, Globals.getTotalSeconds());
+                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_WEAPON_LICENSE, Globals.GetTotalSeconds());
 
                                         // Mandamos el mensaje a los jugadores
                                         playerMessage = String.Format(Messages.INF_WEAPON_LICENSE_REMOVED, target.Name);
@@ -916,7 +915,7 @@ namespace WiredPlayers.police
                                         break;
                                     case "turismos":
                                         // Eliminamos la licencia de turismos
-                                        DrivingSchool.setPlayerLicense(target, Constants.LICENSE_CAR, -1);
+                                        DrivingSchool.SetPlayerLicense(target, Constants.LICENSE_CAR, -1);
 
                                         // Mandamos el mensaje a los jugadores
                                         playerMessage = String.Format(Messages.INF_CAR_LICENSE_REMOVED, target.Name);
@@ -926,7 +925,7 @@ namespace WiredPlayers.police
                                         break;
                                     case "motocicletas":
                                         // Eliminamos la licencia de motocicletas
-                                        DrivingSchool.setPlayerLicense(target, Constants.LICENSE_MOTORCYCLE, -1);
+                                        DrivingSchool.SetPlayerLicense(target, Constants.LICENSE_MOTORCYCLE, -1);
 
                                         // Mandamos el mensaje a los jugadores
                                         playerMessage = String.Format(Messages.INF_MOTO_LICENSE_REMOVED, target.Name);
@@ -956,13 +955,13 @@ namespace WiredPlayers.police
         }
 
         [Command("alcoholimetro", Messages.GEN_ALCOHOLIMETER_COMMAND)]
-        public void alcoholimeterCommand(Client player, String targetString)
+        public void AlcoholimetroCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) > 0)
             {
-                int targetId = 0;
-                Client target = Int32.TryParse(targetString, out targetId) ? Globals.getPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
-                float alcoholLevel = 0;
+                float alcoholLevel = 0.0f;
+                Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
                 if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_DRUNK_LEVEL) == true)
                 {
                     alcoholLevel = NAPI.Data.GetEntityData(target, EntityData.PLAYER_DRUNK_LEVEL);
