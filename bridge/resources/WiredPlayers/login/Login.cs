@@ -52,45 +52,8 @@ namespace WiredPlayers.login
                         NAPI.Player.SetPlayerName(player, character.realName);
                         NAPI.Player.SetPlayerSkin(player, pedHash);
 
-                        // Cargamos el tipo y tiempo de cárcel
-                        String[] jail = character.jailed.Split(',');
-
-                        // Carga de los datos básicos del personaje sincronizados
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, character.money);
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, character.bank);
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, character.age);
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, character.sex);
-
-                        // Carga de los datos básicos del personaje normales
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, character.id);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, character.realName);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_RANK, character.adminRank);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_NAME, character.adminName);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_POS, character.position);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_ROT, character.rotation);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_PHONE, character.phone);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_RADIO, character.radio);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, character.killed);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, Int32.Parse(jail[0]));
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, Int32.Parse(jail[1]));
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION, character.faction);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB, character.job);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_RANK, character.rank);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_ON_DUTY, character.duty);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS, character.carKeys);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, character.documentation);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, character.licenses);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, character.insurance);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE, character.weaponLicense);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_RENT_HOUSE, character.houseRent);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, character.houseEntered);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, character.businessEntered);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, character.employeeCooldown);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, character.jobCooldown);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, character.jobDeliver);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, character.jobPoints);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, character.played);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_STATUS, character.status);
+                        // Cargamos los datos básicos del personaje
+                        LoadCharacterData(player, character);
 
                         // Generación del modelo del personaje
                         PopulateCharacterSkin(player, skin);
@@ -153,7 +116,7 @@ namespace WiredPlayers.login
                     NAPI.Player.FreezePlayer(player, false);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_ACCOUNT_REGISTER);
                     break;
-                case "LoginAccount":
+                case "loginAccount":
                     password = (String)arguments[0];
                     bool login = Database.LoginAccount(player.SocialClubName, password);
                     if (login)
@@ -194,7 +157,7 @@ namespace WiredPlayers.login
                     NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
                     NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
                     break;
-                case "CreateCharacter":
+                case "createCharacter":
                     // Recuperamos el nombre y edad
                     String playerName = arguments[0].ToString();
                     int playerAge = Int32.Parse(arguments[1].ToString());
@@ -253,45 +216,8 @@ namespace WiredPlayers.login
                     NAPI.Player.SetPlayerName(player, playerModel.realName);
                     NAPI.Player.SetPlayerSkin(player, pedHash);
 
-                    // Cargamos el tipo y tiempo de cárcel
-                    String[] jail = playerModel.jailed.Split(',');
-
-                    // Carga de los datos básicos del personaje sincronizados
-                    NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerModel.money);
-                    NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, playerModel.bank);
-                    NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, playerModel.age);
-                    NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, playerModel.sex);
-
-                    // Carga de los datos básicos del personaje normales
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, playerModel.id);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, playerModel.realName);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_RANK, playerModel.adminRank);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_NAME, playerModel.adminName);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_POS, playerModel.position);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_ROT, playerModel.rotation);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_PHONE, playerModel.phone);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_RADIO, playerModel.radio);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, playerModel.killed);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, Int32.Parse(jail[0]));
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, Int32.Parse(jail[1]));
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION, playerModel.faction);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB, playerModel.job);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_RANK, playerModel.rank);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_ON_DUTY, playerModel.duty);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS, playerModel.carKeys);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, playerModel.documentation);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, playerModel.licenses);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, playerModel.insurance);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE, playerModel.weaponLicense);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_RENT_HOUSE, playerModel.houseRent);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, playerModel.houseEntered);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, playerModel.businessEntered);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, playerModel.employeeCooldown);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, playerModel.jobCooldown);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, playerModel.jobDeliver);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, playerModel.jobPoints);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, playerModel.played);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_STATUS, playerModel.status);
+                    // Cargamos los datos básicos del personaje
+                    LoadCharacterData(player, playerModel);
 
                     // Generación del modelo del personaje
                     PopulateCharacterSkin(player, skinModel);
@@ -306,7 +232,7 @@ namespace WiredPlayers.login
                     Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
                     NAPI.Player.FreezePlayer(player, false);
                     break;
-                case "GetPlayerCustomSkin":
+                case "getPlayerCustomSkin":
                     Client target = (Client)arguments[0];
 
                     SkinModel targetCustomSkin = GetPlayerCustomSkin(target);
@@ -338,11 +264,10 @@ namespace WiredPlayers.login
 
         private void InitializePlayerData(Client player)
         {
-            Random random = new Random();
             Vector3 spawn = new Vector3(152.26, -1004.47, -99.00);
             Vector3 worldSpawn = new Vector3(200.6641f, -932.0939f, 30.68681f);
             Vector3 rotation = new Vector3(0.0f, 0.0f, 0.0f);
-            uint dimension = Convert.ToUInt32(random.Next(100000));
+            uint dimension = Convert.ToUInt32(player.Value);
             NAPI.Entity.SetEntityPosition(player, spawn);
             NAPI.Entity.SetEntityDimension(player, dimension);
 
@@ -393,6 +318,49 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_STATUS, 0);
+        }
+
+        private void LoadCharacterData(Client player, PlayerModel character)
+        {
+            // Cargamos el tipo y tiempo de cárcel
+            String[] jail = character.jailed.Split(',');
+
+            // Carga de los datos básicos del personaje compartidos
+            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, character.money);
+            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, character.bank);
+            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, character.age);
+            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, character.sex);
+
+            // Carga de los datos básicos del personaje normales
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, character.id);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, character.realName);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_RANK, character.adminRank);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_NAME, character.adminName);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_POS, character.position);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_ROT, character.rotation);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_PHONE, character.phone);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_RADIO, character.radio);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, character.killed);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, Int32.Parse(jail[0]));
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, Int32.Parse(jail[1]));
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION, character.faction);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB, character.job);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_RANK, character.rank);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ON_DUTY, character.duty);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS, character.carKeys);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, character.documentation);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, character.licenses);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, character.insurance);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE, character.weaponLicense);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_RENT_HOUSE, character.houseRent);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, character.houseEntered);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, character.businessEntered);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, character.employeeCooldown);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, character.jobCooldown);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, character.jobDeliver);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, character.jobPoints);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, character.played);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_STATUS, character.status);
         }
         
         private void PopulateCharacterSkin(Client player, SkinModel skinModel)

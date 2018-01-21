@@ -201,10 +201,7 @@ mp.events.add('render', () => {
 		// Obtenemos el tiempo local
 		let currentTime = new Date().getTime();
 		/*
-		if(target != null) {
-			// Mostramos el inventario
-			drawInventory();
-		} else if(helpWelcome == 1) {
+		if(helpWelcome == 1) {
 			// Mostramos el menú de ayuda
 			drawHelpMenu();
 		} else if(helpWelcome == 2) {

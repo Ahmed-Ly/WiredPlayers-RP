@@ -4,6 +4,9 @@ var resolution;
 mp.events.add('guiReady', () => {
 	// Eliminamos la regeneración de vida
     mp.game.player.setHealthRechargeMultiplier(0.0);
+	
+	// Deshabilitamos los beneficios al entrar en vehículos
+	mp.game.player.disableVehicleRewards();
 });
 
 mp.events.add('changePlayerWalkingStyle', (player, clipSet) => {
@@ -14,7 +17,6 @@ mp.events.add('changePlayerWalkingStyle', (player, clipSet) => {
 mp.events.add('resetPlayerWalkingStyle', (player) => {
 	// Eliminamos la regeneración de vida
 	player.resetMovementClipset(0.0);
-    mp.game.player.setHealthRechargeMultiplier(0.0);
 });
 
 /*

@@ -28,7 +28,7 @@ namespace WiredPlayers.telephone
             // Miramos el evento que ha sido lanzado
             switch (eventName)
             {
-                case "AddNewContact":
+                case "addNewContact":
                     // Obtenemos el número y nombre
                     contactNumber = Int32.Parse(arguments[0].ToString());
                     contactName = arguments[1].ToString();
@@ -47,7 +47,7 @@ namespace WiredPlayers.telephone
                     actionMessage = String.Format(Messages.INF_CONTACT_CREATED, contactName, contactNumber);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + actionMessage);
                     break;
-                case "ModifyContact":
+                case "modifyContact":
                     // Obtenemos el número, nombre y el identificador
                     contactNumber = Int32.Parse(arguments[0].ToString());
                     contactName = arguments[1].ToString();
@@ -62,7 +62,7 @@ namespace WiredPlayers.telephone
                     // Informamos al jugador
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_CONTACT_MODIFIED);
                     break;
-                case "DeleteContact":
+                case "deleteContact":
                     // Obtenemos el identificador del contacto
                     contactIndex = Int32.Parse(arguments[0].ToString());
 

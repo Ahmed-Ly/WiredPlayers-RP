@@ -1,11 +1,6 @@
 ﻿let purchasedAmount = 1;
 let selected = null;
 
-function getBusinessItems() {
-	// Obtenemos la lista de objetos a mostrar
-    mp.trigger('getBusinessItems');
-}
-
 function populateBusinessItems(businessItemsJson, businessName, multiplier) {
 	// Inicializamos los valores
 	purchasedAmount = 1;

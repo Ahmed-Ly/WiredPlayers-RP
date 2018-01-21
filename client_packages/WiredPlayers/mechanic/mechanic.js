@@ -10,6 +10,46 @@ let slotsArray = [
 	{slot: 28, desc: 'Adornos'}, {slot: 33, desc: 'Volante'}, {slot: 34, desc: 'Palanca de cambios'}, {slot: 38, desc: 'Suspensión hidráulica'}
 ];
 
+function populateTunningMenu() {
+	// Obtenemos el jugador y el vehículo en el que está subido
+	let player = mp.players.local;
+
+	// Añadimos los componentes al menú
+	for(let i = 0; i < slotsArray.length; i++) {
+		// Miramos el número de modificaciones
+		let modNumber = player.vehicle.getNumMods(slotsArray[i].slot);
+		
+		// Si tiene modificaciones, añadimos la opción al menú
+		if(modNumber > 0) {
+			// Añadimos la posición al array de índices
+			indexArray.push(i);
+
+			// Creamos la lista de opciones
+			let componentList = new List(String);
+			componentList.Add("0");
+			for(let m = 0; m < modNumber - 1; m++) {
+				componentList.Add("" + (m+1));
+			}
+			/*let menuItem = NAPI.CreateListItem(slotsArray[i].desc, "", componentList, 0);
+			tunningMenu.AddItem(menuItem);
+
+			menuItem.OnListChanged.connect(function(sender, index) {
+				let selectedIndex = indexArray[selected];
+				NAPI.TriggerServerEvent("modifyVehicle", slotsArray[selectedIndex].slot, index);
+			});*/
+		}
+	}
+
+	// Añadimos las opciones de aceptar y cancelar
+	/*let calculateItem = NAPI.CreateColoredItem("Calcular", "", "#E0E0E0", "#BDBDBD");
+	let acceptItem = NAPI.CreateColoredItem("Modificar", "", "#558B2F", "#33691E");
+    let cancelItem = NAPI.CreateColoredItem("Salir", "", "#C62828", "#B71C1C");
+    tunningMenu.AddItem(calculateItem);
+    tunningMenu.AddItem(acceptItem);
+    tunningMenu.AddItem(cancelItem);*/
+}
+
+/*
 // Menú de selección de tunning
 var tunningMenu = NAPI.CreateMenu("Modificaciones", "", 0, 0, 6);
 tunningMenu.ResetKey(menuControl.Back);
@@ -91,47 +131,7 @@ function cancelVehicleRepaint() {
 	NAPI.TriggerServerEvent("cancelVehicleRepaint");
 }
 
-function populateTunningMenu() {
-	// Obtenemos el jugador y el vehículo en el que está subido
-	let player = NAPI.GetLocalPlayer();
-	let vehicle = NAPI.Player.GetPlayerVehicle(player);
-
-	// Añadimos los componentes al menú
-	for(let i = 0; i < slotsArray.length; i++) {
-		// Miramos el número de modificaciones
-		let modNumber = NAPI.ReturnNative("GET_NUM_VEHICLE_MODS", 0, vehicle, slotsArray[i].slot);
-		
-		// Si tiene modificaciones, añadimos la opción al menú
-		if(modNumber > 1) {
-			// Añadimos la posición al array de índices
-			indexArray.push(i);
-
-			// Creamos la lista de opciones
-			let componentList = new List(String);
-			componentList.Add("0");
-			for(let m = 0; m < modNumber - 1; m++) {
-				componentList.Add("" + (m+1));
-			}
-			let menuItem = NAPI.CreateListItem(slotsArray[i].desc, "", componentList, 0);
-			tunningMenu.AddItem(menuItem);
-
-			menuItem.OnListChanged.connect(function(sender, index) {
-				let selectedIndex = indexArray[selected];
-				NAPI.TriggerServerEvent("modifyVehicle", slotsArray[selectedIndex].slot, index);
-			});
-		}
-	}
-
-	// Añadimos las opciones de aceptar y cancelar
-	let calculateItem = NAPI.CreateColoredItem("Calcular", "", "#E0E0E0", "#BDBDBD");
-	let acceptItem = NAPI.CreateColoredItem("Modificar", "", "#558B2F", "#33691E");
-    let cancelItem = NAPI.CreateColoredItem("Salir", "", "#C62828", "#B71C1C");
-    tunningMenu.AddItem(calculateItem);
-    tunningMenu.AddItem(acceptItem);
-    tunningMenu.AddItem(cancelItem);
-}
-
 function closeTunningMenu() {
 	// Cerramos el menú de tunning
 	tunningMenu.Visible = false;
-}
+}*/

@@ -660,7 +660,7 @@ namespace WiredPlayers.globals
                     // Quitamos el link con el vehículo
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
                     break;
-                case "GetPlayerTattoos":
+                case "getPlayerTattoos":
                     NetHandle playerHandle = (NetHandle)arguments[0];
                     Client targetPlayer = NAPI.Player.GetPlayerFromHandle(playerHandle);
                     int targetId = NAPI.Data.GetEntityData(targetPlayer, EntityData.PLAYER_SQL_ID);

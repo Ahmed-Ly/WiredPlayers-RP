@@ -351,7 +351,7 @@ namespace WiredPlayers.vehicles
                         }
                     }
                     break;
-                case "SaveVehicleConsumes":
+                case "saveVehicleConsumes":
                     // Actualizamos los kilómetros y gasolina
                     vehicle = (NetHandle)arguments[0];
                     

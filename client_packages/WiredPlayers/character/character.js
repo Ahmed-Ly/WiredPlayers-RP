@@ -115,10 +115,10 @@ mp.events.add('characterCreatedSuccessfully', () => {
 
 mp.events.add('entityStreamIn', (entity) => {
 	// Comprobamos que sea una persona
-	if(entity.getType() == 1) {
+	if(entity.getType() === 4) {
 		// Miramos el modelo
 		let model = entity.getModel();
-        if (mp.game.joaat("FreeModeMale01") == model || mp.game.joaat("FreemodeFemale01") == model) {
+        if (mp.game.joaat("mp_m_freemode_01") == model || mp.game.joaat("mp_f_freemode_01") == model) {
 			// Obtenemos la cara y tatuajes del jugador
 			mp.events.callRemote('getPlayerCustomSkin', entity);
 			

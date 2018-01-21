@@ -5,24 +5,15 @@ let selectedClothes = -1;
 let clothesShop = false;
 
 let businessItems = null;
-let businessName = null;
 let businessPriceMultiplier = 0.0;
-let businessMenuBrowser = null;
 
 mp.events.add('showBusinessPurchaseMenu', (itemsJsonArray, business, multiplier) => {
 	// Almacenamos los objetos y precios
 	businessItems = itemsJsonArray;
-	businessName = business;
 	businessPriceMultiplier = multiplier;
 	
 	// Mostramos la ventana con los objetos a comprar
-	businessMenuBrowser = mp.browsers.new('package://WiredPlayers/statics/html/businessMenu.html');
-});
-
-mp.events.add('getBusinessItems', () => {
-	// Rellenamos la lista de objetos
-	mp.gui.cursor.visible = true;
-    businessMenuBrowser.execute(`populateBusinessItems('${businessItems}', '${businessName}', ${businessPriceMultiplier});`);
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/businessMenu.html', 'populateBusinessItems', itemsJsonArray, business, multiplier]);
 });
 
 mp.events.add('purchaseItem', (index, amount) => {

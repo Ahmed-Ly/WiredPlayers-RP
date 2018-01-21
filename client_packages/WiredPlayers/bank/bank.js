@@ -1,9 +1,8 @@
-﻿let bankBrowser = null;
-
-mp.events.add('showATM', () => {
+﻿mp.events.add('showATM', () => {
 	// Creamos la ventana del banco
-	bankBrowser = mp.browsers.new('package://WiredPlayers/statics/html/bankMenu.html');
-	mp.gui.cursor.visible = true;
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/bankMenu.html']);
+	
+	// Desactivamos el chat
 	mp.gui.chat.activate(false);
 	mp.gui.chat.show(false);
 });
@@ -21,9 +20,9 @@ mp.events.add('executeBankOperation', (operation, amount, target) => {
 mp.events.add('bankOperationResponse', (action) => {
 	// Miramos la acción del cajero
 	if (action == '') {
-		bankBrowser.execute(`bankBack();`);
+		mp.events.call('executeFunction', ['bankBack']);
 	} else {
-		bankBrowser.execute(`showOperationError('${action}');`);
+		mp.events.call('executeFunction', ['bankBack', action]);
 	}
 });
 
@@ -34,14 +33,14 @@ mp.events.add('loadPlayerBankBalance', () => {
 
 mp.events.add('showPlayerBankBalance', (operationJson, playerName) => {
 	// Mostramos las operaciones del jugador
-	bankBrowser.execute(`showBankOperations('${operationJson}', '${playerName}');`);
+	mp.events.call('executeFunction', ['showBankOperations', operationJson, playerName]);
 });
 
 mp.events.add('closeATM', () => {
 	// Borramos el menú del cajero
-	bankBrowser.destroy();
-	mp.gui.cursor.visible = false;
+	mp.events.call('destroyBrowser');
+	
+	// Reactivamos el chat
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
-	bankBrowser = null;
 });
