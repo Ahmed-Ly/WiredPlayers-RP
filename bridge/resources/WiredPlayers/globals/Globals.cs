@@ -19,6 +19,7 @@ namespace WiredPlayers.globals
     public class Globals : Script
     {
         private int fastFoodId = 1;
+        public static int orderGenerationTime;
         public static List<FastFoodOrderModel> fastFoodOrderList;
         public static List<ClothesModel> clothesList;
         public static List<TattooModel> tattooList;
@@ -753,10 +754,7 @@ namespace WiredPlayers.globals
 
             // Definimos variables globales del servidor
             Random rnd = new Random();
-            //NAPI.SetWorldSharedData(EntityData.JOB_ORDERS_TIME, GetTotalSeconds() + rnd.Next(0, 1) * 60);
-
-            // Añadimos la lista de pedidos de comida rápida
-            //NAPI.SetWorldSharedData(EntityData.FASTFOOD_LIST, NAPI.Util.ToJson(fastFoodOrderList));
+            orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
 
             // Creamos los timers cíclicos
             playersCheckTimer = new Timer(UpdatePlayerList, null, 500, 500);
@@ -1121,7 +1119,7 @@ namespace WiredPlayers.globals
                 }
 
                 // Generación de nuevos pedidos en los trabajos
-                /*if (NAPI.GetWorldSharedData(EntityData.JOB_ORDERS_TIME) <= totalSeconds)
+                if (orderGenerationTime <= totalSeconds)
                 {
                     Random rnd = new Random();
                     int generatedOrders = rnd.Next(7, 20);
@@ -1132,19 +1130,19 @@ namespace WiredPlayers.globals
                         order.pizzas = rnd.Next(0, 4);
                         order.hamburgers = rnd.Next(0, 4);
                         order.sandwitches = rnd.Next(0, 4);
+                        order.position = GetPlayerFastFoodDeliveryDestination();
                         order.limit = totalSeconds + 300;
                         order.taken = false;
                         fastFoodOrderList.Add(order);
                         fastFoodId++;
                     }
-                    //NAPI.SetWorldSharedData(EntityData.JOB_ORDERS_TIME, totalSeconds + rnd.Next(2, 5) * 60);
-                }*/
+
+                    // Actualizamos la hora de generación de un nuevo pedido
+                    orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
+                }
 
                 // Borrados de pedidos de comida rápida caducados
                 fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
-
-                // Añadimos la lista de pedidos de comida rápida
-                //NAPI.SetWorldSharedData(EntityData.FASTFOOD_LIST, NAPI.Util.ToJson(fastFoodOrderList));
 
                 // Guardamos los vehículos
                 List<VehicleModel> vehicleList = new List<VehicleModel>();
@@ -1287,6 +1285,13 @@ namespace WiredPlayers.globals
 
             // Añadimos el log de pago
             Database.LogPayment("Payday", player.Name, "Payday", total);
+        }
+        
+        private Vector3 GetPlayerFastFoodDeliveryDestination()
+        {
+            Random random = new Random();
+            int element = random.Next(House.houseList.Count);
+            return House.houseList[element].position;
         }
 
         public static ItemModel GetItemModelFromId(int itemId)

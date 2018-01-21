@@ -40,7 +40,6 @@ namespace WiredPlayers.globals
         public const String PLAYER_JOB_CHECKPOINT = "PLAYER_JOB_CHECKPOINT";
         public const String PLAYER_JOB_WON = "PLAYER_JOB_WON"; 
         public const String PLAYER_DELIVER_ORDER = "PLAYER_DELIVER_ORDER";
-        public const String PLAYER_ORDER_DESTINATION = "PLAYER_ORDER_DESTINATION";
         public const String PLAYER_DELIVER_START = "PLAYER_DELIVER_START";
         public const String PLAYER_DELIVER_TIME = "PLAYER_DELIVER_TIME";
         public const String PLAYER_MOVING_FURNITURE = "PLAYER_MOVING_FURNITURE";
@@ -177,10 +176,8 @@ namespace WiredPlayers.globals
         public const String VEHICLE_WEAPON_UNPACKING = "VEHICLE_WEAPON_UNPACKING"; 
 
         // Datos genéricos
-        public const String JOB_ORDERS_TIME = "JOB_ORDERS_TIME";
         public const String JOB_OFFER_PRICE = "JOB_OFFER_PRICE";
         public const String JOB_OFFER_PRODUCTS = "JOB_OFFER_PRODUCTS"; 
-        public const String FASTFOOD_LIST = "FASTFOOD_LIST";
         public const String TIME_HOSPITAL_RESPAWN = "TIME_HOSPITAL_RESPAWN";
         public const String HOOKER_TYPE_SERVICE = "HOOKER_TYPE_SERVICE";
     }

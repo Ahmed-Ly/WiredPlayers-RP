@@ -25,10 +25,6 @@ function getPlayerList() {
     mp.trigger('getConnectedPlayers');
 };
 
-function getBankAccountMoney() {
-    return mp.trigger('getBankAccountMoney');
-};
-
 function populatePlayerList(playerJSON) {
     var playerArray = JSON.parse(playerJSON);
     var tableBody = document.getElementById('playersTableBody');
@@ -65,7 +61,7 @@ function withdrawMoney() {
     $('#bank-withdraw').removeClass('hidden');
     $('#bank-accept').removeClass('hidden');
     $('#bank-exit').html('Cancelar');
-    $('#bank-withdraw-balance').html(getBankAccountMoney() + '$');
+	mp.trigger('updateBankAccountMoney');
 }
 
 function depositMoney() {
@@ -74,7 +70,7 @@ function depositMoney() {
     $('#bank-deposit').removeClass('hidden');
     $('#bank-accept').removeClass('hidden');
     $('#bank-exit').html('Cancelar');
-    $('#bank-deposit-balance').html(getBankAccountMoney() + '$');
+	mp.trigger('updateBankAccountMoney');
 }
 
 function transferMoney() {
@@ -83,7 +79,22 @@ function transferMoney() {
     $('#bank-transfer').removeClass('hidden');
     $('#bank-accept').removeClass('hidden');
     $('#bank-exit').html('Cancelar');
-    $('#bank-transfer-balance').html(getBankAccountMoney() + '$');
+	mp.trigger('updateBankAccountMoney');
+}
+
+function updateAccountMoney(money) {
+	// Actualizamos la etiqueta con el dinero
+	switch(bankSelectedOption) {
+		case 1:
+			$('#bank-withdraw-balance').html(money + '$');
+			break;
+		case 2:
+			$('#bank-deposit-balance').html(money + '$');
+			break;
+		case 3:
+			$('#bank-transfer-balance').html(money + '$');
+			break;
+	}
 }
 
 function showBalance() {

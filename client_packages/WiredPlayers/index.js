@@ -11,3 +11,5 @@ require('./WiredPlayers/character/character.js');
 require('./WiredPlayers/character/inventory.js');
 require('./WiredPlayers/vehicles/vehicles.js');
 require('./WiredPlayers/garbage/garbage.js');
+require('./WiredPlayers/mechanic/mechanic.js');
+require('./WiredPlayers/fastfood/fastFood.js');

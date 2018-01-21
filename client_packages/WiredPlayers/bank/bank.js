@@ -7,9 +7,12 @@
 	mp.gui.chat.show(false);
 });
 
-mp.events.add('getBankAccountMoney', () => {
+mp.events.add('updateBankAccountMoney', () => {
 	// Obtenemos el dinero en el banco del jugador
-    return mp.players.local.getVariable('PLAYER_BANK');
+	let money = mp.players.local.getVariable('PLAYER_BANK');
+	
+	// Actualizamos el valor del dinero
+	mp.events.call('executeFunction', ['updateAccountMoney', money]);	
 });
 
 mp.events.add('executeBankOperation', (operation, amount, target) => {

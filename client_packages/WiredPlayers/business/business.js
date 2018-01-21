@@ -13,7 +13,7 @@ mp.events.add('showBusinessPurchaseMenu', (itemsJsonArray, business, multiplier)
 	businessPriceMultiplier = multiplier;
 	
 	// Mostramos la ventana con los objetos a comprar
-	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/businessMenu.html', 'populateBusinessItems', itemsJsonArray, business, multiplier]);
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateBusinessItems', itemsJsonArray, business, multiplier]);
 });
 
 mp.events.add('purchaseItem', (index, amount) => {
@@ -32,11 +32,12 @@ mp.events.add('purchaseItem', (index, amount) => {
 });
 
 mp.events.add('cancelBusinessPurchase', () => {
-    businessMenuBrowser.destroy();
-	mp.gui.cursor.visible = false;
+	// Borramos el menú del negocio
+	mp.events.call('destroyBrowser');
+	
+	// Reactivamos el chat
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
-    businessMenuBrowser = null;
 });
 /*
 

@@ -5,6 +5,7 @@ using WiredPlayers.model;
 using System.Collections.Generic;
 using System.Threading;
 using System;
+using System.Linq;
 
 namespace WiredPlayers.fastfood
 {
@@ -45,10 +46,11 @@ namespace WiredPlayers.fastfood
                     }
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == false)
                     {
-                        HouseModel orderHouse = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ORDER_DESTINATION);
-                        Checkpoint playerFastFoodCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, orderHouse.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+                        int orderId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
+                        FastFoodOrderModel order = GetFastfoodOrderFromId(orderId);
+                        Checkpoint playerFastFoodCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, order.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT, playerFastFoodCheckpoint);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDestinationCheckPoint", orderHouse.position);
+                        NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDestinationCheckPoint", order.position);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_VEHICLE, vehicle);
                     }
                 }
@@ -89,15 +91,12 @@ namespace WiredPlayers.fastfood
                         {
                             order.taken = true;
                             int start = Globals.GetTotalSeconds();
-                            HouseModel house = GetPlayerFastFoodDeliveryDestination();
-                            int time = (int)Math.Round(player.Position.DistanceTo(house.position) / 9.5f);
+                            int time = (int)Math.Round(player.Position.DistanceTo(order.position) / 9.5f);
                             String orderMessage = String.Format(Messages.INF_DELIVER_ORDER, time);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + orderMessage);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_ORDER, orderId);
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ORDER_DESTINATION, house);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_START, start);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_TIME, time);
-                            //NAPI.SetWorldSharedData(EntityData.FASTFOOD_LIST, NAPI.Util.ToJson(Globals.fastFoodOrderList));
                         }
                         return;
                     }
@@ -126,7 +125,6 @@ namespace WiredPlayers.fastfood
                             int extra = (int)Math.Round((NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_TIME) - elapsed) / 2.0f);
                             int amount = GetFastFoodOrderAmount(player) + extra;
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_START);
-                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ORDER_DESTINATION);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_WON, amount > 0 ? amount : 25);
                             NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverBack", vehiclePosition);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_DELIVER_COMPLETED);
@@ -184,24 +182,6 @@ namespace WiredPlayers.fastfood
             }
         }
 
-        private HouseModel GetPlayerFastFoodDeliveryDestination()
-        {
-            HouseModel house = null;
-            Random random = new Random();
-            int current = 0;
-            int element = random.Next(House.houseList.Count);
-            foreach (HouseModel houseModel in House.houseList)
-            {
-                if (current == element)
-                {
-                    house = houseModel;
-                    break;
-                }
-                current++;
-            }
-            return house;
-        }
-
         private int GetFastFoodOrderAmount(Client player)
         {
             int amount = 0;
@@ -217,6 +197,21 @@ namespace WiredPlayers.fastfood
                 }
             }
             return amount;
+        }
+
+        private FastFoodOrderModel GetFastfoodOrderFromId(int orderId)
+        {
+            FastFoodOrderModel order = null;
+            
+            foreach(FastFoodOrderModel orderModel in Globals.fastFoodOrderList) {
+                if(orderModel.id == orderId)
+                {
+                    order = orderModel;
+                    break;
+                }
+            }
+
+            return order;
         }
 
         private void RespawnFastfoodVehicle(NetHandle vehicle)
@@ -284,7 +279,26 @@ namespace WiredPlayers.fastfood
             }
             else
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "mostrarRepartosComidaRapida");
+                // Obtenemos los pedidos entregables
+                List<FastFoodOrderModel> fastFoodOrders = Globals.fastFoodOrderList.Where(o => !o.taken).ToList();
+
+                if(fastFoodOrders.Count > 0)
+                {
+
+                    List<float> distancesList = new List<float>();
+
+                    foreach (FastFoodOrderModel order in fastFoodOrders)
+                    {
+                        float distance = player.Position.DistanceTo(order.position);
+                        distancesList.Add(distance);
+                    }
+
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showFastfoodOrders", NAPI.Util.ToJson(fastFoodOrders), NAPI.Util.ToJson(distancesList));
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ORDER_NONE);
+                }
             }
         }
     }

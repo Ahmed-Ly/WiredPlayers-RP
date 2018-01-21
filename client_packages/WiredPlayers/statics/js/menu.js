@@ -1,5 +1,11 @@
-﻿let purchasedAmount = 1;
+﻿const PRICE_PIZZA = 20;
+const PRICE_HAMBURGER = 10;
+const PRICE_SANDWICH = 5;
+
+let tunningComponents = [];
+let purchasedAmount = 1;
 let selected = null;
+let drawable = null;
 
 function populateBusinessItems(businessItemsJson, businessName, multiplier) {
 	// Inicializamos los valores
@@ -50,12 +56,12 @@ function populateBusinessItems(businessItemsJson, businessName, multiplier) {
 		itemPrice.classList.add('item-price');
 		itemAmount.classList.add('item-amount-description');
 		itemAdd.classList.add('item-adder');
-		itemSubstract.classList.add('item-substract', 'hidden');		
+		itemSubstract.classList.add('item-substract', 'hidden');
 		
 		// Añadimos el contenido de cada elemento
 		itemImage.src = '../img/inventory/' + item.hash + '.png';
 		itemDescription.textContent = item.description;
-		itemPrice.innerHTML = '<b>Precio unitario: </b>' + Math.round(item.products * multiplier) + '$';
+		itemPrice.innerHTML = '<b>Precio unitario: </b>' + Math.round(item.products * parseFloat(multiplier)) + '$';
 		itemAmount.innerHTML = '<b>Cantidad: </b>' + purchasedAmount;
 		itemAdd.textContent = '+';
 		itemSubstract.textContent = '-';
@@ -176,6 +182,302 @@ function populateBusinessItems(businessItemsJson, businessName, multiplier) {
 		
 	// Ordenamos la jerarquía de elementos
 	options.appendChild(purchaseButton);
+	options.appendChild(cancelButton);
+}
+
+function populateTunningMenu(tunningComponentsJSON) {
+	// Añadimos el título al menú
+	let header = document.getElementById('header');
+	header.textContent = 'Menú de modificaciones';
+	
+	// Obtenemos la lista de componentes
+	tunningComponents = JSON.parse(tunningComponentsJSON);
+	
+	// Mostramos el menú principal
+	populateTunningHome();
+}
+
+function populateTunningHome() {
+	// Obtenemos el nodo contenedor
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Inicializamos las opciones
+	selected = null;
+	drawable = null;
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < tunningComponents.length; i++) {
+		// Obtenemos el objeto en curso
+		let group = tunningComponents[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		itemDescription.classList.add('item-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = group.desc;
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Seleccionamos el elemento pulsado
+			selected = i;
+			
+			// Mostramos la página de componentes
+			populateTunningComponents();
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+	}
+	
+	// Añadimos el botón
+	let exitButton = document.createElement('div');
+	
+	// Añadimos las clases al botón
+	exitButton.classList.add('single-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	exitButton.textContent = 'Salir';
+	
+	exitButton.onclick = (function() {
+		// Cerramos la ventana de compra
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(exitButton);
+}
+
+function populateTunningComponents() {
+	// Obtenemos el nodo contenedor
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < tunningComponents[selected].components.length; i++) {
+		// Obtenemos el componente
+		let component = tunningComponents[selected].components[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = component.desc;
+		itemPrice.innerHTML = '<b>Precio unitario: </b>' + tunningComponents[selected].products + '$';
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(drawable !== i) {
+				// Miramos si había algún elemento seleccionado
+				if(drawable != null) {
+					let previousSelected = document.getElementsByClassName('item-row')[drawable];
+					previousSelected.classList.remove('active-item');
+				}
+				
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el nuevo índice seleccionado
+				drawable = i;
+				
+				// Actualizamos el tunning del vehículo
+				mp.trigger('addVehicleComponent', tunningComponents[selected].slot, drawable);
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+	}
+	
+	// Añadimos los botones
+	let purchaseButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	purchaseButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	purchaseButton.textContent = 'Comprar';
+	cancelButton.textContent = 'Atrás';
+	
+	// Ponemos la función para cada elemento
+	purchaseButton.onclick = (function() {
+		// Mandamos la acción de compra si ha seleccionado algo
+		if(selected != null) {
+			//mp.trigger('purchaseItem', selected, purchasedAmount);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Volvemos al inicio
+		populateTunningHome();
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(purchaseButton);
+	options.appendChild(cancelButton);
+}
+
+function populateFastfoodOrders(ordersJson, distancesJson) {
+	// Obtenemos la lista de pedidos
+	let fastfoodOrders = JSON.parse(ordersJson);
+	let distances = JSON.parse(distancesJson);
+	let header = document.getElementById('header');
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Añadimos la cabecera del menú
+	header.textContent = 'Pedidos de comida rápida';
+	
+	for(let i = 0; i < fastfoodOrders.length; i++) {
+		// Obtenemos el objeto en curso
+		let order = fastfoodOrders[i];
+		
+		// Calculamos el precio del pedido
+		let amount = order.pizzas * PRICE_PIZZA + order.hamburgers * PRICE_HAMBURGER + order.sandwitches * PRICE_SANDWICH;
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemAmountContainer = document.createElement('div');
+		let amountTextContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		let itemAmount = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemAmountContainer.classList.add('item-amount-container');
+		amountTextContainer.classList.add('item-amount-desc-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		itemAmount.classList.add('item-amount-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = 'Pedido #' + order.id;
+		itemPrice.innerHTML = '<b>Pedido: </b>' + amount + '$';
+		itemAmount.innerHTML = '<b>Distancia: </b>' + parseFloat(distances[i] / 1000).toFixed(2) + 'km';
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(selected !== i) {
+				// Miramos si había algún elemento seleccionado
+				if(selected != null) {
+					let previousSelected = document.getElementsByClassName('item-row')[selected];
+					previousSelected.classList.remove('active-item');
+				}
+				
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el nuevo índice seleccionado
+				selected = i;
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+		purchaseContainer.appendChild(itemAmountContainer);
+		itemAmountContainer.appendChild(amountTextContainer);
+		amountTextContainer.appendChild(itemAmount);
+	}
+	
+	// Añadimos los botones
+	let deliverButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	deliverButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	deliverButton.textContent = 'Entregar';
+	cancelButton.textContent = 'Salir';
+	
+	// Ponemos la función para cada elemento
+	deliverButton.onclick = (function() {
+		// Entregamos el pedido seleccionado
+		if(selected != null) {
+			mp.trigger('deliverOrder', fastfoodOrders[selected].id);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Cerramos la ventana de pedidos
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(deliverButton);
 	options.appendChild(cancelButton);
 }
 

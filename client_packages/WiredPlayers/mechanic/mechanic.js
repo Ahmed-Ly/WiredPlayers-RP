@@ -3,51 +3,49 @@ let repaintBrowser = null;
 let selected = 0;
 let indexArray = [];
 let slotsArray = [
-	{slot: 0, desc: 'Alerón'}, {slot: 1, desc: 'Parachoques frontal'}, {slot: 2, desc: 'Parachoques trasero'}, {slot: 3, desc: 'Faldón lateral'}, 
-	{slot: 4, desc: 'Tubo de escape'}, {slot: 5, desc: 'Antivuelco'}, {slot: 6, desc: 'Parrilla'}, {slot: 7, desc: 'Capó'}, {slot: 8, desc: 'Aleta'},
-	{slot: 9, desc: 'Aleta trasera'}, {slot: 10, desc: 'Techo'}, {slot: 14, desc: 'Claxon'}, {slot: 15, desc: 'Suspensión'}, {slot: 22, desc: 'Xenon'}, 
-	{slot: 23, desc: 'Ruedas delanteras'}, {slot: 24, desc: 'Ruedas traseras'}, {slot: 25, desc: 'Matrícula'}, {slot: 27, desc: 'Diseño tapicería'},
-	{slot: 28, desc: 'Adornos'}, {slot: 33, desc: 'Volante'}, {slot: 34, desc: 'Palanca de cambios'}, {slot: 38, desc: 'Suspensión hidráulica'}
+	{slot: 0, desc: 'Alerón', products: 250}, {slot: 1, desc: 'Parachoques frontal', products: 250}, {slot: 2, desc: 'Parachoques trasero', products: 250}, {slot: 3, desc: 'Faldón lateral', products: 250}, 
+	{slot: 4, desc: 'Tubo de escape', products: 100}, {slot: 5, desc: 'Antivuelco', products: 500}, {slot: 6, desc: 'Parrilla', products: 200}, {slot: 7, desc: 'Capó', products: 300}, {slot: 8, desc: 'Aleta', products: 100},
+	{slot: 9, desc: 'Aleta trasera', products: 100}, {slot: 10, desc: 'Techo', products: 400}, {slot: 14, desc: 'Claxon', products: 100}, {slot: 15, desc: 'Suspensión', products: 900}, {slot: 22, desc: 'Xenon', products: 150}, 
+	{slot: 23, desc: 'Ruedas delanteras', products: 100}, {slot: 24, desc: 'Ruedas traseras', products: 100}, {slot: 25, desc: 'Matrícula', products: 100}, {slot: 27, desc: 'Diseño tapicería', products: 800},
+	{slot: 28, desc: 'Adornos', products: 150}, {slot: 33, desc: 'Volante', products: 100}, {slot: 34, desc: 'Palanca de cambios', products: 100}, {slot: 38, desc: 'Suspensión hidráulica', products: 1200}
 ];
 
-function populateTunningMenu() {
-	// Obtenemos el jugador y el vehículo en el que está subido
-	let player = mp.players.local;
-
-	// Añadimos los componentes al menú
+mp.events.add('showTunningMenu', () => {
+	// Obtenemos el vehículo en el que está subido
+	let vehicle = mp.players.local.vehicle;
+	
+	// Inicializamos el array con los grupos
+	let componentGroups = [];
+	
 	for(let i = 0; i < slotsArray.length; i++) {
 		// Miramos el número de modificaciones
-		let modNumber = player.vehicle.getNumMods(slotsArray[i].slot);
+		let modNumber = vehicle.getNumMods(slotsArray[i].slot);
 		
 		// Si tiene modificaciones, añadimos la opción al menú
 		if(modNumber > 0) {
-			// Añadimos la posición al array de índices
-			indexArray.push(i);
-
-			// Creamos la lista de opciones
-			let componentList = new List(String);
-			componentList.Add("0");
-			for(let m = 0; m < modNumber - 1; m++) {
-				componentList.Add("" + (m+1));
+			// Inicializamos el array de componentes y el grupo
+			let group = {'slot': slotsArray[i].slot, 'desc': slotsArray[i].desc, 'products': slotsArray[i].products};
+			let components = [];
+			
+			for(let m = 0; m < modNumber; m++) {
+				let component = {'id': m, 'desc': slotsArray[i].desc + " tipo " + (m + 1)};
+				components.push(component);
 			}
-			/*let menuItem = NAPI.CreateListItem(slotsArray[i].desc, "", componentList, 0);
-			tunningMenu.AddItem(menuItem);
-
-			menuItem.OnListChanged.connect(function(sender, index) {
-				let selectedIndex = indexArray[selected];
-				NAPI.TriggerServerEvent("modifyVehicle", slotsArray[selectedIndex].slot, index);
-			});*/
+			
+			// Añadimos la lista de componentes a la lista
+			group.components = components;
+			componentGroups.push(group);
 		}
 	}
+	
+	// Creamos el menú de tunning
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateTunningMenu', JSON.stringify(componentGroups)]);
+});
 
-	// Añadimos las opciones de aceptar y cancelar
-	/*let calculateItem = NAPI.CreateColoredItem("Calcular", "", "#E0E0E0", "#BDBDBD");
-	let acceptItem = NAPI.CreateColoredItem("Modificar", "", "#558B2F", "#33691E");
-    let cancelItem = NAPI.CreateColoredItem("Salir", "", "#C62828", "#B71C1C");
-    tunningMenu.AddItem(calculateItem);
-    tunningMenu.AddItem(acceptItem);
-    tunningMenu.AddItem(cancelItem);*/
-}
+mp.events.add('addVehicleComponent', (slot, component) => {
+	// Añadimos el componente al vehículo
+	mp.players.local.vehicle.setMod(slot, component);
+});
 
 /*
 // Menú de selección de tunning
@@ -129,9 +127,4 @@ function cancelVehicleRepaint() {
 
 	// Volvemos a poner los colores
 	NAPI.TriggerServerEvent("cancelVehicleRepaint");
-}
-
-function closeTunningMenu() {
-	// Cerramos el menú de tunning
-	tunningMenu.Visible = false;
 }*/

@@ -472,6 +472,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_NO_FACTION = "No estás en ninguna facción."; 
         public const String ERR_NOT_SERVICE = "No te encuentras de servicio.";
         public const String ERR_NOT_FASTFOOD = "No eres repartidor de comida rápida.";
+        public const String ERR_ORDER_NONE = "No hay ningún pedido en la lista para atender.";
         public const String ERR_ORDER_TAKEN = "El pedido ya ha sido atendido por otra persona.";
         public const String ERR_ORDER_TIMEOUT = "El cliente se ha cansado de esperar a su pedido.";
         public const String ERR_ORDER_DELIVERING = "Ya estás atendiendo un pedido.";
