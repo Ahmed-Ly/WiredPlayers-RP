@@ -467,7 +467,7 @@ function populateFastfoodOrders(ordersJson, distancesJson) {
 	deliverButton.onclick = (function() {
 		// Entregamos el pedido seleccionado
 		if(selected != null) {
-			mp.trigger('deliverOrder', fastfoodOrders[selected].id);
+			mp.trigger('deliverFastfoodOrder', fastfoodOrders[selected].id);
 		}
 	});
 	

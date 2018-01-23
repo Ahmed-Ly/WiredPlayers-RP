@@ -78,7 +78,9 @@ namespace WiredPlayers.fastfood
         {
             if (eventName == "takeFastFoodOrder")
             {
-                int orderId = Int32.Parse((String)arguments[0]);
+                // Obtenemos el número de pedido
+                int orderId = Int32.Parse(arguments[0].ToString());
+
                 foreach (FastFoodOrderModel order in Globals.fastFoodOrderList)
                 {
                     if (order.id == orderId)
@@ -89,18 +91,26 @@ namespace WiredPlayers.fastfood
                         }
                         else
                         {
-                            order.taken = true;
+                            // Obtenemos el tiempo necesario
                             int start = Globals.GetTotalSeconds();
                             int time = (int)Math.Round(player.Position.DistanceTo(order.position) / 9.5f);
-                            String orderMessage = String.Format(Messages.INF_DELIVER_ORDER, time);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + orderMessage);
+                            
+                            // Ponemos el pedido como cogido
+                            order.taken = true;
+
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_ORDER, orderId);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_START, start);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_TIME, time);
+
+                            // Mandamos el mensaje de recogida
+                            String orderMessage = String.Format(Messages.INF_DELIVER_ORDER, time);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + orderMessage);
                         }
                         return;
                     }
                 }
+
+                // Mandamos el mensaje de que no se ha encontrado ningún pedido
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ORDER_TIMEOUT);
             }
         }
@@ -116,7 +126,7 @@ namespace WiredPlayers.fastfood
                 {
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DELIVER_START) == true)
                     {
-                        if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_NONE)
+                        if (NAPI.Player.IsPlayerInAnyVehicle(player) == false)
                         {
                             NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
                             Vector3 vehiclePosition = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);

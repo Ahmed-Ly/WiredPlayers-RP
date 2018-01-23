@@ -7,8 +7,8 @@ mp.events.add('showFastfoodOrders', (orders, distances) => {
 
 mp.events.add('deliverFastfoodOrder', (order) => {
 	// Cerramos el menú y atendemos el pedido
-	mp.events.call('destroyBrowser');
 	mp.events.callRemote('takeFastFoodOrder', order);
+	mp.events.call('destroyBrowser');
 });
 
 mp.events.add('fastFoodDestinationCheckPoint', (position) => {
