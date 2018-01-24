@@ -191,7 +191,7 @@ namespace WiredPlayers.admin
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
             {
                 int vehicleId = 0;
-                NetHandle veh = new NetHandle();
+                Vehicle veh = null;
                 VehicleModel vehicle = new VehicleModel();
                 if (args.Trim().Length > 0)
                 {
@@ -319,7 +319,7 @@ namespace WiredPlayers.admin
                                             if (Int32.TryParse(arguments[2], out vehicleId) == true)
                                             {
                                                 veh = Vehicles.GetVehicleById(vehicleId);
-                                                if (veh.IsNull)
+                                                if (veh == null)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
                                                 }
@@ -390,7 +390,7 @@ namespace WiredPlayers.admin
                                         {
                                             if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
                                             {
-                                                veh = NAPI.Player.GetPlayerVehicle(player);
+                                                veh = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                                                 vehicle.position = NAPI.Entity.GetEntityPosition(veh);
                                                 vehicle.rotation = NAPI.Entity.GetEntityRotation(veh);
                                                 vehicle.id = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
@@ -447,7 +447,7 @@ namespace WiredPlayers.admin
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
                                     veh = Vehicles.GetVehicleById(vehicleId);
-                                    if (!veh.IsNull)
+                                    if (veh != null)
                                     {
                                         NAPI.Entity.DeleteEntity(veh);
                                         Database.RemoveVehicle(vehicleId);
@@ -491,7 +491,7 @@ namespace WiredPlayers.admin
                             {
                                 if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                                 {
-                                    veh = NAPI.Player.GetPlayerVehicle(player);
+                                    veh = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                                     NAPI.Vehicle.SetVehicleEngineStatus(veh, true);
                                 }
                                 else
@@ -506,7 +506,7 @@ namespace WiredPlayers.admin
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
                                     veh = Vehicles.GetVehicleById(vehicleId);
-                                    if (!veh.IsNull)
+                                    if (veh != null)
                                     {
                                         // Traemos el vehículo a la posición
                                         NAPI.Entity.SetEntityPosition(veh, player.Position);
@@ -533,7 +533,7 @@ namespace WiredPlayers.admin
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
                                 {
                                     veh = Vehicles.GetVehicleById(vehicleId);
-                                    if (veh.IsNull)
+                                    if (veh == null)
                                     {
                                         VehicleModel vehModel = Vehicles.GetParkedVehicleById(vehicleId);
 

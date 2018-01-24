@@ -201,17 +201,19 @@ namespace WiredPlayers.vehicles
             return hasKeys;
         }
 
-        public static NetHandle GetVehicleById(int vehicleId)
+        public static Vehicle GetVehicleById(int vehicleId)
         {
-            NetHandle vehicle = new NetHandle();
+            Vehicle vehicle = null;
+
             foreach (NetHandle veh in NAPI.Pools.GetAllVehicles())
             {
                 if (NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID) == vehicleId)
                 {
-                    vehicle = veh;
+                    vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(veh);
                     break;
                 }
             }
+
             return vehicle;
         }
 
@@ -611,8 +613,8 @@ namespace WiredPlayers.vehicles
             }
             else
             {
-                NetHandle vehicle = Globals.GetClosestVehicle(player);
-                if (vehicle.IsNull)
+                Vehicle vehicle = Globals.GetClosestVehicle(player);
+                if (vehicle == null)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                 }
@@ -651,8 +653,8 @@ namespace WiredPlayers.vehicles
             }
             else
             {
-                NetHandle vehicle = Globals.GetClosestVehicle(player, 3.75f);
-                if (vehicle.IsNull == false)
+                Vehicle vehicle = Globals.GetClosestVehicle(player, 3.75f);
+                if (vehicle != null)
                 {
                     if (HasPlayerVehicleKeys(player, vehicle) == false && NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
                     {
@@ -675,39 +677,6 @@ namespace WiredPlayers.vehicles
                 }
             }
         }
-        /*
-        [Command("lavar")]
-        public void lavarCommand(Client player)
-        {
-            NetHandle vehicle = Globals.GetClosestVehicle(player, 3.75f);
-            if (vehicle.IsNull)
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
-            }
-            else if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_INSIDE_VEHICLE);
-            }
-            else if (NAPI.GetVehicleDirtLevel(vehicle) == 0.0f)
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_ALREADY_CLEAN);
-            }
-            else
-            {
-                if (NAPI.GetVehicleDirtLevel(vehicle) >= 10.0f)
-                {
-                    NAPI.SetVehicleDirtLevel(vehicle, 7.0f);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_ALMOST_CLEANED);
-                }
-                else if (NAPI.GetVehicleDirtLevel(vehicle) <= 10.0f)
-                {
-                    NAPI.SetVehicleDirtLevel(vehicle, 0.0f);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_VEHICLE_COMPLETELY_CLEANED);
-                }
-                NAPI.Player.StopPlayerAnimation(player);
-                NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "switch@franklin@cleaning_car", "001946_01_gc_fras_v2_ig_5_base");
-            }
-        }*/
 
         [Command("maletero", Messages.GEN_TRUNK_COMMAND)]
         public void MaleteroCommand(Client player, String action)
@@ -719,9 +688,9 @@ namespace WiredPlayers.vehicles
             else
             {
                 // Obtenemos el vehículo más cercano
-                NetHandle vehicle = Globals.GetClosestVehicle(player, 3.75f);
+                Vehicle vehicle = Globals.GetClosestVehicle(player, 3.75f);
 
-                if (vehicle.IsNull == false)
+                if (vehicle != null)
                 {
                     // Inicializamos el inventario
                     List<InventoryModel> inventory = null;
@@ -895,7 +864,7 @@ namespace WiredPlayers.vehicles
         public void LlavesCommand(Client player, String action, int vehicleId, String targetString = "")
         {
             // Inicializamos la variable del vehículo
-            NetHandle vehicle = new NetHandle();
+            Vehicle vehicle = null;
 
             // Obtenemos las llaves cedidas
             String playerKeys = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
@@ -1022,9 +991,9 @@ namespace WiredPlayers.vehicles
         [Command("localizar", Messages.GEN_LOCATE_COMMAND)]
         public void LocalizarCommand(Client player, int vehicleId)
         {
-            NetHandle vehicle = GetVehicleById(vehicleId);
+            Vehicle vehicle = GetVehicleById(vehicleId);
 
-            if (vehicle.IsNull)
+            if (vehicle == null)
             {
                 // Miramos si está aparcado
                 VehicleModel vehModel = GetParkedVehicleById(vehicleId);
@@ -1095,13 +1064,13 @@ namespace WiredPlayers.vehicles
                 if (business.type == Constants.BUSINESS_TYPE_GAS_STATION && player.Position.DistanceTo(business.position) < 20.5f)
                 {
                     // Obtenemos el vehículo más cercano
-                    NetHandle vehicle = Globals.GetClosestVehicle(player);
+                    Vehicle vehicle = Globals.GetClosestVehicle(player);
 
                     // Obtenemos la facción y trabajo del jugador
                     int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
                     int job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
 
-                    if (vehicle.IsNull)
+                    if (vehicle == null)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                     }
@@ -1188,8 +1157,8 @@ namespace WiredPlayers.vehicles
 
                 if (item.hash == Constants.ITEM_HASH_JERRYCAN)
                 {
-                    NetHandle vehicle = Globals.GetClosestVehicle(player);
-                    if (!vehicle.IsNull)
+                    Vehicle vehicle = Globals.GetClosestVehicle(player);
+                    if (vehicle != null)
                     {
                         if (HasPlayerVehicleKeys(player, vehicle) == true || NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_MECHANIC)
                         {

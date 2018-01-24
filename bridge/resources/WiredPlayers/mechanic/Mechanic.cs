@@ -336,8 +336,8 @@ namespace WiredPlayers.mechanic
             }
             else
             {
-                NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
-                if(vehicle.IsNull)
+                Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
+                if(vehicle == null)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
                 }
@@ -462,8 +462,8 @@ namespace WiredPlayers.mechanic
                 {
                     if(business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
                     {
-                        NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
-                        if(!vehicle.IsNull)
+                        Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
+                        if(vehicle != null)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showRepaintMenu");

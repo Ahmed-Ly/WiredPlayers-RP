@@ -235,8 +235,8 @@ namespace WiredPlayers.police
             }
             else
             {
-                NetHandle vehicle = Globals.GetClosestVehicle(player, 3.5f);
-                if(!vehicle.IsNull)
+                Vehicle vehicle = Globals.GetClosestVehicle(player, 3.5f);
+                if(vehicle == null)
                 {
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                     String model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);

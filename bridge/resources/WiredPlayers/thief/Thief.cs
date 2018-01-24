@@ -281,8 +281,8 @@ namespace WiredPlayers.thief
                 }
                 else
                 {
-                    NetHandle vehicle = Globals.GetClosestVehicle(player);
-                    if (vehicle.IsNull)
+                    Vehicle vehicle = Globals.GetClosestVehicle(player);
+                    if (vehicle == null)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                     }

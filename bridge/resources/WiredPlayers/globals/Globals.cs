@@ -936,9 +936,9 @@ namespace WiredPlayers.globals
             }
         }*/
 
-        public static NetHandle GetClosestVehicle(Client player, float distance = 2.5f)
+        public static Vehicle GetClosestVehicle(Client player, float distance = 2.5f)
         {
-            NetHandle vehicle = new NetHandle();
+            Vehicle vehicle = null;
             foreach (NetHandle veh in NAPI.Pools.GetAllVehicles())
             {
                 Vector3 vehPos = NAPI.Entity.GetEntityPosition(veh);
@@ -947,7 +947,7 @@ namespace WiredPlayers.globals
                 if (distanceVehicleToPlayer < distance && player.Dimension == vehicleDimension)
                 {
                     distance = distanceVehicleToPlayer;
-                    vehicle = veh;
+                    vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(veh);
 
                 }
             }
@@ -1820,10 +1820,10 @@ namespace WiredPlayers.globals
                                 {
                                     if (Int32.TryParse(arguments[1], out objectId) == true)
                                     {
-                                        NetHandle vehicle = Vehicles.GetVehicleById(objectId);
+                                        Vehicle vehicle = Vehicles.GetVehicleById(objectId);
 
                                         // Miramos si está en un parking
-                                        if (vehicle.IsNull)
+                                        if (vehicle == null)
                                         {
                                             // Miramos si está aparcado
                                             VehicleModel vehModel = Vehicles.GetParkedVehicleById(objectId);
@@ -2715,10 +2715,10 @@ namespace WiredPlayers.globals
 
                                     // Obtenemos el vehículo
                                     String vehicleModel = String.Empty;
-                                    NetHandle vehicle = Vehicles.GetVehicleById(vehicleId);
+                                    Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
 
                                     // Cambiamos el dueño del vehículo
-                                    if (vehicle.IsNull)
+                                    if (vehicle == null)
                                     {
                                         VehicleModel vehModel = Vehicles.GetParkedVehicleById(vehicleId);
                                         vehModel.owner = player.Name;
