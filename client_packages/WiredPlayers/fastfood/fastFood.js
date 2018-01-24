@@ -18,7 +18,7 @@ mp.events.add('fastFoodDestinationCheckPoint', (position) => {
 
 mp.events.add('fastFoodDeliverBack', (position) => {
 	// Creamos una marca con la posición del vehículo
-	fastFoodBlip.position = position;
+	fastFoodBlip.setCoords(position);
 });
 
 mp.events.add('fastFoodDeliverFinished', () => {

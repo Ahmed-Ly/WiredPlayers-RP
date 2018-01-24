@@ -3,6 +3,7 @@ const PRICE_HAMBURGER = 10;
 const PRICE_SANDWICH = 5;
 
 let tunningComponents = [];
+let selectedCrimes = [];
 let purchasedAmount = 1;
 let selected = null;
 let drawable = null;
@@ -478,6 +479,118 @@ function populateFastfoodOrders(ordersJson, distancesJson) {
 		
 	// Ordenamos la jerarquía de elementos
 	options.appendChild(deliverButton);
+	options.appendChild(cancelButton);
+}
+
+function populateCrimesMenu(crimesJson) {
+	// Obtenemos el nodo contenedor
+	let header = document.getElementById('header');
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Añadimos el texto de cabecera y obtenemos la lista de delitos
+	let crimesArray = JSON.parse(crimesJson);
+	header.textContent = 'Lista de delitos';
+	selectedCrimes = [];
+	
+	for(let i = 0; i < crimesArray.length; i++) {
+		// Obtenemos el componente
+		let crime = crimesArray[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemAmountContainer = document.createElement('div');
+		let amountTextContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		let itemAmount = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemAmountContainer.classList.add('item-amount-container');
+		amountTextContainer.classList.add('item-amount-desc-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		itemAmount.classList.add('item-amount-description');
+		
+		if(selectedCrimes.indexOf(crime) > -1) {
+			// Marcamos el delito como aplicable
+			itemContainer.classList.add('active-item');
+		}
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = crime.crime;
+		itemPrice.innerHTML = '<b>Multa: </b>' + crime.fine + '$';
+		itemAmount.innerHTML = '<b>Tiempo: </b>' + crime.jail + 'min.';
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(selectedCrimes.indexOf(crime) === -1) {
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el índice seleccionado
+				selectedCrimes.push(crime);
+			} else {
+				// Eliminamos la selección del elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.remove('active-item');
+				
+				// Eliminamos el índice seleccionado
+				selectedCrimes.splice(selectedCrimes.indexOf(crime), 1);
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+		purchaseContainer.appendChild(itemAmountContainer);
+		itemAmountContainer.appendChild(amountTextContainer);
+		amountTextContainer.appendChild(itemAmount);
+	}
+	
+	// Añadimos los botones
+	let applyButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	applyButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	applyButton.textContent = 'Inculpar';
+	cancelButton.textContent = 'Salir';
+	
+	// Ponemos la función para cada elemento
+	applyButton.onclick = (function() {
+		// Entregamos el pedido seleccionado
+		if(selectedCrimes.length > 0) {
+			mp.trigger('applyCrimes', selectedCrimes);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Cerramos la ventana de pedidos
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(applyButton);
 	options.appendChild(cancelButton);
 }
 

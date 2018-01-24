@@ -54,7 +54,7 @@ mp.events.add('showLicenseCheckpoint', (position) => {
 		licenseBlip = mp.blips.new(1, position, {color: 1});
 	} else {
 		// Cambiamos la posición de la marca
-		licenseBlip.position = position;
+		licenseBlip.setCoords(position);
 	}
 });
 

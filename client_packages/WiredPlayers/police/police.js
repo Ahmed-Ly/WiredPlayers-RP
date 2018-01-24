@@ -1,4 +1,27 @@
-﻿let policeControlBrowser = null;
+﻿let crimesJson = null;
+let crimesArray = [];
+
+mp.events.add('showCrimesMenu', (crimes) => {
+	// Guardamos la lista de delitos
+	crimesJson = crimes;
+	
+	// Creamos el menú con la lista de delitos
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCrimesMenu', crimes, new Array()]);
+});
+
+mp.events.add('applyCrimes', (crimes) => {
+	// Guardamos los delitos a aplicar
+	crimesArray = JSON.stringify(crimes);
+	
+	// Eliminamos el menú de delitos
+	mp.events.call('destroyBrowser');
+	
+	// Mostramos la ventana de confirmación
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/crimesConfirm.html', 'populateCrimesConfirmation', crimesArray]);
+});
+
+
+let policeControlBrowser = null;
 let control = "";
 let resolution;
 let crimes = [];

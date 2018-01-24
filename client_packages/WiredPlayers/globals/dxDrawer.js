@@ -221,9 +221,9 @@ mp.events.add('render', () => {
 
 		// Comprobamos si hay que actualizar el dinero
 		if (currentTime - lastTimeFlagChecked > checkFlagEvery) {
-			lastTimeFlagChecked = currentTime;
-			money = player.getVariable('PLAYER_MONEY');
+			money = player.getVariable('PLAYER_MONEY') || 0;
 			moneySize = money.toString().length + 1;
+			lastTimeFlagChecked = currentTime;
 		}
 
 		
