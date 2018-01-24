@@ -881,7 +881,7 @@ namespace WiredPlayers.vehicles
                             // Obtenemos el vehículo
                             vehicle = GetVehicleById(vehicleId);
 
-                            if (!vehicle.IsNull)
+                            if (vehicle != null)
                             {
                                 String model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
                                 String owner = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER);
@@ -913,12 +913,12 @@ namespace WiredPlayers.vehicles
 
                     vehicle = GetVehicleById(vehicleId);
 
-                    if (vehicle.IsNull)
+                    if (vehicle == null)
                     {
                         // Miramos si está aparcado
                         VehicleModel vehicleModel = GetParkedVehicleById(vehicleId);
 
-                        if (vehicle.IsNull)
+                        if (vehicle == null)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
                             return;

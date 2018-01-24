@@ -503,7 +503,7 @@ namespace WiredPlayers.mechanic
                     if (business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
                     {
                         NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
-                        if (!vehicle.IsNull)
+                        if (vehicle != null)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showTunningMenu");

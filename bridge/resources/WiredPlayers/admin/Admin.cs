@@ -202,7 +202,7 @@ namespace WiredPlayers.admin
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 veh = Globals.GetClosestVehicle(player);
-                                if (veh.IsNull)
+                                if (veh == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                                 }
@@ -275,7 +275,7 @@ namespace WiredPlayers.admin
                                             if (arguments.Length == 4)
                                             {
                                                 veh = Globals.GetClosestVehicle(player);
-                                                if (veh.IsNull)
+                                                if (veh == null)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                                                 }
@@ -358,7 +358,7 @@ namespace WiredPlayers.admin
                                             if (arguments.Length == 3)
                                             {
                                                 veh = Globals.GetClosestVehicle(player);
-                                                if (veh.IsNull)
+                                                if (veh == null)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                                                 }
@@ -411,7 +411,7 @@ namespace WiredPlayers.admin
                                             if (arguments.Length == 4)
                                             {
                                                 veh = Globals.GetClosestVehicle(player);
-                                                if (veh.IsNull)
+                                                if (veh == null)
                                                 {
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                                                 }
@@ -470,7 +470,7 @@ namespace WiredPlayers.admin
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 veh = Globals.GetClosestVehicle(player);
-                                if (veh.IsNull)
+                                if (veh == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_VEHICLES_NEAR);
                                 }
