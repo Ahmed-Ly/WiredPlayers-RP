@@ -19,7 +19,6 @@ namespace WiredPlayers.police
         public Police()
         {
             Event.OnResourceStart += OnResourceStart;
-            Event.OnClientEventTrigger += OnClientEventTrigger;
             Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
         }
 
@@ -29,134 +28,12 @@ namespace WiredPlayers.police
             reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
         }
 
-        private void OnClientEventTrigger(Client player, String eventName, params object[] arguments)
-        {
-            if (eventName == "applyCrimesToPlayer")
-            {
-                int fine = 0, jail = 0;
-                String[] crimeList = arguments[0].ToString().Split(',');
-                Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET);
-
-                // Calculamos la multa y tiempo de cárcel
-                for (int i = 0; i < Constants.CRIME_LIST.Count; i++)
-                {
-                    if (crimeList.Contains(Constants.CRIME_LIST.ElementAt(i).crime) == true)
-                    {
-                        fine += Constants.CRIME_LIST.ElementAt(i).fine;
-                        jail += Constants.CRIME_LIST.ElementAt(i).jail;
-                    }
-                }
-
-                // Metemos al jugador en una de las celdas
-                Random random = new Random();
-                NAPI.Data.SetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET, target);
-                NAPI.Entity.SetEntityPosition(target, Constants.JAIL_SPAWNS[random.Next(3)]);
-
-                // Aplicamos la condena
-                int money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY);
-                NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, money - fine);
-                NAPI.Data.SetEntityData(target, EntityData.PLAYER_JAIL_TYPE, Constants.JAIL_TYPE_IC);
-                NAPI.Data.SetEntityData(target, EntityData.PLAYER_JAILED, jail);
-            }
-            else if (eventName == "policeControlSelected")
-            {
-                String policeControl = arguments[0].ToString();
-                if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_LOAD)
-                {
-                    foreach (PoliceControlModel policeControlModel in policeControlList)
-                    {
-                        if (!NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
-                        {
-                            policeControlModel.controlObject = NAPI.Object.CreateObject(policeControlModel.item, policeControlModel.position, policeControlModel.rotation);
-                        }
-                    }
-                }
-                else if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_SAVE)
-                {
-                    List<PoliceControlModel> copiedPoliceControlModels = new List<PoliceControlModel>();
-                    List<PoliceControlModel> deletedPoliceControlModels = new List<PoliceControlModel>();
-                    foreach (PoliceControlModel policeControlModel in policeControlList)
-                    {
-                        if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name != policeControl)
-                        {
-                            if (policeControlModel.name != String.Empty)
-                            {
-                                PoliceControlModel policeControlCopy = policeControlModel;
-                                policeControlCopy.name = policeControl;
-                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
-                                copiedPoliceControlModels.Add(policeControlCopy);
-                            }
-                            else
-                            {
-                                policeControlModel.name = policeControl;
-                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
-                            }
-                        }
-                        else if (!NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
-                        {
-                            Database.DeletePoliceControlItem(policeControlModel.id);
-                            deletedPoliceControlModels.Add(policeControlModel);
-                        }
-                    }
-                    policeControlList.AddRange(copiedPoliceControlModels);
-                    policeControlList = policeControlList.Except(deletedPoliceControlModels).ToList();
-                }
-                else
-                {
-                    foreach (PoliceControlModel policeControlModel in policeControlList)
-                    {
-                        if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
-                        {
-                            NAPI.Entity.DeleteEntity(policeControlModel.controlObject);
-                        }
-                    }
-                    policeControlList.RemoveAll(control => control.name == policeControl);
-                    Database.DeletePoliceControl(policeControl);
-                }
-            }
-            else if (eventName == "policeControlNamed")
-            {
-                String policeControlSource = arguments[0].ToString();
-                String policeControlTarget = arguments[1].ToString();
-                if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_SAVE)
-                {
-                    List<PoliceControlModel> copiedPoliceControlModels = new List<PoliceControlModel>();
-                    List<PoliceControlModel> deletedPoliceControlModels = new List<PoliceControlModel>();
-                    foreach (PoliceControlModel policeControlModel in policeControlList)
-                    {
-                        if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name != policeControlTarget)
-                        {
-                            if (policeControlModel.name != String.Empty)
-                            {
-                                PoliceControlModel policeControlCopy = policeControlModel.Copy();
-                                policeControlModel.controlObject = new NetHandle();
-                                policeControlCopy.name = policeControlTarget;
-                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
-                                copiedPoliceControlModels.Add(policeControlCopy);
-                            }
-                            else
-                            {
-                                policeControlModel.name = policeControlTarget;
-                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
-                            }
-                        }
-                    }
-                    policeControlList.AddRange(copiedPoliceControlModels);
-                }
-                else
-                {
-                    policeControlList.Where(s => s.name == policeControlSource).ToList().ForEach(t => t.name = policeControlTarget);
-                    Database.RenamePoliceControl(policeControlSource, policeControlTarget);
-                }
-            }
-        }
-
         private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HANDCUFFED) == true)
             {
                 // Quitamos las esposas al personaje
-                NetHandle cuff = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HANDCUFFED);
+                GTANetworkAPI.Object cuff = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HANDCUFFED);
                 NAPI.Entity.DetachEntity(cuff);
                 NAPI.Entity.DeleteEntity(cuff);
             }
@@ -182,7 +59,7 @@ namespace WiredPlayers.police
                 if (NAPI.Entity.DoesEntityExist(policeControl.controlObject) && NAPI.Entity.GetEntityPosition(policeControl.controlObject).DistanceTo(player.Position) < 2.0f && policeControl.item == hash)
                 {
                     NAPI.Entity.DeleteEntity(policeControl.controlObject);
-                    policeControl.controlObject = new NetHandle();
+                    policeControl.controlObject = null;
                     break;
                 }
             }
@@ -215,6 +92,130 @@ namespace WiredPlayers.police
                     // Actualizamos la posición para cada policía
                     NAPI.ClientEvent.TriggerClientEvent(police, "updatePoliceReinforces", reinforcesJsonList);
                 }
+            }
+        }
+
+        [RemoteEvent("applyCrimesToPlayer")]
+        public void ApplyCrimesToPlayerEvent(Client player, params object[] arguments)
+        {
+            int fine = 0, jail = 0;
+            String[] crimeList = arguments[0].ToString().Split(',');
+            Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET);
+
+            // Calculamos la multa y tiempo de cárcel
+            for (int i = 0; i < Constants.CRIME_LIST.Count; i++)
+            {
+                if (crimeList.Contains(Constants.CRIME_LIST.ElementAt(i).crime) == true)
+                {
+                    fine += Constants.CRIME_LIST.ElementAt(i).fine;
+                    jail += Constants.CRIME_LIST.ElementAt(i).jail;
+                }
+            }
+
+            // Metemos al jugador en una de las celdas
+            Random random = new Random();
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET, target);
+            NAPI.Entity.SetEntityPosition(target, Constants.JAIL_SPAWNS[random.Next(3)]);
+
+            // Aplicamos la condena
+            int money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY);
+            NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, money - fine);
+            NAPI.Data.SetEntityData(target, EntityData.PLAYER_JAIL_TYPE, Constants.JAIL_TYPE_IC);
+            NAPI.Data.SetEntityData(target, EntityData.PLAYER_JAILED, jail);
+        }
+
+        [RemoteEvent("policeControlSelected")]
+        public void PoliceControlSelectedEvent(Client player, params object[] arguments)
+        {
+            String policeControl = arguments[0].ToString();
+            if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_LOAD)
+            {
+                foreach (PoliceControlModel policeControlModel in policeControlList)
+                {
+                    if (!NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
+                    {
+                        policeControlModel.controlObject = NAPI.Object.CreateObject(policeControlModel.item, policeControlModel.position, policeControlModel.rotation);
+                    }
+                }
+            }
+            else if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_SAVE)
+            {
+                List<PoliceControlModel> copiedPoliceControlModels = new List<PoliceControlModel>();
+                List<PoliceControlModel> deletedPoliceControlModels = new List<PoliceControlModel>();
+                foreach (PoliceControlModel policeControlModel in policeControlList)
+                {
+                    if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name != policeControl)
+                    {
+                        if (policeControlModel.name != String.Empty)
+                        {
+                            PoliceControlModel policeControlCopy = policeControlModel;
+                            policeControlCopy.name = policeControl;
+                            policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
+                            copiedPoliceControlModels.Add(policeControlCopy);
+                        }
+                        else
+                        {
+                            policeControlModel.name = policeControl;
+                            policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                        }
+                    }
+                    else if (!NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
+                    {
+                        Database.DeletePoliceControlItem(policeControlModel.id);
+                        deletedPoliceControlModels.Add(policeControlModel);
+                    }
+                }
+                policeControlList.AddRange(copiedPoliceControlModels);
+                policeControlList = policeControlList.Except(deletedPoliceControlModels).ToList();
+            }
+            else
+            {
+                foreach (PoliceControlModel policeControlModel in policeControlList)
+                {
+                    if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name == policeControl)
+                    {
+                        NAPI.Entity.DeleteEntity(policeControlModel.controlObject);
+                    }
+                }
+                policeControlList.RemoveAll(control => control.name == policeControl);
+                Database.DeletePoliceControl(policeControl);
+            }
+        }
+
+        [RemoteEvent("policeControlNamed")]
+        public void PoliceControlNamedEvent(Client player, params object[] arguments)
+        {
+            String policeControlSource = arguments[0].ToString();
+            String policeControlTarget = arguments[1].ToString();
+            if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_SAVE)
+            {
+                List<PoliceControlModel> copiedPoliceControlModels = new List<PoliceControlModel>();
+                List<PoliceControlModel> deletedPoliceControlModels = new List<PoliceControlModel>();
+                foreach (PoliceControlModel policeControlModel in policeControlList)
+                {
+                    if (NAPI.Entity.DoesEntityExist(policeControlModel.controlObject) && policeControlModel.name != policeControlTarget)
+                    {
+                        if (policeControlModel.name != String.Empty)
+                        {
+                            PoliceControlModel policeControlCopy = policeControlModel.Copy();
+                            policeControlModel.controlObject = null;
+                            policeControlCopy.name = policeControlTarget;
+                            policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
+                            copiedPoliceControlModels.Add(policeControlCopy);
+                        }
+                        else
+                        {
+                            policeControlModel.name = policeControlTarget;
+                            policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                        }
+                    }
+                }
+                policeControlList.AddRange(copiedPoliceControlModels);
+            }
+            else
+            {
+                policeControlList.Where(s => s.name == policeControlSource).ToList().ForEach(t => t.name = policeControlTarget);
+                Database.RenamePoliceControl(policeControlSource, policeControlTarget);
             }
         }
 
@@ -440,7 +441,7 @@ namespace WiredPlayers.police
                     {
                         String playerMessage = String.Format(Messages.INF_CUFFED, target.Name);
                         String targetMessage = String.Format(Messages.INF_CUFFED_BY, player.Name);
-                        NetHandle cuff = NAPI.Object.CreateObject(-1281059971, new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f));
+                        GTANetworkAPI.Object cuff = NAPI.Object.CreateObject(-1281059971, new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f));
                         NAPI.Entity.AttachEntityToEntity(cuff, target, "IK_R_Hand", new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f));
                         NAPI.Player.PlayPlayerAnimation(target, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.OnlyAnimateUpperBody | Constants.AnimationFlags.AllowPlayerControl), "mp_arresting", "idle");
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
@@ -455,7 +456,7 @@ namespace WiredPlayers.police
                     {
                         String playerMessage = String.Format(Messages.INF_UNCUFFED, target.Name);
                         String targetMessage = String.Format(Messages.INF_UNCUFFED_BY, player.Name);
-                        NetHandle cuff = NAPI.Data.GetEntityData(target, EntityData.PLAYER_HANDCUFFED);
+                        GTANetworkAPI.Object cuff = NAPI.Data.GetEntityData(target, EntityData.PLAYER_HANDCUFFED);
                         NAPI.Entity.DetachEntity(cuff);
                         NAPI.Entity.DeleteEntity(cuff);
                         NAPI.Player.StopPlayerAnimation(target);

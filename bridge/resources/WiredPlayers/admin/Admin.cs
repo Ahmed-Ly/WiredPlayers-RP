@@ -689,7 +689,7 @@ namespace WiredPlayers.admin
                                         business.locked = false;
                                         business.name = "Negocio";
                                         business.id = Database.AddNewBusiness(business);
-                                        business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 0, new Color(255, 255, 255), false, business.dimension);
+                                        business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, business.dimension);
                                         Business.businessList.Add(business);
                                     }
                                     else
@@ -944,7 +944,7 @@ namespace WiredPlayers.admin
                             house.rental = 0;
                             house.locked = true;
                             house.id = Database.AddHouse(house);
-                            house.houseLabel = NAPI.TextLabel.CreateTextLabel(House.GetHouseLabelText(house), house.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                            house.houseLabel = NAPI.TextLabel.CreateTextLabel(House.GetHouseLabelText(house), house.position, 20.0f, 0.75f, 4, new Color(255, 255, 255));
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_HOUSE_CREATED);
                             House.houseList.Add(house);
                         }
@@ -1197,7 +1197,7 @@ namespace WiredPlayers.admin
                                         parking.type = type;
                                         parking.position = player.Position;
                                         parking.id = Database.AddParking(parking);
-                                        parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                                        parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 4, new Color(255, 255, 255));
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_PARKING_CREATED);
                                         Parking.parkingList.Add(parking);
                                     }
@@ -1249,7 +1249,7 @@ namespace WiredPlayers.admin
                                         {
                                             parking.capacity = slots;
                                             Database.UpdateParking(parking);
-                                            parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 0, new Color(255, 255, 255));
+                                            parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(Parking.GetParkingLabelText(parking.type), parking.position, 20.0f, 0.75f, 4, new Color(255, 255, 255));
 
                                             // Mandamos el mensaje al administrador
                                             String message = String.Format(Messages.ADM_PARKING_SLOTS_MODIFIED, slots);
@@ -1557,7 +1557,7 @@ namespace WiredPlayers.admin
                 // Guardamos los vehículos
                 List<VehicleModel> vehicleList = new List<VehicleModel>();
 
-                foreach (NetHandle vehicle in NAPI.Pools.GetAllVehicles())
+                foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
                 {
                     if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == 0 && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKING) == 0)
                     {
@@ -1820,7 +1820,7 @@ namespace WiredPlayers.admin
                 }
 
                 // Miramos si tiene algún vehículo en propiedad
-                foreach (NetHandle vehicle in NAPI.Pools.GetAllVehicles())
+                foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
                 {
                     if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == target.Name)
                     {

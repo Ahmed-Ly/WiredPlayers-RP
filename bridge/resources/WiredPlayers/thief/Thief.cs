@@ -28,11 +28,11 @@ namespace WiredPlayers.thief
             foreach(Vector3 pawnShop in Constants.PAWN_SHOP)
             {
                 // Creación de la tienda de empeños
-                NAPI.TextLabel.CreateTextLabel("Tienda de empeños", pawnShop, 10.0f, 0.5f, 0, new Color(255, 255, 255), false, 0);
+                NAPI.TextLabel.CreateTextLabel("Tienda de empeños", pawnShop, 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
             }
         }
 
-        private void OnPlayerExitVehicle(Client player, NetHandle vehicle)
+        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_THIEF)
             {
@@ -83,7 +83,7 @@ namespace WiredPlayers.thief
             {
                 Client player = (Client)playerObject;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LOCKPICKING);
+                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LOCKPICKING);
 
                 NAPI.Vehicle.SetVehicleLocked(vehicle, false);
                 NAPI.Player.StopPlayerAnimation(player);
@@ -113,7 +113,7 @@ namespace WiredPlayers.thief
             {
                 Client player = (Client)playerObject;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOTWIRING);
+                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOTWIRING);
 
                 NAPI.Vehicle.SetVehicleEngineStatus(vehicle, true);
                 NAPI.Player.StopPlayerAnimation(player);

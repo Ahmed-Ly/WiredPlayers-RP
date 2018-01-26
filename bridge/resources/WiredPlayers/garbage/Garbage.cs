@@ -16,11 +16,11 @@ namespace WiredPlayers.garbage
         {
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-            Event.OnEntityEnterCheckpoint += OnEntityEnterCheckpoint;
+            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
-        private void OnPlayerEnterVehicle(Client player, NetHandle vehicle, sbyte seat)
+        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
             if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.JOB_GARBAGE + Constants.MAX_FACTION_VEHICLES)
             {
@@ -94,7 +94,7 @@ namespace WiredPlayers.garbage
                                     NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
 
                                     // Añadimos el objeto basura
-                                    NetHandle trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
+                                    GTANetworkAPI.Object trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, trashBag);
                                 }
                                 else
@@ -114,7 +114,7 @@ namespace WiredPlayers.garbage
             }
         }
 
-        private void OnPlayerExitVehicle(Client player, NetHandle vehicle)
+        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_VEHICLE) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.JOB_GARBAGE + Constants.MAX_FACTION_VEHICLES)
             {
@@ -134,11 +134,11 @@ namespace WiredPlayers.garbage
             }
         }
 
-        private void OnEntityEnterCheckpoint(Checkpoint checkpoint, NetHandle entity)
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
         {
-            if (NAPI.Entity.GetEntityType(entity) == EntityType.Player && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Data.GetEntityData(entity, EntityData.PLAYER_JOB) == Constants.JOB_GARBAGE)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_GARBAGE)
             {
-                Client player = NAPI.Player.GetPlayerFromHandle(entity);
+                // Obtenemos el checkpoint de basura
                 Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
 
                 if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER && garbageCheckpoint == checkpoint)
@@ -173,7 +173,7 @@ namespace WiredPlayers.garbage
             }
         }
 
-        private void RespawnGarbageVehicle(NetHandle vehicle)
+        private void RespawnGarbageVehicle(Vehicle vehicle)
         {
             NAPI.Vehicle.RepairVehicle(vehicle);
             NAPI.Entity.SetEntityPosition(vehicle, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
@@ -187,7 +187,7 @@ namespace WiredPlayers.garbage
                 Client player = (Client)playerObject;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
-                NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
 
                 // Respawneamos el vehículo
                 RespawnGarbageVehicle(vehicle);
@@ -224,7 +224,7 @@ namespace WiredPlayers.garbage
                 Client driver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
                 // Recogemos la bolsa de basura
-                NetHandle trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
+                GTANetworkAPI.Object trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
                 NAPI.Player.StopPlayerAnimation(player);
                 NAPI.Entity.DeleteEntity(trashBag);
 
@@ -296,7 +296,7 @@ namespace WiredPlayers.garbage
 
         private void FinishGarbageRoute(Client driver, bool canceled = false)
         {
-            NetHandle vehicle = NAPI.Player.GetPlayerVehicle(driver);
+            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(driver));
             Client partner = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_PARTNER);
             
             // Respawneamos el vehículo
@@ -423,7 +423,7 @@ namespace WiredPlayers.garbage
                             if(partner != player)
                             {
                                 // Tiene un compañero asignado
-                                NetHandle trashBag = new NetHandle();
+                                GTANetworkAPI.Object trashBag = null;
                                 Checkpoint garbageCheckpoint = null;
 
                                 if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)

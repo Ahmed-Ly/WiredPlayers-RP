@@ -16,10 +16,9 @@ namespace WiredPlayers.mechanic
 
         public Mechanic()
         {
-            Event.OnClientEventTrigger += OnClientEventTrigger;
         }
 
-        public static void AddTunningToVehicle(NetHandle vehicle)
+        public static void AddTunningToVehicle(Vehicle vehicle)
         {
             foreach(TunningModel tunning in tunningList)
             {
@@ -42,7 +41,7 @@ namespace WiredPlayers.mechanic
             }
 
             // Miramos si tiene una grúa cerca
-            foreach(NetHandle vehicle in NAPI.Pools.GetAllVehicles())
+            foreach(Vehicle vehicle in NAPI.Pools.GetAllVehicles())
             {
                 VehicleHash vehicleHash = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);
                 if (vehicleHash == VehicleHash.TowTruck || vehicleHash == VehicleHash.TowTruck2)
@@ -68,250 +67,255 @@ namespace WiredPlayers.mechanic
             return tunning;
         }
 
-        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
+        [RemoteEvent("repaintVehicle")]
+        public void RepaintVehicleEvent(Client player, params object[] arguments)
         {
-            // Declaramos la variable de vehículo
-            NetHandle vehicle = new NetHandle();
-            ItemModel item = null;
-            int playerId = 0;
-            int vehicleId = 0;
+            int colorType = Int32.Parse(arguments[0].ToString());
+            String firstColor = arguments[1].ToString();
+            String secondColor = arguments[2].ToString();
+            int pearlescentColor = Int32.Parse(arguments[3].ToString());
+            int vehiclePaid = Int32.Parse(arguments[4].ToString());
+            Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+
+            // Miramos el tipo de color
+            switch (colorType)
+            {
+                case 0:
+                    // Color predefinido
+                    NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(firstColor));
+                    NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(secondColor));
+
+                    // Miramos si lleva nacarado
+                    if (pearlescentColor >= 0)
+                    {
+                        NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, pearlescentColor);
+                    }
+                    break;
+                case 1:
+                    // Color personalizado
+                    String[] firstColorArray = firstColor.Split(',');
+                    String[] secondColorArray = secondColor.Split(',');
+                    NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(firstColorArray[0]), Int32.Parse(firstColorArray[1]), Int32.Parse(firstColorArray[2]));
+                    NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondColorArray[0]), Int32.Parse(secondColorArray[1]), Int32.Parse(secondColorArray[2]));
+                    break;
+            }
+
+            // Miramos si ha aceptado
+            if (vehiclePaid > 0)
+            {
+                // Miramos si tiene suficientes productos
+                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                ItemModel item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+
+                if (item != null && item.amount >= 250)
+                {
+                    // Cargamos la facción del vehículo
+                    int vehicleFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
+
+                    // Buscamos a alguien con llaves del vehículo
+                    foreach (Client target in NAPI.Pools.GetAllPlayers())
+                    {
+                        if (Vehicles.HasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
+                        {
+                            if (target.Position.DistanceTo(player.Position) < 4.0f)
+                            {
+                                // Mandamos el cambio de pintura al jugador objetivo
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_VEHICLE, vehicle);
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_COLOR_TYPE, colorType);
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_FIRST_COLOR, firstColor);
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_SECOND_COLOR, secondColor);
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_PEARLESCENT, pearlescentColor);
+                                NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, vehiclePaid);
+                                NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRODUCTS, 250);
+
+                                // Enviamos los mensajes a ambos jugadores
+                                String playerMessage = String.Format(Messages.INF_MECHANIC_REPAINT_OFFER, target.Name, vehiclePaid);
+                                String targetMessage = String.Format(Messages.INF_MECHANIC_REPAINT_ACCEPT, player.Name, vehiclePaid);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
+                                return;
+                            }
+                        }
+                    }
+
+                    // Mandamos el mensaje de que el jugador está lejos
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_TOO_FAR);
+                }
+                else
+                {
+                    String message = String.Format(Messages.ERR_NOT_REQUIRED_PRODUCTS, 250);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
+                }
+            }
+        }
+
+        [RemoteEvent("cancelVehicleRepaint")]
+        public void CancelVehicleRepaintEvent(Client player, params object[] arguments)
+        {
+            // Obtenemos el vehículo
+            Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+
+            // Obtenemos los antiguos colores
+            int vehicleColorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
+            String primaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
+            String secondaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
+            int vehiclePearlescentColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
+
+            if (vehicleColorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
+            {
+                NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(primaryVehicleColor));
+                NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(secondaryVehicleColor));
+                NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, vehiclePearlescentColor);
+            }
+            else
+            {
+                String[] primaryColor = primaryVehicleColor.Split(',');
+                String[] secondaryColor = secondaryVehicleColor.Split(',');
+                NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(primaryColor[0]), Int32.Parse(primaryColor[1]), Int32.Parse(primaryColor[2]));
+                NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondaryColor[0]), Int32.Parse(secondaryColor[1]), Int32.Parse(secondaryColor[2]));
+            }
+        }
+
+        [RemoteEvent("calculateTunningCost")]
+        public void CalculateTunningCostEvent(Client player, params object[] arguments)
+        {
+            // Inicializamos productos
             int totalProducts = 0;
 
-            switch (eventName)
+            // Obtenemos el vehículo
+            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+
+            for (int i = 0; i < 49; i++)
             {
-                case "repaintVehicle":
-                    int colorType = Int32.Parse(arguments[0].ToString());
-                    String firstColor = arguments[1].ToString();
-                    String secondColor = arguments[2].ToString();
-                    int pearlescentColor = Int32.Parse(arguments[3].ToString());
-                    int vehiclePaid = Int32.Parse(arguments[4].ToString());
-                    vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+                // Obtenemos el componente
+                int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
 
-                    // Miramos el tipo de color
-                    switch (colorType)
+                if (vehicleMod > 0)
+                {
+                    TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
+                    if (tunningModel == null)
                     {
-                        case 0:
-                            // Color predefinido
-                            NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(firstColor));
-                            NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(secondColor));
-
-                            // Miramos si lleva nacarado
-                            if(pearlescentColor >= 0)
-                            {
-                                NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, pearlescentColor);
-                            }
-                            break;
-                        case 1:
-                            // Color personalizado
-                            String[] firstColorArray = firstColor.Split(',');
-                            String[] secondColorArray = secondColor.Split(',');
-                            NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(firstColorArray[0]), Int32.Parse(firstColorArray[1]), Int32.Parse(firstColorArray[2]));
-                            NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondColorArray[0]), Int32.Parse(secondColorArray[1]), Int32.Parse(secondColorArray[2]));
-                            break;
+                        totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
                     }
-                    
-                    // Miramos si ha aceptado
-                    if(vehiclePaid > 0)
+                }
+            }
+
+            // Enviamos al jugador el precio en productos
+            String priceMessage = String.Format(Messages.INF_TUNNING_PRODUCTS, totalProducts);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + priceMessage);
+        }
+
+        [RemoteEvent("modifyVehicle")]
+        public void ModifyVehicleEvent(Client player, params object[] arguments)
+        {
+            int slot = Int32.Parse(arguments[0].ToString());
+            int component = Int32.Parse(arguments[1].ToString());
+            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+
+            if (component > 0)
+            {
+                NAPI.Vehicle.SetVehicleMod(vehicle, slot, component);
+            }
+            else
+            {
+                NAPI.Vehicle.RemoveVehicleMod(vehicle, slot);
+            }
+        }
+
+        [RemoteEvent("cancelVehicleModification")]
+        public void CancelVehicleModificationEvent(Client player, params object[] arguments)
+        {
+            // Obtenemos el vehículo
+            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+
+            // Obtenemos el gasto
+            for (int i = 0; i < 49; i++)
+            {
+                // Obtenemos el componente
+                int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
+                TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
+
+                if (tunningModel == null)
+                {
+                    NAPI.Vehicle.RemoveVehicleMod(vehicle, i);
+                }
+                else
+                {
+                    NAPI.Vehicle.SetVehicleMod(vehicle, i, vehicleMod);
+                }
+            }
+        }
+
+        [RemoteEvent("confirmVehicleModification")]
+        public void ConfirmVehicleModificationEvent(Client player, params object[] arguments)
+        {
+            // Inicializamos productos
+            int totalProducts = 0;
+
+            // Obtenemos el vehículo
+            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+
+            // Obtenemos los productos del jugador
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+            ItemModel item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
+
+            // Obtenemos el gasto
+            for (int i = 0; i < 49; i++)
+            {
+                // Obtenemos el componente
+                int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
+
+                if (vehicleMod > 0)
+                {
+                    TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
+                    if (tunningModel == null)
                     {
-                        // Miramos si tiene suficientes productos
-                        playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
-
-                        if(item != null && item.amount >= 250)
-                        {
-                            // Cargamos la facción del vehículo
-                            int vehicleFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
-
-                            // Buscamos a alguien con llaves del vehículo
-                            foreach (Client target in NAPI.Pools.GetAllPlayers())
-                            {
-                                if (Vehicles.HasPlayerVehicleKeys(target, vehicle) || (vehicleFaction > 0 && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == vehicleFaction))
-                                {
-                                    if (target.Position.DistanceTo(player.Position) < 4.0f)
-                                    {
-                                        // Mandamos el cambio de pintura al jugador objetivo
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_VEHICLE, vehicle);
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_COLOR_TYPE, colorType);
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_FIRST_COLOR, firstColor);
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_SECOND_COLOR, secondColor);
-                                        NAPI.Data.SetEntityData(target, EntityData.PLAYER_REPAINT_PEARLESCENT, pearlescentColor);
-                                        NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, vehiclePaid);
-                                        NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRODUCTS, 250);
-
-                                        // Enviamos los mensajes a ambos jugadores
-                                        String playerMessage = String.Format(Messages.INF_MECHANIC_REPAINT_OFFER, target.Name, vehiclePaid);
-                                        String targetMessage = String.Format(Messages.INF_MECHANIC_REPAINT_ACCEPT, player.Name, vehiclePaid);
-                                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
-                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
-                                        return;
-                                    }
-                                }
-                            }
-
-                            // Mandamos el mensaje de que el jugador está lejos
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_TOO_FAR);
-                        }
-                        else
-                        {
-                            String message = String.Format(Messages.ERR_NOT_REQUIRED_PRODUCTS, 250);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
-                        }
+                        totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
                     }
-                    break;
-                case "cancelVehicleRepaint":
-                    // Obtenemos el vehículo
-                    vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+                }
+            }
 
-                    // Obtenemos los antiguos colores
-                    int vehicleColorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
-                    String primaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
-                    String secondaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
-                    int vehiclePearlescentColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
+            if (item != null && item.amount >= totalProducts)
+            {
+                for (int i = 0; i < 49; i++)
+                {
+                    // Obtenemos el componente
+                    int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
 
-                    if (vehicleColorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
+                    if (vehicleMod > 0)
                     {
-                        NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(primaryVehicleColor));
-                        NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(secondaryVehicleColor));
-                        NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, vehiclePearlescentColor);
-                    }
-                    else
-                    {
-                        String[] primaryColor = primaryVehicleColor.Split(',');
-                        String[] secondaryColor = secondaryVehicleColor.Split(',');
-                        NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(primaryColor[0]), Int32.Parse(primaryColor[1]), Int32.Parse(primaryColor[2]));
-                        NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondaryColor[0]), Int32.Parse(secondaryColor[1]), Int32.Parse(secondaryColor[2]));
-                    }
-                    break;
-                case "calculateTunningCost":
-                    // Inicializamos productos
-                    totalProducts = 0;
-
-                    // Obtenemos el vehículo
-                    vehicle = NAPI.Player.GetPlayerVehicle(player);
-                    vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-
-                    for (int i = 0; i < 49; i++)
-                    {
-                        // Obtenemos el componente
-                        int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
-
-                        if (vehicleMod > 0)
-                        {
-                            TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
-                            if(tunningModel == null)
-                            {
-                                totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
-                            }
-                        }
-                    }
-
-                    // Enviamos al jugador el precio en productos
-                    String priceMessage = String.Format(Messages.INF_TUNNING_PRODUCTS, totalProducts);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + priceMessage);
-                    break;
-                case "modifyVehicle":
-                    int slot = Int32.Parse(arguments[0].ToString());
-                    int component = Int32.Parse(arguments[1].ToString());
-                    vehicle = NAPI.Player.GetPlayerVehicle(player);
-                    if (component > 0)
-                    {
-                        NAPI.Vehicle.SetVehicleMod(vehicle, slot, component);
-                    }
-                    else
-                    {
-                        NAPI.Vehicle.RemoveVehicleMod(vehicle, slot);
-                    }
-                    break;
-                case "cancelVehicleModification":
-                    // Obtenemos el vehículo
-                    vehicle = NAPI.Player.GetPlayerVehicle(player);
-                    vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-
-                    // Obtenemos el gasto
-                    for (int i = 0; i < 49; i++)
-                    {
-                        // Obtenemos el componente
-                        int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
                         TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
-
                         if (tunningModel == null)
                         {
-                            NAPI.Vehicle.RemoveVehicleMod(vehicle, i);
-                        }
-                        else
-                        {
-                            NAPI.Vehicle.SetVehicleMod(vehicle, i, vehicleMod);
-                        }
-                    }
-                    break;
-                case "confirmVehicleModification":
-                    // Inicializamos productos
-                    totalProducts = 0;
-
-                    // Obtenemos el vehículo
-                    vehicle = NAPI.Player.GetPlayerVehicle(player);
-                    vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-
-                    // Obtenemos los productos del jugador
-                    playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
-
-                    // Obtenemos el gasto
-                    for (int i = 0; i < 49; i++)
-                    {
-                        // Obtenemos el componente
-                        int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
-
-                        if (vehicleMod > 0)
-                        {
-                            TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
-                            if (tunningModel == null)
-                            {
-                                totalProducts += Constants.TUNNING_PRICE_LIST.Where(x => x.slot == i).First().products;
-                            }
+                            // Añadimos la pieza
+                            tunningModel = new TunningModel();
+                            tunningModel.slot = i;
+                            tunningModel.component = vehicleMod;
+                            tunningModel.vehicle = vehicleId;
+                            tunningModel.id = Database.AddTunning(tunningModel);
+                            tunningList.Add(tunningModel);
                         }
                     }
+                }
 
-                    if (item != null && item.amount >= totalProducts)
-                    {
-                        for (int i = 0; i < 49; i++)
-                        {
-                            // Obtenemos el componente
-                            int vehicleMod = NAPI.Vehicle.GetVehicleMod(vehicle, i);
+                // Descontamos los productos
+                item.amount -= totalProducts;
+                Database.UpdateItem(item);
 
-                            if (vehicleMod > 0)
-                            {
-                                TunningModel tunningModel = GetVehicleTunningComponent(vehicleId, i, vehicleMod);
-                                if (tunningModel == null)
-                                {
-                                    // Añadimos la pieza
-                                    tunningModel = new TunningModel();
-                                    tunningModel.slot = i;
-                                    tunningModel.component = vehicleMod;
-                                    tunningModel.vehicle = vehicleId;
-                                    tunningModel.id = Database.AddTunning(tunningModel);
-                                    tunningList.Add(tunningModel);
-                                }
-                            }
-                        }
+                // Cerramos la ventana de tunning
+                NAPI.ClientEvent.TriggerClientEvent(player, "closeTunningMenu");
 
-                        // Descontamos los productos
-                        item.amount -= totalProducts;
-                        Database.UpdateItem(item);
-
-                        // Cerramos la ventana de tunning
-                        NAPI.ClientEvent.TriggerClientEvent(player, "closeTunningMenu");
-
-                        // Mandamos el mensaje
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_TUNNING);
-                    }
-                    else
-                    {
-                        String message = String.Format(Messages.ERR_NOT_REQUIRED_PRODUCTS, totalProducts);
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
-                    }
-                    break;
+                // Mandamos el mensaje
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_TUNNING);
+            }
+            else
+            {
+                String message = String.Format(Messages.ERR_NOT_REQUIRED_PRODUCTS, totalProducts);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
             }
         }
         

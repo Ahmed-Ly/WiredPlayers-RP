@@ -10,7 +10,7 @@ namespace WiredPlayers.model
         public int item { get; internal set; }
         public Vector3 position { get; internal set; }
         public Vector3 rotation { get; internal set; }
-        public NetHandle controlObject { get; internal set; }
+        public GTANetworkAPI.Object controlObject { get; internal set; }
 
         public PoliceControlModel() { }
 

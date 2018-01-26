@@ -23,10 +23,10 @@ namespace WiredPlayers.emergency
             Event.OnUpdate += OnUpdateHandler;
         }
 
-        private void OnPlayerDeathHandler(Client player, NetHandle entityKiller, uint weapon, CancelEventArgs cancel)
+        private void OnPlayerDeathHandler(Client player, Client killer, uint weapon, CancelEventArgs cancel)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-            DeathModel death = new DeathModel(player, entityKiller, weapon);
+            DeathModel death = new DeathModel(player, killer, weapon);
 
             // Creamos las variables para dar el aviso
             Vector3 deathPosition = null;
@@ -101,7 +101,7 @@ namespace WiredPlayers.emergency
             try
             {
                 Client player = ((DeathModel)death).player;
-                NetHandle entityKiller = ((DeathModel)death).entityKiller;
+                Client killer = ((DeathModel)death).killer;
                 uint weapon = ((DeathModel)death).weapon;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 int totalSeconds = Globals.GetTotalSeconds();
@@ -123,15 +123,8 @@ namespace WiredPlayers.emergency
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, true);
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
 
-                if (entityKiller != null && NAPI.Entity.GetEntityType(entityKiller) == EntityType.Player)
-                {
-                    int killerId = NAPI.Data.GetEntityData(entityKiller, EntityData.PLAYER_SQL_ID);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
-                }
-                else
-                {
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, -1);
-                }
+                int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_SQL_ID);
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
                 NAPI.Entity.SetEntityInvincible(player, true);
                 NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);

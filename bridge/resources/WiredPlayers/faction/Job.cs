@@ -41,8 +41,8 @@ namespace WiredPlayers.faction
             
             foreach (JobPickModel job in jobList)
             {
-                NAPI.TextLabel.CreateTextLabel("/empleo", job.position, 10.0f, 0.5f, 0, new Color(255, 255, 153), false, 0);
-                NAPI.TextLabel.CreateTextLabel("Escribe el comando para obtener más información del empleo", new Vector3(job.position.X, job.position.Y, job.position.Z - 0.1f), 10.0f, 0.5f, 0, new Color(0, 0, 0), false, 0);
+                NAPI.TextLabel.CreateTextLabel("/empleo", job.position, 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
+                NAPI.TextLabel.CreateTextLabel("Escribe el comando para obtener más información del empleo", new Vector3(job.position.X, job.position.Y, job.position.Z - 0.1f), 10.0f, 0.5f, 4, new Color(0, 0, 0), false, 0);
             }
         }
 

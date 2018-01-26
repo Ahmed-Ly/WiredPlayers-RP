@@ -9,7 +9,7 @@ namespace WiredPlayers.model
         public uint house { get; internal set; }
         public Vector3 position { get; internal set; }
         public Vector3 rotation { get; internal set; }
-        public NetHandle handle { get; internal set; }
+        public Object handle { get; internal set; }
 
         public FurnitureModel() { }
     }

@@ -16,7 +16,6 @@ namespace WiredPlayers.login
         public Login()
         {
             Event.OnPlayerConnected += OnPlayerConnected;
-            Event.OnClientEventTrigger += OnClientEventTrigger;
             Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
@@ -96,153 +95,6 @@ namespace WiredPlayers.login
 
             // Cancelamos el spawn automático
             cancel.Spawn = false;
-        }
-        
-        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
-        {
-            // Inicializamos las variables
-            String forumName = String.Empty;
-            String password = String.Empty;
-            String pedModel = String.Empty;
-            PlayerModel playerModel = null;
-            SkinModel skinModel = null;
-            PedHash pedHash;
-
-            switch (eventName)
-            {
-                case "registerAccount":
-                    forumName = (String)arguments[0];
-                    password = (String)arguments[1];
-                    NAPI.Player.FreezePlayer(player, false);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_ACCOUNT_REGISTER);
-                    break;
-                case "loginAccount":
-                    password = (String)arguments[0];
-                    bool login = Database.LoginAccount(player.SocialClubName, password);
-                    if (login)
-                    {
-                        // Borramos el timer de la lista
-                        if (loginTimerList.TryGetValue(player.SocialClubName, out Timer loginTimer) == true)
-                        {
-                            loginTimer.Dispose();
-                            loginTimerList.Remove(player.SocialClubName);
-                        }
-
-                        NAPI.Player.FreezePlayer(player, false);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "clearLoginWindow");
-                    }
-                    else
-                    {
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showLoginError");
-                    }
-                    break;
-                case "getPlayerCharacters":
-                    List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
-                    String jsonList = NAPI.Util.ToJson(playerList);
-                    NAPI.Player.FreezePlayer(player, true);
-                    NAPI.Player.StopPlayerAnimation(player);
-                    NAPI.Player.SetPlayerDefaultClothes(player);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayersMenu", jsonList);
-                    break;
-                case "unfreezePlayer":
-                    NAPI.Player.FreezePlayer(player, false);
-                    break;
-                case "changeCharacterSex":
-                    pedModel = arguments[0].ToString() == "1" ? Constants.FEMALE_PED_MODEL : Constants.MALE_PED_MODEL;
-                    pedHash = NAPI.Util.PedNameToModel(pedModel);
-                    NAPI.Player.SetPlayerSkin(player, pedHash);
-
-                    // Eliminamos la ropa
-                    NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
-                    NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
-                    NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
-                    break;
-                case "createCharacter":
-                    // Recuperamos el nombre y edad
-                    String playerName = arguments[0].ToString();
-                    int playerAge = Int32.Parse(arguments[1].ToString());
-
-                    playerModel = new PlayerModel();
-                    skinModel = (SkinModel) NAPI.Util.FromJson(arguments[2].ToString());
-
-                    // Generación del modelo del personaje
-                    playerModel.realName = playerName;
-                    playerModel.age = playerAge;
-                    playerModel.sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
-                    
-                    // Generación del modelo del personaje
-                    PopulateCharacterSkin(player, skinModel);
-
-                    int playerId = Database.CreateCharacter(player, playerModel, skinModel);
-                    if (playerId > 0)
-                    {
-                        InitializePlayerData(player);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, playerId);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, playerName);
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, playerAge);
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SPAWN_POS, new Vector3(200.6641f, -932.0939f, 30.6868f));
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 0.0f));
-                        Database.UpdateLastCharacter(player.SocialClubName, playerId);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "characterCreatedSuccessfully");
-                        NAPI.Player.FreezePlayer(player, false);
-                    }
-                    break;
-                case "setCharacterIntoCreator":
-                    // Cambiamos el skin del personaje al por defecto
-                    NAPI.Player.SetPlayerSkin(player, PedHash.FreemodeMale01);
-
-                    // Eliminamos la ropa
-                    NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
-                    NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
-                    NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
-
-                    // Establecemos su posición
-                    NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 180.0f));
-                    NAPI.Entity.SetEntityPosition(player, new Vector3(152.3787f, -1000.644f, -99f));
-
-                    // Aplicamos la animación para que se esté quieto
-                    NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.StopOnLastFrame), "mp_ped_interaction", "hugs_guy_a");
-
-                    // Cargamos el menú de edición
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showCharacterCreationMenu");
-                    break;
-                case "loadCharacter":
-                    playerModel = Database.LoadCharacterInformationByName(arguments[0].ToString());
-                    skinModel = Database.GetCharacterSkin(playerModel.id);
-
-                    // Carga de skin hombre/mujer
-                    pedModel = playerModel.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
-                    pedHash = NAPI.Util.PedNameToModel(pedModel);
-                    NAPI.Player.SetPlayerName(player, playerModel.realName);
-                    NAPI.Player.SetPlayerSkin(player, pedHash);
-
-                    // Cargamos los datos básicos del personaje
-                    LoadCharacterData(player, playerModel);
-
-                    // Generación del modelo del personaje
-                    PopulateCharacterSkin(player, skinModel);
-
-                    // Generación de la ropa del personaje
-                    Globals.PopulateCharacterClothes(player);
-
-                    // Añadimos la vida y chaleco
-                    NAPI.Player.SetPlayerHealth(player, playerModel.health);
-                    NAPI.Player.SetPlayerArmor(player, playerModel.armor);
-
-                    Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
-                    NAPI.Player.FreezePlayer(player, false);
-                    break;
-                case "getPlayerCustomSkin":
-                    Client target = (Client)arguments[0];
-
-                    SkinModel targetCustomSkin = GetPlayerCustomSkin(target);
-                    int targetId = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
-                    List<TattooModel> targetTattooList = Globals.GetPlayerTattoos(targetId);
-
-                    // Llamamos al evento del cliente
-                    NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", target, NAPI.Util.ToJson(targetCustomSkin), NAPI.Util.ToJson(targetTattooList));
-                    break;
-            }
         }
 
         private void OnPlayerDisconnected(Client player, byte type, string reason)
@@ -547,6 +399,166 @@ namespace WiredPlayers.login
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerLoginTimeoutTimer] " + ex.Message);
             }
+        }
+
+        [RemoteEvent("registerAccount")]
+        public void RegisterAccountEvent(Client player, params object[] arguments)
+        {
+            String forumName = (String)arguments[0];
+            String password = (String)arguments[1];
+            NAPI.Player.FreezePlayer(player, false);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_ACCOUNT_REGISTER);
+        }
+
+        [RemoteEvent("loginAccount")]
+        public void LoginAccountEvent(Client player, params object[] arguments)
+        {
+            String password = (String)arguments[0];
+            bool login = Database.LoginAccount(player.SocialClubName, password);
+            if (login)
+            {
+                // Borramos el timer de la lista
+                if (loginTimerList.TryGetValue(player.SocialClubName, out Timer loginTimer) == true)
+                {
+                    loginTimer.Dispose();
+                    loginTimerList.Remove(player.SocialClubName);
+                }
+
+                NAPI.Player.FreezePlayer(player, false);
+                NAPI.ClientEvent.TriggerClientEvent(player, "clearLoginWindow");
+            }
+            else
+            {
+                NAPI.ClientEvent.TriggerClientEvent(player, "showLoginError");
+            }
+        }
+
+        [RemoteEvent("getPlayerCharacters")]
+        public void GetPlayerCharactersEvent(Client player, params object[] arguments)
+        {
+            List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
+            String jsonList = NAPI.Util.ToJson(playerList);
+            NAPI.Player.FreezePlayer(player, true);
+            NAPI.Player.StopPlayerAnimation(player);
+            NAPI.Player.SetPlayerDefaultClothes(player);
+            NAPI.ClientEvent.TriggerClientEvent(player, "showPlayersMenu", jsonList);
+        }
+
+        [RemoteEvent("unfreezePlayer")]
+        public void UnfreezePlayerEvent(Client player, params object[] arguments)
+        {
+            // Descongelamos al jugador
+            NAPI.Player.FreezePlayer(player, false);
+        }
+
+        [RemoteEvent("changeCharacterSex")]
+        public void ChangeCharacterSexEvent(Client player, params object[] arguments)
+        {
+            String pedModel = arguments[0].ToString() == "1" ? Constants.FEMALE_PED_MODEL : Constants.MALE_PED_MODEL;
+            PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
+            NAPI.Player.SetPlayerSkin(player, pedHash);
+
+            // Eliminamos la ropa
+            NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
+            NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
+            NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
+        }
+
+        [RemoteEvent("createCharacter")]
+        public void CreateCharacterEvent(Client player, params object[] arguments)
+        {
+            // Recuperamos el nombre y edad
+            String playerName = arguments[0].ToString();
+            int playerAge = Int32.Parse(arguments[1].ToString());
+
+            PlayerModel playerModel = new PlayerModel();
+            SkinModel skinModel = (SkinModel)NAPI.Util.FromJson(arguments[2].ToString());
+
+            // Generación del modelo del personaje
+            playerModel.realName = playerName;
+            playerModel.age = playerAge;
+            playerModel.sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
+
+            // Generación del modelo del personaje
+            PopulateCharacterSkin(player, skinModel);
+
+            int playerId = Database.CreateCharacter(player, playerModel, skinModel);
+            if (playerId > 0)
+            {
+                InitializePlayerData(player);
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, playerId);
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, playerName);
+                NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, playerAge);
+                NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SPAWN_POS, new Vector3(200.6641f, -932.0939f, 30.6868f));
+                NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 0.0f));
+                Database.UpdateLastCharacter(player.SocialClubName, playerId);
+                NAPI.ClientEvent.TriggerClientEvent(player, "characterCreatedSuccessfully");
+                NAPI.Player.FreezePlayer(player, false);
+            }
+        }
+
+        [RemoteEvent("setCharacterIntoCreator")]
+        public void SetCharacterIntoCreatorEvent(Client player, params object[] arguments)
+        {
+            // Cambiamos el skin del personaje al por defecto
+            NAPI.Player.SetPlayerSkin(player, PedHash.FreemodeMale01);
+
+            // Eliminamos la ropa
+            NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
+            NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
+            NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
+
+            // Establecemos su posición
+            NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 180.0f));
+            NAPI.Entity.SetEntityPosition(player, new Vector3(152.3787f, -1000.644f, -99f));
+
+            // Aplicamos la animación para que se esté quieto
+            NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.StopOnLastFrame), "mp_ped_interaction", "hugs_guy_a");
+
+            // Cargamos el menú de edición
+            NAPI.ClientEvent.TriggerClientEvent(player, "showCharacterCreationMenu");
+        }
+
+        [RemoteEvent("loadCharacter")]
+        public void LoadCharacterEvent(Client player, params object[] arguments)
+        {
+            PlayerModel playerModel = Database.LoadCharacterInformationByName(arguments[0].ToString());
+            SkinModel skinModel = Database.GetCharacterSkin(playerModel.id);
+
+            // Carga de skin hombre/mujer
+            String pedModel = playerModel.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
+            PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
+            NAPI.Player.SetPlayerName(player, playerModel.realName);
+            NAPI.Player.SetPlayerSkin(player, pedHash);
+
+            // Cargamos los datos básicos del personaje
+            LoadCharacterData(player, playerModel);
+
+            // Generación del modelo del personaje
+            PopulateCharacterSkin(player, skinModel);
+
+            // Generación de la ropa del personaje
+            Globals.PopulateCharacterClothes(player);
+
+            // Añadimos la vida y chaleco
+            NAPI.Player.SetPlayerHealth(player, playerModel.health);
+            NAPI.Player.SetPlayerArmor(player, playerModel.armor);
+
+            Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
+            NAPI.Player.FreezePlayer(player, false);
+        }
+
+        [RemoteEvent("getPlayerCustomSkin")]
+        public void GetPlayerCustomSkinEvent(Client player, params object[] arguments)
+        {
+            Client target = (Client)arguments[0];
+
+            SkinModel targetCustomSkin = GetPlayerCustomSkin(target);
+            int targetId = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
+            List<TattooModel> targetTattooList = Globals.GetPlayerTattoos(targetId);
+
+            // Llamamos al evento del cliente
+            NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", target, NAPI.Util.ToJson(targetCustomSkin), NAPI.Util.ToJson(targetTattooList));
         }
 
         [Command("login", Messages.GEN_LOGIN_COMMAND)]

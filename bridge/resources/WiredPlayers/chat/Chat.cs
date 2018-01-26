@@ -374,7 +374,7 @@ namespace WiredPlayers.chat
             }
             else
             {
-                TextLabel ameLabel = NAPI.TextLabel.CreateTextLabel("*" + message + "*", new Vector3(0.0f, 0.0f, 0.0f), 50.0f, 0.5f, 0, new Color(201, 90, 0, 255));
+                TextLabel ameLabel = NAPI.TextLabel.CreateTextLabel("*" + message + "*", new Vector3(0.0f, 0.0f, 0.0f), 50.0f, 0.5f, 4, new Color(201, 90, 0, 255));
                 NAPI.Entity.AttachEntityToEntity(ameLabel, player, "SKEL_Head", new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 0.0f, 0.0f));
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_AME, ameLabel);
             }

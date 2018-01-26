@@ -17,10 +17,9 @@ namespace WiredPlayers.weapons
         public Weapons()
         {
             Event.OnResourceStart += OnResourceStart;
-            Event.OnClientEventTrigger += OnClientEventHandler;
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-            Event.OnEntityEnterCheckpoint += OnEntityEnterCheckpoint;
+            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Event.OnPlayerWeaponSwitch += OnPlayerWeaponSwitch;
             Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
@@ -154,49 +153,8 @@ namespace WiredPlayers.weapons
             vehicleWeaponTimer = new List<Timer>();
             weaponCrateList = new List<WeaponCrateModel>();
         }
-
-        private void OnClientEventHandler(Client player, String eventName, params object[] arguments)
-        {
-            if (eventName == "reloadPlayerWeapon")
-            {
-                WeaponHash weapon = NAPI.Player.GetPlayerCurrentWeapon(player);
-                int maxCapacity = GetGunAmmunitionCapacity(weapon);
-                int currentBullets = NAPI.Player.GetPlayerWeaponAmmo(player, weapon);
-                if (currentBullets < maxCapacity)
-                {
-                    String bulletType = GetGunAmmunitionType(weapon);
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    ItemModel bulletItem = Globals.GetPlayerItemModelFromHash(playerId, bulletType);
-                    if (bulletItem != null)
-                    {
-                        int bulletsLeft = maxCapacity - currentBullets;
-                        if (bulletsLeft >= bulletItem.amount)
-                        {
-                            currentBullets += bulletItem.amount;
-                            Database.RemoveItem(bulletItem.id);
-                            Globals.itemList.Remove(bulletItem);
-                        }
-                        else
-                        {
-                            currentBullets += bulletsLeft;
-                            bulletItem.amount -= bulletsLeft;
-                            Database.UpdateItem(bulletItem);
-                        }
-
-                        // Añadimos la munición al objeto arma
-                        ItemModel weaponItem = GetEquippedWeaponItemModelByHash(playerId, weapon);
-                        weaponItem.amount = currentBullets;
-                        Database.UpdateItem(weaponItem);
-
-                        // Recargamos el arma
-                        NAPI.Player.SetPlayerWeaponAmmo(player, weapon, currentBullets);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.MAKE_PED_RELOAD, player);
-                    }
-                }
-            }
-        }
         
-        private void OnPlayerEnterVehicle(Client player, NetHandle vehicle, sbyte seat)
+        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
             if(NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
             {
@@ -213,7 +171,7 @@ namespace WiredPlayers.weapons
             }
         }
 
-        private void OnPlayerExitVehicle(Client player, NetHandle vehicle)
+        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
         {
             if(NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) == true)
             {
@@ -225,11 +183,10 @@ namespace WiredPlayers.weapons
             }
         }
 
-        private void OnEntityEnterCheckpoint(Checkpoint checkpoint, NetHandle entity)
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
         {
-            if (NAPI.Entity.GetEntityType(entity) == EntityType.Player && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_JOB_COLSHAPE) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) == true)
             {
-                Client player = NAPI.Player.GetPlayerFromHandle(entity);
                 if (checkpoint == NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                 {
                     NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
@@ -445,7 +402,7 @@ namespace WiredPlayers.weapons
 
         private static void OnVehicleUnpackWeapons(object vehicleObject)
         {
-            NetHandle vehicle = (NetHandle)vehicleObject;
+            Vehicle vehicle = (Vehicle)vehicleObject;
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
 
             // Desempaquetamos las armas
@@ -513,7 +470,46 @@ namespace WiredPlayers.weapons
             }
             return crates;
         }
-        
+
+        [RemoteEvent("reloadPlayerWeapon")]
+        public void ReloadPlayerWeaponEvent(Client player, params object[] arguments)
+        {
+            WeaponHash weapon = NAPI.Player.GetPlayerCurrentWeapon(player);
+            int maxCapacity = GetGunAmmunitionCapacity(weapon);
+            int currentBullets = NAPI.Player.GetPlayerWeaponAmmo(player, weapon);
+            if (currentBullets < maxCapacity)
+            {
+                String bulletType = GetGunAmmunitionType(weapon);
+                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                ItemModel bulletItem = Globals.GetPlayerItemModelFromHash(playerId, bulletType);
+                if (bulletItem != null)
+                {
+                    int bulletsLeft = maxCapacity - currentBullets;
+                    if (bulletsLeft >= bulletItem.amount)
+                    {
+                        currentBullets += bulletItem.amount;
+                        Database.RemoveItem(bulletItem.id);
+                        Globals.itemList.Remove(bulletItem);
+                    }
+                    else
+                    {
+                        currentBullets += bulletsLeft;
+                        bulletItem.amount -= bulletsLeft;
+                        Database.UpdateItem(bulletItem);
+                    }
+
+                    // Añadimos la munición al objeto arma
+                    ItemModel weaponItem = GetEquippedWeaponItemModelByHash(playerId, weapon);
+                    weaponItem.amount = currentBullets;
+                    Database.UpdateItem(weaponItem);
+
+                    // Recargamos el arma
+                    NAPI.Player.SetPlayerWeaponAmmo(player, weapon, currentBullets);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.MAKE_PED_RELOAD, player);
+                }
+            }
+        }
+
         [Command("armarios")]
         public void ArmariosCommand(Client player)
         {

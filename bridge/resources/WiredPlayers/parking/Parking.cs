@@ -26,7 +26,7 @@ namespace WiredPlayers.parking
             foreach (ParkingModel parking in parkingList)
             {
                 String parkingLabelText = GetParkingLabelText(parking.type);
-                parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(parkingLabelText, parking.position, 30.0f, 0.75f, 0, new Color(255, 255, 255));
+                parking.parkingLabel = NAPI.TextLabel.CreateTextLabel(parkingLabelText, parking.position, 30.0f, 0.75f, 4, new Color(255, 255, 255));
             }
         }
 
@@ -281,7 +281,7 @@ namespace WiredPlayers.parking
                             ParkedCarModel parkedCar = GetParkedVehicle(vehicleId);
 
                             // Recreamos el vehículo
-                            NetHandle newVehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicle.model), parking.position, vehicle.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
+                            Vehicle newVehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicle.model), parking.position, vehicle.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
                             NAPI.Vehicle.SetVehicleNumberPlate(newVehicle, vehicle.plate == String.Empty ? "LS " + (1000 + vehicle.id) : vehicle.plate);
                             NAPI.Vehicle.SetVehicleEngineStatus(newVehicle, false);
                             NAPI.Vehicle.SetVehicleLocked(newVehicle, false);

@@ -10,7 +10,7 @@ namespace WiredPlayers.model
         public Vector3 position { get; internal set; }
         public String carriedEntity { get; internal set; }
         public int carriedIdentifier { get; internal set; }
-        public NetHandle crateObject { get; internal set; }
+        public GTANetworkAPI.Object crateObject { get; internal set; }
 
         public WeaponCrateModel() { }
     }

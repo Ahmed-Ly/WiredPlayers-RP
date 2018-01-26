@@ -87,7 +87,7 @@ namespace WiredPlayers.avatar
             }
 
             // Miramos si tiene algún vehículo en propiedad
-            foreach (NetHandle vehicle in NAPI.Pools.GetAllVehicles())
+            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
             {
                 if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == player.Name)
                 {

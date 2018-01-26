@@ -82,7 +82,7 @@ namespace WiredPlayers.globals
         public const String PLAYER_PARKED_VEHICLE = "PLAYER_PARKED_VEHICLE";
         public const String PLAYER_REFUELING = "PLAYER_REFUELING";
         public const String PLAYER_REINFORCES = "PLAYER_REINFORCES";
-        public const String PLAYER_FACTION_WARKING = "PLAYER_FACTION_WARKING";
+        public const String PLAYER_FACTION_WARNING = "PLAYER_FACTION_WARNING";
         public const String PLAYER_EMPLOYEE_COOLDOWN = "PLAYER_EMPLOYEE_COOLDOWN"; 
         public const String PLAYER_JOB_COOLDOWN = "PLAYER_JOB_COOLDOWN";
         public const String PLAYER_JOB_DELIVER = "PLAYER_JOB_DELIVER";

@@ -19,7 +19,7 @@ namespace WiredPlayers.faction
         public Faction()
         {
             Event.OnResourceStart += OnResourceStartHandler;
-            Event.OnEntityEnterCheckpoint += OnEntityEnterCheckpoint;
+            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
         }
 
         public static String GetPlayerFactionRank(Client player)
@@ -57,23 +57,22 @@ namespace WiredPlayers.faction
             factionWarningList = new List<FactionWarningModel>();
         }
 
-        private void OnEntityEnterCheckpoint(Checkpoint checkpoint, NetHandle entity)
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
         {
-            if (NAPI.Data.HasEntityData(entity, EntityData.PLAYER_FACTION_WARKING) && NAPI.Entity.GetEntityType(entity) == EntityType.Player)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
             {
-                // Sacamos el jugador
-                Client player = NAPI.Player.GetPlayerFromHandle(entity);
+                // Sacamos el identificador jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
                 // Borramos el checkpoint
-                Checkpoint locationCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION_WARKING);
+                Checkpoint locationCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
                 NAPI.Entity.DeleteEntity(locationCheckpoint);
 
                 // Borramos las marcas
                 NAPI.ClientEvent.TriggerClientEvent(player, "deleteFactionWarning");
 
                 // Reseteamos la variable de localización
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FACTION_WARKING);
+                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
 
                 // Borramos el aviso
                 factionWarningList.RemoveAll(x => x.takenBy == playerId);
@@ -987,14 +986,14 @@ namespace WiredPlayers.faction
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FACTION_WARNING_TAKEN);
                     }
-                    else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARKING) == true)
+                    else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_HAVE_FACTION_WARNING);
                     }
                     else
                     {
                         Checkpoint factionWarningCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, factionWarning.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION_WARKING, factionWarningCheckpoint);
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION_WARNING, factionWarningCheckpoint);
                         factionWarning.takenBy = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                         NAPI.ClientEvent.TriggerClientEvent(player, "showFactionWarning", factionWarning.position);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_FACTION_WARNING_TAKEN);

@@ -13,124 +13,6 @@ namespace WiredPlayers.telephone
 
         public Telephone()
         {
-            Event.OnClientEventTrigger += OnClientEventTrigger;
-        }
-
-        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
-        {
-            // Declaramos las variables necesarias
-            int contactIndex = 0;
-            int contactNumber = 0;
-            String contactName = String.Empty;
-            String actionMessage = String.Empty;
-            ContactModel contact = null;
-
-            // Miramos el evento que ha sido lanzado
-            switch (eventName)
-            {
-                case "addNewContact":
-                    // Obtenemos el número y nombre
-                    contactNumber = Int32.Parse(arguments[0].ToString());
-                    contactName = arguments[1].ToString();
-
-                    // Creamos el nuevo modelo
-                    contact = new ContactModel();
-                    contact.owner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
-                    contact.contactNumber = contactNumber;
-                    contact.contactName = contactName;
-
-                    // Añadimos el nuevo contacto
-                    contact.id = Database.AddNewContact(contact);
-                    contactList.Add(contact);
-
-                    // Informamos al jugador
-                    actionMessage = String.Format(Messages.INF_CONTACT_CREATED, contactName, contactNumber);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + actionMessage);
-                    break;
-                case "modifyContact":
-                    // Obtenemos el número, nombre y el identificador
-                    contactNumber = Int32.Parse(arguments[0].ToString());
-                    contactName = arguments[1].ToString();
-                    contactIndex = Int32.Parse(arguments[2].ToString());
-
-                    // Modificamos los datos del contacto
-                    contact = GetContactFromId(contactIndex);
-                    contact.contactNumber = contactNumber;
-                    contact.contactName = contactName;
-                    Database.ModifyContact(contact);
-
-                    // Informamos al jugador
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_CONTACT_MODIFIED);
-                    break;
-                case "deleteContact":
-                    // Obtenemos el identificador del contacto
-                    contactIndex = Int32.Parse(arguments[0].ToString());
-
-                    // Obtenemos los datos del contacto
-                    contact = GetContactFromId(contactIndex);
-                    contactName = contact.contactName;
-                    contactNumber = contact.contactNumber;
-
-                    // Eliminamos el contacto
-                    Database.DeleteContact(contactIndex);
-                    contactList.Remove(contact);
-
-                    // Informamos al jugador
-                    actionMessage = String.Format(Messages.INF_CONTACT_DELETED, contactName, contactNumber);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + actionMessage);
-                    break;
-                case "sendPhoneMessage":
-                    // Capturamos el contacto y el mensaje
-                    contactIndex = Int32.Parse(arguments[0].ToString());
-                    String textMessage = arguments[1].ToString();
-
-                    // Obtenemos el contacto
-                    contact = GetContactFromId(contactIndex);
-
-                    // Obtenemos el jugador objetivo
-                    foreach (Client target in NAPI.Pools.GetAllPlayers())
-                    {
-                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_PHONE) == contact.contactNumber)
-                        {
-                            // Miramos si lo tiene añadido como contacto
-                            int phone = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PHONE);
-                            contactName = GetContactInTelephone(phone, contact.contactNumber);
-                            if (contactName.Length == 0)
-                            {
-                                contactName = contact.contactNumber.ToString();
-                            }
-
-                            // Comprobación de la longitud del mensaje
-                            String secondMessage = String.Empty;
-
-                            if (textMessage.Length > Constants.CHAT_LENGTH)
-                            {
-                                // El mensaje tiene una longitud de dos líneas
-                                secondMessage = textMessage.Substring(Constants.CHAT_LENGTH, textMessage.Length - Constants.CHAT_LENGTH);
-                                textMessage = textMessage.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
-                            }
-
-                            // Mandamos el mensaje al jugador objetivo
-                            NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_INFO + "[SMS de " + contactName + "] " + textMessage + "..." : Constants.COLOR_INFO + "[SMS de " + contactName + "] " + textMessage);
-                            if (secondMessage.Length > 0)
-                            {
-                                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + secondMessage);
-                            }
-
-                            // Avisamos al jugador del envío del mensaje
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SMS_SENT);
-
-                            // Añadimos el mensaje a la base de datos
-                            Database.AddSMSLog(phone, contact.contactNumber, textMessage);
-                            return;
-                        }
-                    }
-
-                    // No hay ningún jugador con ese número de teléfono conectado
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PHONE_DISCONNECTED);
-
-                    break;
-            }
         }
 
         private ContactModel GetContactFromId(int contactId)
@@ -186,6 +68,120 @@ namespace WiredPlayers.telephone
                 }
             }
             return contactName;
+        }
+
+        [RemoteEvent("addNewContact")]
+        public void AddNewContactEvent(Client player, params object[] arguments)
+        {
+            // Obtenemos el número y nombre
+            int contactNumber = Int32.Parse(arguments[0].ToString());
+            String contactName = arguments[1].ToString();
+
+            // Creamos el nuevo modelo
+            ContactModel contact = new ContactModel();
+            contact.owner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
+            contact.contactNumber = contactNumber;
+            contact.contactName = contactName;
+
+            // Añadimos el nuevo contacto
+            contact.id = Database.AddNewContact(contact);
+            contactList.Add(contact);
+
+            // Informamos al jugador
+            String actionMessage = String.Format(Messages.INF_CONTACT_CREATED, contactName, contactNumber);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + actionMessage);
+        }
+
+        [RemoteEvent("modifyContact")]
+        public void ModifyContactEvent(Client player, params object[] arguments)
+        {
+            // Obtenemos el número, nombre y el identificador
+            int contactNumber = Int32.Parse(arguments[0].ToString());
+            String contactName = arguments[1].ToString();
+            int contactIndex = Int32.Parse(arguments[2].ToString());
+
+            // Modificamos los datos del contacto
+            ContactModel contact = GetContactFromId(contactIndex);
+            contact.contactNumber = contactNumber;
+            contact.contactName = contactName;
+            Database.ModifyContact(contact);
+
+            // Informamos al jugador
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_CONTACT_MODIFIED);
+        }
+
+        [RemoteEvent("deleteContact")]
+        public void DeleteContactEvent(Client player, params object[] arguments)
+        {
+            // Obtenemos el identificador del contacto
+            int contactIndex = Int32.Parse(arguments[0].ToString());
+
+            // Obtenemos los datos del contacto
+            ContactModel contact = GetContactFromId(contactIndex);
+            String contactName = contact.contactName;
+            int contactNumber = contact.contactNumber;
+
+            // Eliminamos el contacto
+            Database.DeleteContact(contactIndex);
+            contactList.Remove(contact);
+
+            // Informamos al jugador
+            String actionMessage = String.Format(Messages.INF_CONTACT_DELETED, contactName, contactNumber);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + actionMessage);
+        }
+
+        [RemoteEvent("sendPhoneMessage")]
+        public void SendPhoneMessageEvent(Client player, params object[] arguments)
+        {
+            // Capturamos el contacto y el mensaje
+            int contactIndex = Int32.Parse(arguments[0].ToString());
+            String textMessage = arguments[1].ToString();
+
+            // Obtenemos el contacto
+            ContactModel contact = GetContactFromId(contactIndex);
+
+            // Obtenemos el jugador objetivo
+            foreach (Client target in NAPI.Pools.GetAllPlayers())
+            {
+                if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_PHONE) == contact.contactNumber)
+                {
+                    // Miramos si lo tiene añadido como contacto
+                    int phone = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PHONE);
+                    String contactName = GetContactInTelephone(phone, contact.contactNumber);
+
+                    if (contactName.Length == 0)
+                    {
+                        contactName = contact.contactNumber.ToString();
+                    }
+
+                    // Comprobación de la longitud del mensaje
+                    String secondMessage = String.Empty;
+
+                    if (textMessage.Length > Constants.CHAT_LENGTH)
+                    {
+                        // El mensaje tiene una longitud de dos líneas
+                        secondMessage = textMessage.Substring(Constants.CHAT_LENGTH, textMessage.Length - Constants.CHAT_LENGTH);
+                        textMessage = textMessage.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
+                    }
+
+                    // Mandamos el mensaje al jugador objetivo
+                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_INFO + "[SMS de " + contactName + "] " + textMessage + "..." : Constants.COLOR_INFO + "[SMS de " + contactName + "] " + textMessage);
+                    if (secondMessage.Length > 0)
+                    {
+                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + secondMessage);
+                    }
+
+                    // Avisamos al jugador del envío del mensaje
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SMS_SENT);
+
+                    // Añadimos el mensaje a la base de datos
+                    Database.AddSMSLog(phone, contact.contactNumber, textMessage);
+                    return;
+                }
+            }
+
+            // No hay ningún jugador con ese número de teléfono conectado
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PHONE_DISCONNECTED);
         }
 
         [Command("llamar", Messages.GEN_PHONE_CALL_COMMAND)]

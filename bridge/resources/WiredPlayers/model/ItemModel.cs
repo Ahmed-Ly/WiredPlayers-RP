@@ -12,7 +12,7 @@ namespace WiredPlayers.model
         public int amount { get; internal set; }
         public Vector3 position { get; internal set; }
         public uint dimension { get; internal set; }
-        public NetHandle objectHandle { get; internal set; }
+        public GTANetworkAPI.Object objectHandle { get; internal set; }
 
         public ItemModel() { }
 

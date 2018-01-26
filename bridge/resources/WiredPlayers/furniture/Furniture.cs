@@ -14,21 +14,6 @@ namespace WiredPlayers.furniture
 
         public Furniture()
         {
-            Event.OnClientEventTrigger += OnClientEventTrigger;
-        }
-
-        private void OnClientEventTrigger(Client player, String eventName, params object[] args)
-        {
-            if(eventName == "moveFurniture")
-            {
-                int furnitureId = Int32.Parse((String)args[0]);
-                float posX = float.Parse(((String)args[1]).Replace(",", "."));
-                float posY = float.Parse(((String)args[2]).Replace(",", "."));
-                float posZ = float.Parse(((String)args[3]).Replace(",", "."));
-                FurnitureModel furniture = GetFurnitureById(furnitureId);
-                Vector3 position = new Vector3(posX, posY, posZ);
-                NAPI.Entity.SetEntityPosition(furniture.handle, position);
-            }
         }
 
         public void LoadDatabaseFurniture()
@@ -65,6 +50,18 @@ namespace WiredPlayers.furniture
                 }
             }
             return furniture;
+        }
+
+        [RemoteEvent("moveFurniture")]
+        public void MoveFurnitureEvent(Client player, params object[] arguments)
+        {
+            int furnitureId = Int32.Parse((String)arguments[0]);
+            float posX = float.Parse(((String)arguments[1]).Replace(",", "."));
+            float posY = float.Parse(((String)arguments[2]).Replace(",", "."));
+            float posZ = float.Parse(((String)arguments[3]).Replace(",", "."));
+            FurnitureModel furniture = GetFurnitureById(furnitureId);
+            Vector3 position = new Vector3(posX, posY, posZ);
+            NAPI.Entity.SetEntityPosition(furniture.handle, position);
         }
 
         [Command("muebles")]

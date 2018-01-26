@@ -13,45 +13,6 @@ namespace WiredPlayers.house
 
         public House()
         {
-            Event.OnClientEventTrigger += OnClientEventTrigger;
-        }
-
-        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
-        {
-            if (eventName == "wardrobeClothesItemSelected")
-            {
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                int clothesId = Int32.Parse(arguments[0].ToString());
-                int type = Int32.Parse(arguments[1].ToString());
-                int slot = Int32.Parse(arguments[2].ToString());
-
-                // Quitamos la ropa que tenía puesta y ponemos la nueva
-                foreach(ClothesModel clothes in Globals.clothesList)
-                {
-                    if(clothes.id == clothesId)
-                    {
-                        clothes.dressed = true;
-                        if (clothes.type == 0)
-                        {
-                            NAPI.Player.SetPlayerClothes(player, clothes.slot, clothes.drawable, 0);
-                        }
-                        else
-                        {
-                            NAPI.Player.SetPlayerAccessory(player, clothes.slot, clothes.drawable, 0);
-                        }
-
-                        // Actualizamos la ropa en la base de datos
-                        Database.UpdateClothes(clothes);
-                    }
-                    else if(clothes.id != clothesId && clothes.player == playerId && clothes.type == type && clothes.slot == slot && clothes.dressed)
-                    {
-                        clothes.dressed = false;
-
-                        // Actualizamos la ropa en la base de datos
-                        Database.UpdateClothes(clothes);
-                    }
-                }
-            }
         }
 
         public void LoadDatabaseHouses()
@@ -60,7 +21,7 @@ namespace WiredPlayers.house
             foreach (HouseModel houseModel in houseList)
             {
                 String houseLabelText = GetHouseLabelText(houseModel);
-                houseModel.houseLabel = NAPI.TextLabel.CreateTextLabel(houseLabelText, houseModel.position, 20.0f, 0.75f, 0, new Color(255, 255, 255), false, houseModel.dimension);
+                houseModel.houseLabel = NAPI.TextLabel.CreateTextLabel(houseLabelText, houseModel.position, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, houseModel.dimension);
             }
         }
 
@@ -154,6 +115,42 @@ namespace WiredPlayers.house
             else
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOUSE_NOT_BUYABLE);
+            }
+        }
+
+        [RemoteEvent("wardrobeClothesItemSelected")]
+        public void WardrobeClothesItemSelectedEvent(Client player, params object[] arguments)
+        {
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+            int clothesId = Int32.Parse(arguments[0].ToString());
+            int type = Int32.Parse(arguments[1].ToString());
+            int slot = Int32.Parse(arguments[2].ToString());
+
+            // Quitamos la ropa que tenía puesta y ponemos la nueva
+            foreach (ClothesModel clothes in Globals.clothesList)
+            {
+                if (clothes.id == clothesId)
+                {
+                    clothes.dressed = true;
+                    if (clothes.type == 0)
+                    {
+                        NAPI.Player.SetPlayerClothes(player, clothes.slot, clothes.drawable, 0);
+                    }
+                    else
+                    {
+                        NAPI.Player.SetPlayerAccessory(player, clothes.slot, clothes.drawable, 0);
+                    }
+
+                    // Actualizamos la ropa en la base de datos
+                    Database.UpdateClothes(clothes);
+                }
+                else if (clothes.id != clothesId && clothes.player == playerId && clothes.type == type && clothes.slot == slot && clothes.dressed)
+                {
+                    clothes.dressed = false;
+
+                    // Actualizamos la ropa en la base de datos
+                    Database.UpdateClothes(clothes);
+                }
             }
         }
 

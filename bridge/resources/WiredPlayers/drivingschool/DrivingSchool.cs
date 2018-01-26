@@ -16,14 +16,13 @@ namespace WiredPlayers.drivingschool
         {
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-            Event.OnClientEventTrigger += OnClientEventTrigger;
-            Event.OnEntityEnterCheckpoint += OnEntityEnterCheckpoint;
+            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Event.OnPlayerDisconnected += OnPlayerDisconnected;
             Event.OnVehicleDamage += OnVehicleDamageHandler;
             Event.OnUpdate += OnUpdateHandler;
         }
 
-        private void OnPlayerEnterVehicle(Client player, NetHandle vehicle, sbyte seatId)
+        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seatId)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
             if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
@@ -85,7 +84,7 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        private void OnPlayerExitVehicle(Client player, NetHandle vehicle)
+        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
         {
             if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_VEHICLE) == true)
             {
@@ -108,59 +107,10 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        private void OnClientEventTrigger(Client player, string eventName, params object[] arguments)
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
         {
-            if(eventName == "checkAnswer")
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == true)
             {
-                int answer = Int32.Parse(arguments[0].ToString());
-                if(Database.CheckAnswerCorrect(answer) == true)
-                {
-                    // Incrementamos el número de preguntas
-                    int nextQuestion = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION) + 1;
-
-                    if(nextQuestion < Constants.MAX_LICENSE_QUESTIONS)
-                    {
-                        // Aún quedan más preguntas, mostramos la siguiente
-                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION, nextQuestion);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "getNextTestQuestion");
-                    }
-                    else
-                    {
-                        // Ha aprobado el examen
-                        int license = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
-                        SetPlayerLicense(player, license, 0);
-
-                        // Restablecemos las variables
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
-                        NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
-
-                        // Mandamos el mensaje
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LICENSE_EXAM_PASSED);
-
-                        // Cerramos la ventana del examen
-                        NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
-                    }
-                }
-                else
-                {
-                    // Ha fallado la pregunta
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_EXAM_FAILED);
-
-                    // Restablecemos las variables
-                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
-                    NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
-
-                    // Cerramos la ventana del examen
-                    NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
-                }
-            }
-        }
-
-        private void OnEntityEnterCheckpoint(Checkpoint checkpoint, NetHandle entity)
-        {
-            if (NAPI.Entity.GetEntityType(entity) == EntityType.Player && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_DRIVING_EXAM) == true)
-            {
-                Client player = NAPI.Player.GetPlayerFromHandle(entity);
                 if (NAPI.Player.IsPlayerInAnyVehicle(player) == true && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == Constants.CAR_DRIVING_PRACTICE)
                 {
                     NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
@@ -262,28 +212,21 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        private void OnVehicleDamageHandler(NetHandle entity, float lossFirst, float lossSecond)
+        private void OnVehicleDamageHandler(Vehicle vehicle, float lossFirst, float lossSecond)
         {
-            if (NAPI.Entity.GetEntityType(entity) == EntityType.Player && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(entity, EntityData.PLAYER_DRIVING_EXAM) == true)
+            Client player = NAPI.Vehicle.GetVehicleDriver(vehicle);
+            if (player != null && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == true)
             {
-                Client player = NAPI.Player.GetPlayerFromHandle(entity);
-                if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+                // Calculamos el estado actual de daños
+                float currentHealth = NAPI.Vehicle.GetVehicleHealth(vehicle);
+
+                if(lossFirst - currentHealth > 5.0f)
                 {
-                    // Obtenemos el vehículo
-                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                    // Finalizamos el examen
+                    FinishDrivingExam(player, vehicle);
 
-                    // Calculamos el estado actual de daños
-                    float currentHealth = NAPI.Vehicle.GetVehicleHealth(vehicle);
-
-                    if(lossFirst - currentHealth > 5.0f)
-                    {
-                        // Finalizamos el examen
-                        FinishDrivingExam(player, vehicle);
-
-                        // Avisamos al jugador del suspenso
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_DRIVE_FAILED);
-                    }
-
+                    // Avisamos al jugador del suspenso
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_DRIVE_FAILED);
                 }
             }
         }
@@ -338,7 +281,7 @@ namespace WiredPlayers.drivingschool
                 // Obtenemos el jugador y su vehículo
                 Client player = (Client)playerObject;
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
 
                 // Finalizamos el examen
                 FinishDrivingExam(player, vehicle);
@@ -359,7 +302,7 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        private void FinishDrivingExam(Client player, NetHandle vehicle)
+        private void FinishDrivingExam(Client player, Vehicle vehicle)
         {
             // Reseteamos el vehículo
             NAPI.Vehicle.RepairVehicle(vehicle);
@@ -400,6 +343,52 @@ namespace WiredPlayers.drivingschool
 
             // Guardamos el estado de las licencias
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, playerLicenses);
+        }
+
+        [RemoteEvent("checkAnswer")]
+        public void CheckAnswerEvent(Client player, params object[] arguments)
+        {
+            int answer = Int32.Parse(arguments[0].ToString());
+            if (Database.CheckAnswerCorrect(answer) == true)
+            {
+                // Incrementamos el número de preguntas
+                int nextQuestion = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION) + 1;
+
+                if (nextQuestion < Constants.MAX_LICENSE_QUESTIONS)
+                {
+                    // Aún quedan más preguntas, mostramos la siguiente
+                    NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION, nextQuestion);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "getNextTestQuestion");
+                }
+                else
+                {
+                    // Ha aprobado el examen
+                    int license = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
+                    SetPlayerLicense(player, license, 0);
+
+                    // Restablecemos las variables
+                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
+                    NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
+
+                    // Mandamos el mensaje
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LICENSE_EXAM_PASSED);
+
+                    // Cerramos la ventana del examen
+                    NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
+                }
+            }
+            else
+            {
+                // Ha fallado la pregunta
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_EXAM_FAILED);
+
+                // Restablecemos las variables
+                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
+                NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
+
+                // Cerramos la ventana del examen
+                NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
+            }
         }
 
         [Command("autoescuela", Messages.GEN_DRIVING_SCHOOL_COMMAND)]
