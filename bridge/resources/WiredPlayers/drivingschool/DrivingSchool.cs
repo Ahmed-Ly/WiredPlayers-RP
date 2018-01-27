@@ -113,7 +113,7 @@ namespace WiredPlayers.drivingschool
             {
                 if (NAPI.Player.IsPlayerInAnyVehicle(player) == true && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == Constants.CAR_DRIVING_PRACTICE)
                 {
-                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                    Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                     if (checkpoint == NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                     {
                         Checkpoint currentCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
@@ -162,7 +162,7 @@ namespace WiredPlayers.drivingschool
                 }
                 else if (NAPI.Player.IsPlayerInAnyVehicle(player) == true && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == Constants.MOTORCYCLE_DRIVING_PRACTICE)
                 {
-                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                    Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                     if (checkpoint == NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                     {
                         Checkpoint currentCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
@@ -255,7 +255,7 @@ namespace WiredPlayers.drivingschool
                     // Comprobamos si está conduciendo un vehículo
                     if(NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                     {
-                        NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                        Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                         if(NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                         {
                             Vector3 velocity = NAPI.Entity.GetEntityVelocity(vehicle);

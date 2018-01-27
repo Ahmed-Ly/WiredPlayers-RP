@@ -368,7 +368,7 @@ namespace WiredPlayers.thief
                 }
                 else if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                 {
-                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                    Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                     if (Vehicles.HasPlayerVehicleKeys(player, vehicle) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_CANT_ROB_OWN_VEHICLE);
@@ -421,7 +421,7 @@ namespace WiredPlayers.thief
             }
             else
             {
-                NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                 if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);

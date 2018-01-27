@@ -1749,108 +1749,115 @@ namespace WiredPlayers.admin
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
-                String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";
-                String age = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_AGE) + " años";
-                String money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY) + "$";
-                String bank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK) + "$";
-                String job = "Sin trabajo";
-                String faction = "Sin facción";
-                String rank = "Sin rango";
-                String houses = String.Empty;
-                String ownedVehicles = String.Empty;
-                String lentVehicles = NAPI.Data.GetEntityData(target, EntityData.PLAYER_VEHICLE_KEYS);
-
-                // Miramos si tiene un trabajo
-                foreach (JobModel jobModel in Constants.JOB_LIST)
+                if(target != null)
                 {
-                    if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB) == jobModel.job)
-                    {
-                        job = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
-                        break;
-                    }
-                }
+                    String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
+                    String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";
+                    String age = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_AGE) + " años";
+                    String money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY) + "$";
+                    String bank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK) + "$";
+                    String job = "Sin trabajo";
+                    String faction = "Sin facción";
+                    String rank = "Sin rango";
+                    String houses = String.Empty;
+                    String ownedVehicles = String.Empty;
+                    String lentVehicles = NAPI.Data.GetEntityData(target, EntityData.PLAYER_VEHICLE_KEYS);
 
-                // Miramos si tiene una facción
-                foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
-                {
-                    if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == factionModel.faction && NAPI.Data.GetEntityData(target, EntityData.PLAYER_RANK) == factionModel.rank)
+                    // Miramos si tiene un trabajo
+                    foreach (JobModel jobModel in Constants.JOB_LIST)
                     {
-                        switch (factionModel.faction)
+                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB) == jobModel.job)
                         {
-                            case Constants.FACTION_POLICE:
-                                faction = "Policía";
-                                break;
-                            case Constants.FACTION_EMERGENCY:
-                                faction = "Emergencias";
-                                break;
-                            case Constants.FACTION_NEWS:
-                                faction = "Weazel News";
-                                break;
-                            case Constants.FACTION_TOWNHALL:
-                                faction = "Ayuntamiento";
-                                break;
-                            case Constants.FACTION_TAXI_DRIVER:
-                                faction = "Servicio de transportes";
-                                break;
-                            default:
-                                faction = "Sin facción";
-                                break;
+                            job = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
+                            break;
                         }
-
-                        // Establecemos el rango
-                        rank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
-                        break;
                     }
-                }
 
-                // Miramos si tiene alguna casa alquilada
-                if (NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE) > 0)
-                {
-                    houses += " " + NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE);
-                }
-
-                // Miramos si tiene alguna casa en propiedad
-                foreach (HouseModel house in House.houseList)
-                {
-                    if (house.owner == target.Name)
+                    // Miramos si tiene una facción
+                    foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
                     {
-                        houses += " " + house.id;
-                    }
-                }
+                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == factionModel.faction && NAPI.Data.GetEntityData(target, EntityData.PLAYER_RANK) == factionModel.rank)
+                        {
+                            switch (factionModel.faction)
+                            {
+                                case Constants.FACTION_POLICE:
+                                    faction = "Policía";
+                                    break;
+                                case Constants.FACTION_EMERGENCY:
+                                    faction = "Emergencias";
+                                    break;
+                                case Constants.FACTION_NEWS:
+                                    faction = "Weazel News";
+                                    break;
+                                case Constants.FACTION_TOWNHALL:
+                                    faction = "Ayuntamiento";
+                                    break;
+                                case Constants.FACTION_TAXI_DRIVER:
+                                    faction = "Servicio de transportes";
+                                    break;
+                                default:
+                                    faction = "Sin facción";
+                                    break;
+                            }
 
-                // Miramos si tiene algún vehículo en propiedad
-                foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
-                {
-                    if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == target.Name)
+                            // Establecemos el rango
+                            rank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
+                            break;
+                        }
+                    }
+
+                    // Miramos si tiene alguna casa alquilada
+                    if (NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE) > 0)
                     {
-                        ownedVehicles += " " + NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                        houses += " " + NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE);
                     }
-                }
 
-                // Miramos entre los vehículos aparcados
-                foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
-                {
-                    if (parkedVehicle.vehicle.owner == target.Name)
+                    // Miramos si tiene alguna casa en propiedad
+                    foreach (HouseModel house in House.houseList)
                     {
-                        ownedVehicles += " " + parkedVehicle.vehicle.id;
+                        if (house.owner == target.Name)
+                        {
+                            houses += " " + house.id;
+                        }
                     }
-                }
 
-                // Mostramos la información
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos básicos:");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Nombre: " + target.Name + "; Sexo: " + sex + "; Edad: " + age + "; Dinero: " + money + "; Banco: " + bank);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos de empleo:");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Trabajo: " + job + "; Facción: " + faction + "; Rango: " + rank);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Propiedades:");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Casas: " + houses);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos propios: " + ownedVehicles);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + played);
+                    // Miramos si tiene algún vehículo en propiedad
+                    foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
+                    {
+                        if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == target.Name)
+                        {
+                            ownedVehicles += " " + NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                        }
+                    }
+
+                    // Miramos entre los vehículos aparcados
+                    foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
+                    {
+                        if (parkedVehicle.vehicle.owner == target.Name)
+                        {
+                            ownedVehicles += " " + parkedVehicle.vehicle.id;
+                        }
+                    }
+
+                    // Mostramos la información
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos básicos:");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Nombre: " + target.Name + "; Sexo: " + sex + "; Edad: " + age + "; Dinero: " + money + "; Banco: " + bank);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos de empleo:");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Trabajo: " + job + "; Facción: " + faction + "; Rango: " + rank);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Propiedades:");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Casas: " + houses);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos propios: " + ownedVehicles);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + played);
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+                }
             }
         }
     }

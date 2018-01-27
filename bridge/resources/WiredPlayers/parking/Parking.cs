@@ -164,7 +164,7 @@ namespace WiredPlayers.parking
             }
             else
             {
-                NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
                 if (Vehicles.HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);

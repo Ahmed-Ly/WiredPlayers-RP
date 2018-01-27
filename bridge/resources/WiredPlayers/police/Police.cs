@@ -351,7 +351,11 @@ namespace WiredPlayers.police
         [Command("multar", Messages.GEN_FINE_COMMAND)]
         public void MultarCommand(Client player, String name = "", String surname = "", String amount = "", String reason = "")
         {
-            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+            if (name == String.Empty)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FINE_COMMAND);
+            }
+            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }

@@ -104,7 +104,7 @@ namespace WiredPlayers.fastfood
                     }
                     else
                     {
-                        NetHandle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+                        Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
                         if (NAPI.Player.GetPlayerVehicle(player) == vehicle && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                         {
                             int won = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_WON);
