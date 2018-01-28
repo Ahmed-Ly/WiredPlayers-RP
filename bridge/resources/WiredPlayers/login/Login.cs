@@ -433,17 +433,6 @@ namespace WiredPlayers.login
             }
         }
 
-        [RemoteEvent("getPlayerCharacters")]
-        public void GetPlayerCharactersEvent(Client player, params object[] arguments)
-        {
-            List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
-            String jsonList = NAPI.Util.ToJson(playerList);
-            NAPI.Player.FreezePlayer(player, true);
-            NAPI.Player.StopPlayerAnimation(player);
-            NAPI.Player.SetPlayerDefaultClothes(player);
-            NAPI.ClientEvent.TriggerClientEvent(player, "showPlayersMenu", jsonList);
-        }
-
         [RemoteEvent("unfreezePlayer")]
         public void UnfreezePlayerEvent(Client player, params object[] arguments)
         {

@@ -594,6 +594,78 @@ function populateCrimesMenu(crimesJson) {
 	options.appendChild(cancelButton);
 }
 
+function populateCharacterList(charactersJson) {
+	// Obtenemos el nodo contenedor
+	let header = document.getElementById('header');
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Obtenemos la lista de jugadores
+	let characters = JSON.parse(charactersJson);
+	
+	// Añadimos el texto de cabecera
+	header.textContent = 'Lista de personajes';
+	
+	for(let i = 0; i < characters.length; i++) {
+		// Obtenemos el componente
+		let character = characters[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		itemDescription.classList.add('item-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = character;
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Cargamos el personaje
+			mp.trigger('loadCharacter', character);
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+	}
+	
+	// Añadimos los botones
+	let createButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	createButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	createButton.textContent = 'Crear nuevo';
+	cancelButton.textContent = 'Salir';
+	
+	// Ponemos la función para cada elemento
+	createButton.onclick = (function() {
+		// Mostramos el menú de creación de personaje
+		mp.trigger('showCharacterCreationMenu');
+	});
+	
+	cancelButton.onclick = (function() {
+		// Cerramos la ventana de personajes
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(createButton);
+	options.appendChild(cancelButton);
+}
+
 function findFirstChildByClass(element, className) {
 	let foundElement = null, found;
 	function recurse(element, className, found) {

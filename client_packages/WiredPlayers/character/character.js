@@ -8,15 +8,34 @@ let faceModel = {
 };
 
 // Variables genéricas
-let browser = null;
 let camera = null;
+let characters = null;
+
+mp.events.add('showPlayerCharacters', (charactersJson) => {
+	// Almacenamos los personajes del jugador
+	characters = charactersJson;
+	
+	// Mostramos la ventana con la lista de jugadores
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCharacterList', charactersJson]);
+});
+
+mp.events.add('loadCharacter', (characterName) => {
+	// Destruímos el menú de personajes
+	mp.events.call('destroyBrowser');
+	
+	// Cargamos el personaje
+	mp.events.callRemote('loadCharacter', characterName);
+});
 
 mp.events.add('showCharacterCreationMenu', () => {
+	// Eliminamos el navegador
+	mp.events.call('destroyBrowser');
+	
 	// Inicializamos las variables del personaje
 	initializeCharacterCreation();
 	
 	// Ponemos la cámara enfocando al personaje
-	camera = mp.cameras.new('default', new mp.Vector3(152.6008, -1003.25, -98), new mp.Vector3(-20.0, 0.0, 0.0), 2);
+	camera = mp.cameras.new('default', new mp.Vector3(152.6008, -1003.25, -98), new mp.Vector3(-20.0, 0.0, 0.0), 90);
     camera.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
 	

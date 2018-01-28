@@ -26,7 +26,7 @@ namespace WiredPlayers.globals
         public static List<ItemModel> itemList;
         public static List<ScoreModel> scoreList;
         public static List<AdminTicketModel> adminTicketList;
-        private List<AreaModel> areaList;
+        public static List<AreaModel> areaList;
         private Timer minuteTimer;
         private Timer playersCheckTimer;
 
@@ -44,11 +44,6 @@ namespace WiredPlayers.globals
         private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
             //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_HELMET, player, false);
-        }
-
-        public List<AreaModel> GetAreaList()
-        {
-            return areaList;
         }
 
         public static Client GetPlayerById(int id)
@@ -192,9 +187,10 @@ namespace WiredPlayers.globals
                     switch (area.action)
                     {
                         case "character-selector":
-                            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
+                            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYING) == false)
                             {
-                                NAPI.Data.SetEntitySharedData(player, "create-area", true);
+                                NAPI.Chat.SendChatMessageToAll("Te seteo creación");
+                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
                             }
                             break;
                         case "motorsport-main-doors":
@@ -237,10 +233,8 @@ namespace WiredPlayers.globals
                     switch (area.action)
                     {
                         case "character-selector":
-                            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
-                            {
-                                NAPI.Data.SetEntitySharedData(player, "create-area", false);
-                            }
+                            NAPI.Chat.SendChatMessageToAll("Te quito creación");
+                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
                             break;
                         case "motorsport-main-doors":
                             //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
@@ -1320,6 +1314,19 @@ namespace WiredPlayers.globals
 
                         // Activamos el flag de jugador conectado
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
+                    }
+                }
+                else
+                {
+                    foreach(AreaModel area in areaList)
+                    {
+                        if(NAPI.ColShape.IsPointWithinColshape(area.area, player.Position) && area.action == "character-selector")
+                        {
+                            // Mostramos el menú de personajes
+                            List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
+                            NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerCharacters", NAPI.Util.ToJson(playerList));
+                            break;
+                        }
                     }
                 }
             }

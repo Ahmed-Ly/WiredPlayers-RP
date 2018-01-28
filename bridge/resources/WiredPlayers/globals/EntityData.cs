@@ -104,6 +104,7 @@ namespace WiredPlayers.globals
         public const String PLAYER_FISHING = "PLAYER_FISHING";
         public const String PLAYER_DRUNK_LEVEL = "PLAYER_DRUNK_LEVEL";
         public const String PLAYER_WALKING_STYLE = "PLAYER_WALKING_STYLE";
+        public const String PLAYER_CREATOR_AREA = "PLAYER_CREATOR_AREA";
 
         // Datos del personaje creado
         public const String GTAO_SHAPE_FIRST_ID = "GTAO_SHAPE_FIRST_ID";
