@@ -1241,7 +1241,6 @@ namespace WiredPlayers.globals
                         NAPI.Player.SetPlayerName(player, realName);
                         NAPI.Entity.SetEntityPosition(player, spawnPosition);
                         NAPI.Entity.SetEntityRotation(player, spawnRotation);
-                        NAPI.Entity.SetEntityInvincible(player, false);
 
                         // Comprobamos si está muerto
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -1574,7 +1573,7 @@ namespace WiredPlayers.globals
         [RemoteEvent("getPlayerTattoos")]
         public void GetPlayerTattoosEvent(Client player, params object[] arguments)
         {
-            Client targetPlayer = (Client)arguments[0];
+            Client targetPlayer = NAPI.Entity.GetEntityFromHandle<Client>((NetHandle)arguments[0]);
             int targetId = NAPI.Data.GetEntityData(targetPlayer, EntityData.PLAYER_SQL_ID);
             List<TattooModel> playerTattooList = GetPlayerTattoos(targetId);
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerTattoos", NAPI.Util.ToJson(playerTattooList), targetPlayer);

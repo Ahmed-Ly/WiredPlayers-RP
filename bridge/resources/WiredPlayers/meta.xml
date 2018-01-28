@@ -12,6 +12,7 @@
   <assembly ref="System.Management.dll"/>
   <assembly ref="System.Data.Common.dll"/>
   <assembly ref="System.Data.dll"/>
+  <assembly ref="Newtonsoft.Json.dll"/>
   <assembly ref="MySql.Data.dll"/>
 
   <!-- Clase de control de las operaciones sobre la BD -->

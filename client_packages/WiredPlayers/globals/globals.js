@@ -7,6 +7,9 @@ mp.events.add('guiReady', () => {
 	
 	// Deshabilitamos los beneficios al entrar en vehículos
 	mp.game.player.disableVehicleRewards();
+	
+	// Inicializamos al jugador
+	mp.players.local.freezePosition(true);
 });
 
 mp.events.add('changePlayerWalkingStyle', (player, clipSet) => {

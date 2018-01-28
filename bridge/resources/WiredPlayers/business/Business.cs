@@ -439,13 +439,13 @@ namespace WiredPlayers.business
 
                 // Creamos el modelo de datos
                 SkinModel skin = new SkinModel();
-                skin.hairModel = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_HAIR_MODEL);
-                skin.firstHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_HAIR_FIRST_COLOR);
-                skin.secondHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_HAIR_SECOND_COLOR);
-                skin.beardModel = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_BEARD_MODEL);
-                skin.beardColor = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_BEARD_COLOR);
-                skin.eyebrowsModel = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_EYEBROWS_MODEL);
-                skin.eyebrowsColor = NAPI.Data.GetEntitySharedData(player, EntityData.GTAO_EYEBROWS_COLOR);
+                skin.hairModel = NAPI.Data.GetEntitySharedData(player, EntityData.HAIR_MODEL);
+                skin.firstHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR);
+                skin.secondHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR);
+                skin.beardModel = NAPI.Data.GetEntitySharedData(player, EntityData.BEARD_MODEL);
+                skin.beardColor = NAPI.Data.GetEntitySharedData(player, EntityData.BEARD_COLOR);
+                skin.eyebrowsModel = NAPI.Data.GetEntitySharedData(player, EntityData.EYEBROWS_MODEL);
+                skin.eyebrowsColor = NAPI.Data.GetEntitySharedData(player, EntityData.EYEBROWS_COLOR);
 
                 // Recogemos los datos de peluquería
                 Database.UpdateCharacterHair(playerId, skin);

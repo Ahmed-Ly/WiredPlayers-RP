@@ -1,6 +1,6 @@
 ﻿// Variables del personaje
 let faceModel = {
-	'faceFirstShape': 0, 'faceSecondShape': 0, 'skinFirstId': 0, 'skinSecondId': 0, 'faceMix': 0.5, 'skinMix': 0.5, 'hairModel': 0, 'firstHairColor': 0, 'secondHairColor': 0,
+	'firstHeadShape': 0, 'secondHeadShape': 0, 'firstSkinTone': 0, 'secondSkinTone': 0, 'headMix': 0.5, 'skinMix': 0.5, 'hairModel': 0, 'firstHairColor': 0, 'secondHairColor': 0,
 	'beardModel': 0, 'bearColor': 0, 'chestModel': 0, 'chestColor': 0, 'blemishesModel': -1, 'ageingModel': -1, 'complexionModel': -1, 'sundamageModel': -1, 'frecklesModel': -1,
 	'eyesColor': 0, 'eyebrowsModel': 0, 'eyebrowsColor': 0, 'makeupModel': -1, 'blushModel': -1, 'blushColor': 0, 'lipstickModel': -1, 'lipstickColor': 0, 'noseWidth': 0.0,
 	'noseHeight': 0.0, 'noseLength': 0.0, 'noseBridge': 0.0, 'noseTip': 0.0, 'noseShift': 0.0, 'browHeight': 0.0, 'browWidth': 0.0, 'cheekboneHeight': 0.0, 'cheekboneWidth': 0.0,
@@ -32,6 +32,7 @@ mp.events.add('showCharacterCreationMenu', () => {
 	mp.events.call('destroyBrowser');
 	
 	// Inicializamos las variables del personaje
+	mp.events.callRemote('setCharacterIntoCreator');
 	initializeCharacterCreation();
 	
 	// Ponemos la cámara enfocando al personaje
@@ -39,14 +40,13 @@ mp.events.add('showCharacterCreationMenu', () => {
     camera.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
 	
-	// Cargamos el menú de creación
-	browser = mp.browsers.new('package://WiredPlayers/statics/html/characterCreator.html');
-	
 	// Deshabilitamos la interfaz
-	mp.gui.cursor.visible = true;
 	mp.game.ui.displayHud(false);
 	mp.gui.chat.activate(false);
 	mp.gui.chat.show(false);
+	
+	// Cargamos el menú de creación de personajes
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/characterCreator.html']);	
 });
 
 mp.events.add('updatePlayerSex', (sex) => {
@@ -55,18 +55,15 @@ mp.events.add('updatePlayerSex', (sex) => {
 	mp.events.callRemote('changeCharacterSex', sex);
 });
 
-mp.events.add('updatePlayerCreation', (partName, value, isPercentage) => {
-	// Obtenemos el jugador
-	let player = mp.players.local;
-	
-	if(percentage) {
+mp.events.add('updatePlayerCreation', (partName, value, isPercentage) => {	
+	if(isPercentage) {
 		// Es un porcentaje, calculamos el valor
 		value = parseFloat(value / 100);
 	}
 	
 	// Actualizamos la apariencia del personaje
-	faceModel[" + partName + "] = value;
-	updatePlayerFace(player, faceModel);
+	faceModel[' + partName + '] = value;
+	updatePlayerFace(mp.players.local, faceModel);
 });
 
 mp.events.add('cameraPointTo', (bodyPart) => {
@@ -85,8 +82,8 @@ mp.events.add('rotateCharacter', (rotation) => {
 });
 
 mp.events.add('characterNameDuplicated', () => {
-	// Avisamos del error
-	browser.execute(`showPlayerDuplicatedWarn();`);
+	// Avisamos del error de que el nombre existe
+	mp.events.call('executeFunction', ['showPlayerDuplicatedWarn']);
 });
 
 mp.events.add('acceptCharacterCreation', (name, age) => {
@@ -102,17 +99,18 @@ mp.events.add('cancelCharacterCreation', () => {
 	camera = null;
 
 	// Habilitamos la interfaz
-	mp.gui.cursor.visible = false;
 	mp.game.ui.displayHud(true);
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
 
 	// Eliminamos el menú de creación
-	browser.destroy();
-    browser = null;
-
-	// Obtenemos la lista de personajes
-	mp.events.callRemote('getPlayerCharacters');
+	mp.events.call('destroyBrowser');
+	
+	// Añadimos la ropa y tatuajes que tiene el personaje
+	mp.events.callRemote('loadCharacter', mp.players.local.name);
+	
+	// Mostramos la ventana con la lista de jugadores
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCharacterList', characters]);
 });
 
 mp.events.add('characterCreatedSuccessfully', () => {
@@ -122,14 +120,12 @@ mp.events.add('characterCreatedSuccessfully', () => {
 	camera = null;
 
 	// Habilitamos la interfaz
-	mp.gui.cursor.visible = false;
 	mp.game.ui.displayHud(true);
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
 
 	// Eliminamos el menú de creación
-	browser.destroy();
-    browser = null;
+	mp.events.call('destroyBrowser');
 });
 
 mp.events.add('entityStreamIn', (entity) => {
@@ -137,7 +133,7 @@ mp.events.add('entityStreamIn', (entity) => {
 	if(entity.getType() === 4) {
 		// Miramos el modelo
 		let model = entity.getModel();
-        if (mp.game.joaat("mp_m_freemode_01") == model || mp.game.joaat("mp_f_freemode_01") == model) {
+        if (mp.game.joaat('mp_m_freemode_01') == model || mp.game.joaat('mp_f_freemode_01') == model) {
 			// Obtenemos la cara y tatuajes del jugador
 			mp.events.callRemote('getPlayerCustomSkin', entity);
 			
@@ -151,64 +147,66 @@ mp.events.add('entityStreamIn', (entity) => {
 	}
 });
 
-mp.events.add('updatePlayerCustomSkin', (player, skinJson, tattooJsonArray) => {
+mp.events.add('updatePlayerCustomSkin', (player, tattooJsonArray) => {
 	// Obtenemos los objetos recibidos
-	let skin = JSON.parse(skinJson);
+	let face = initializeCharacterCreation(player);
 	let tattooArray = JSON.parse(tattooJsonArray);
 	
 	// Actualizamos la apariencia del personaje
-	updatePlayerFace(player, skin);
+	updatePlayerFace(player, face);
 	updatePlayerTattoos(player, tattooArray);
 });
 
-function initializeCharacterCreation() {
+function initializeCharacterCreation(player) {
 	// Rasgos básicos
-	faceModel.faceFirstShape = 0;
-	faceModel.faceSecondShape = 0;
-	faceModel.skinFirstId = 0;
-	faceModel.skinSecondId = 0;
-	faceModel.faceMix = 0.5;
-	faceModel.skinMix = 0.5;
-	faceModel.hairModel = 0;
-	faceModel.firstHairColor = 0;
-	faceModel.secondHairColor = 0;
-	faceModel.beardModel = 0;
-	faceModel.bearColor = 0;
-	faceModel.chestModel = 0;
-	faceModel.chestColor = 0;
-	faceModel.blemishesModel = -1;
-	faceModel.ageingModel = -1;
-	faceModel.complexionModel = -1;
-	faceModel.sundamageModel = -1;
-	faceModel.frecklesModel = -1;
-	faceModel.eyesColor = 0;
-	faceModel.eyebrowsModel = 0;
-	faceModel.eyebrowsColor = 0;
-	faceModel.makeupModel = -1;
-	faceModel.blushModel = -1;
-	faceModel.blushColor = 0;
-	faceModel.lipstickModel = -1;
-	faceModel.lipstickColor = 0;
-	faceModel.noseWidth = 0.0;
-	faceModel.noseHeight = 0.0;
-	faceModel.noseLength = 0.0;
-	faceModel.noseBridge = 0.0;
-	faceModel.noseTip = 0.0;
-	faceModel.noseShift = 0.0;
-	faceModel.browHeight = 0.0;
-	faceModel.browWidth = 0.0;
-	faceModel.cheekboneHeight = 0.0;
-	faceModel.cheekboneWidth = 0.0;
-	faceModel.cheeksWidth = 0.0;
-	faceModel.eyes = 0.0;
-	faceModel.lips = 0.0;
-	faceModel.jawWidth = 0.0;
-	faceModel.jawHeight = 0.0;
-	faceModel.chinLength = 0.0;
-	faceModel.chinPosition = 0.0;
-	faceModel.chinWidth = 0.0;
-	faceModel.chinShape = 0.0;
-	faceModel.neckWidth = 0.0;
+	faceModel.firstHeadShape = player === 'undefined' ? 0 : player.getVariable('FIRST_HEAD_SHAPE');
+	faceModel.secondHeadShape = player === 'undefined' ? 0 : player.getVariable('SECOND_HEAD_SHAPE');
+	faceModel.firstSkinTone = player === 'undefined' ? 0 : player.getVariable('FIRST_SKIN_TONE');
+	faceModel.secondSkinTone = player === 'undefined' ? 0 : player.getVariable('SECOND_SKIN_TONE');
+	faceModel.headMix = player === 'undefined' ? 0.5 : player.getVariable('HEAD_MIX');
+	faceModel.skinMix = player === 'undefined' ? 0.5 : player.getVariable('SKIN_MIX');
+	faceModel.hairModel = player === 'undefined' ? 0 : player.getVariable('HAIR_MODEL');
+	faceModel.firstHairColor = player === 'undefined' ? 0 : player.getVariable('FIRST_HAIR_COLOR');
+	faceModel.secondHairColor = player === 'undefined' ? 0 : player.getVariable('SECOND_HAIR_COLOR');
+	faceModel.beardModel = player === 'undefined' ? 0 : player.getVariable('BEARD_MODEL');
+	faceModel.beardColor = player === 'undefined' ? 0 : player.getVariable('BEARD_COLOR');
+	faceModel.chestModel = player === 'undefined' ? 0 : player.getVariable('CHEST_MODEL');
+	faceModel.chestColor = player === 'undefined' ? 0 : player.getVariable('CHEST_COLOR');
+	faceModel.blemishesModel = player === 'undefined' ? -1 : player.getVariable('BLEMISHES_MODEL');
+	faceModel.ageingModel = player === 'undefined' ? -1 : player.getVariable('AGEING_MODEL');
+	faceModel.complexionModel = player === 'undefined' ? -1 : player.getVariable('COMPLEXION_MODEL');
+	faceModel.sundamageModel = player === 'undefined' ? -1 : player.getVariable('SUNDAMAGE_MODEL');
+	faceModel.frecklesModel = player === 'undefined' ? -1 : player.getVariable('FRECKLES_MODEL');
+	faceModel.eyesColor = player === 'undefined' ? 0 : player.getVariable('EYES_COLOR');
+	faceModel.eyebrowsModel = player === 'undefined' ? 0 : player.getVariable('EYEBROWS_MODEL');
+	faceModel.eyebrowsColor = player === 'undefined' ? 0 : player.getVariable('EYEBROWS_COLOR');
+	faceModel.makeupModel = player === 'undefined' ? -1 : player.getVariable('MAKEUP_MODEL');
+	faceModel.blushModel = player === 'undefined' ? -1 : player.getVariable('BLUSH_MODEL');
+	faceModel.blushColor = player === 'undefined' ? 0 : player.getVariable('BLUSH_COLOR');
+	faceModel.lipstickModel = player === 'undefined' ? -1 : player.getVariable('LIPSTICK_MODEL');
+	faceModel.lipstickColor = player === 'undefined' ? 0 : player.getVariable('LIPSTICK_COLOR');
+	faceModel.noseWidth = player === 'undefined' ? 0.0 : player.getVariable('NOSE_WIDTH');
+	faceModel.noseHeight = player === 'undefined' ? 0.0 : player.getVariable('NOSE_HEIGHT');
+	faceModel.noseLength = player === 'undefined' ? 0.0 : player.getVariable('NOSE_LENGTH');
+	faceModel.noseBridge = player === 'undefined' ? 0.0 : player.getVariable('NOSE_BRIDGE');
+	faceModel.noseTip = player === 'undefined' ? 0.0 : player.getVariable('NOSE_TIP');
+	faceModel.noseShift = player === 'undefined' ? 0.0 : player.getVariable('NOSE_SHIFT');
+	faceModel.browHeight = player === 'undefined' ? 0.0 : player.getVariable('BROW_HEIGHT');
+	faceModel.browWidth = player === 'undefined' ? 0.0 : player.getVariable('BROW_WIDTH');
+	faceModel.cheekboneHeight = player === 'undefined' ? 0.0 : player.getVariable('CHEEKBONE_HEIGHT');
+	faceModel.cheekboneWidth = player === 'undefined' ? 0.0 : player.getVariable('CHEEKBONE_WIDTH');
+	faceModel.cheeksWidth = player === 'undefined' ? 0.0 : player.getVariable('CHEEKS_WIDTH');
+	faceModel.eyes = player === 'undefined' ? 0.0 : player.getVariable('EYES');
+	faceModel.lips = player === 'undefined' ? 0.0 : player.getVariable('LIPS');
+	faceModel.jawWidth = player === 'undefined' ? 0.0 : player.getVariable('JAW_WIDTH');
+	faceModel.jawHeight = player === 'undefined' ? 0.0 : player.getVariable('JAW_HEIGHT');
+	faceModel.chinLength = player === 'undefined' ? 0.0 : player.getVariable('CHIN_LENGTH');
+	faceModel.chinPosition = player === 'undefined' ? 0.0 : player.getVariable('CHIN_POSITION');
+	faceModel.chinWidth = player === 'undefined' ? 0.0 : player.getVariable('CHIN_WIDTH');
+	faceModel.chinShape = player === 'undefined' ? 0.0 : player.getVariable('CHIN_SHAPE');
+	faceModel.neckWidth = player === 'undefined' ? 0.0 : player.getVariable('NECK_WIDTH');
+	
+	return faceModel;
 }
 
 function updatePlayerFace(player, face) {

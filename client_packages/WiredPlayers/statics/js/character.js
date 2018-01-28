@@ -126,7 +126,7 @@ function showPrevFatherFace() {
 		currentFatherFace--;
 	}
 	$("#face-father-shape").text("Tipo " + (currentFatherFace + 1));
-	mp.trigger('updatePlayerCreation', 'faceFirstShape', currentFatherFace, false);	
+	mp.trigger('updatePlayerCreation', 'firstHeadShape', currentFatherFace, false);	
 }
 
 function showNextFatherFace() {
@@ -136,7 +136,7 @@ function showNextFatherFace() {
 		currentFatherFace++;
 	}
 	$("#face-father-shape").text("Tipo " + (currentFatherFace + 1));
-	mp.trigger('updatePlayerCreation', 'faceFirstShape', currentFatherFace, false);	
+	mp.trigger('updatePlayerCreation', 'firstHeadShape', currentFatherFace, false);	
 }
 
 function showPrevMotherFace() {
@@ -146,7 +146,7 @@ function showPrevMotherFace() {
 		currentMotherFace--;
 	}
 	$("#face-mother-shape").text("Tipo " + (currentMotherFace - 1));
-	mp.trigger('updatePlayerCreation', 'faceSecondShape', currentMotherFace, false);	
+	mp.trigger('updatePlayerCreation', 'secondHeadShape', currentMotherFace, false);	
 }
 
 function showNextMotherFace() {
@@ -156,7 +156,7 @@ function showNextMotherFace() {
 		currentMotherFace++;
 	}
 	$("#face-mother-shape").text("Tipo " + (currentMotherFace - 1));
-	mp.trigger('updatePlayerCreation', 'faceSecondShape', currentMotherFace, false);
+	mp.trigger('updatePlayerCreation', 'secondHeadShape', currentMotherFace, false);
 }
 
 function showPrevFatherSkin() {
@@ -166,7 +166,7 @@ function showPrevFatherSkin() {
 		currentFatherSkin--;
 	}
 	$("#father-skin").text("Tipo " + (currentFatherSkin + 1));
-	mp.trigger('updatePlayerCreation', 'skinFirstId', currentFatherSkin, false);
+	mp.trigger('updatePlayerCreation', 'firstSkinTone', currentFatherSkin, false);
 }
 
 function showNextFatherSkin() {
@@ -176,7 +176,7 @@ function showNextFatherSkin() {
 		currentFatherSkin++;
 	}
 	$("#father-skin").text("Tipo " + (currentFatherSkin + 1));
-	mp.trigger('updatePlayerCreation', 'skinFirstId', currentFatherSkin, false);
+	mp.trigger('updatePlayerCreation', 'firstSkinTone', currentFatherSkin, false);
 }
 
 function showPrevMotherSkin() {
@@ -186,7 +186,7 @@ function showPrevMotherSkin() {
 		currentMotherSkin--;
 	}
 	$("#mother-skin").text("Tipo " + (currentMotherSkin + 1));
-	mp.trigger('updatePlayerCreation', 'skinSecondId', currentMotherSkin, false);
+	mp.trigger('updatePlayerCreation', 'secondSkinTone', currentMotherSkin, false);
 }
 
 function showNextMotherSkin() {
@@ -196,12 +196,12 @@ function showNextMotherSkin() {
 		currentMotherSkin++;
 	}
 	$("#mother-skin").text("Tipo " + (currentMotherSkin + 1));
-	mp.trigger('updatePlayerCreation', 'skinSecondId', currentMotherSkin, false);
+	mp.trigger('updatePlayerCreation', 'secondSkinTone', currentMotherSkin, false);
 }
 
 function updateFaceMix() {
-	let faceMixValue = document.getElementById('faceMix').value;
-	mp.trigger('updatePlayerCreation', 'faceMix', faceMixValue, true);
+	let faceMixValue = document.getElementById('headMix').value;
+	mp.trigger('updatePlayerCreation', 'headMix', faceMixValue, true);
 }
 
 function updateSkinMix() {
