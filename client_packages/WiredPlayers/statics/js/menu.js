@@ -3,8 +3,10 @@ const PRICE_HAMBURGER = 10;
 const PRICE_SANDWICH = 5;
 
 let tunningComponents = [];
+let tattooZones = [];
 let selectedCrimes = [];
 let purchasedAmount = 1;
+let multiplier = 0.0;
 let selected = null;
 let drawable = null;
 
@@ -663,6 +665,200 @@ function populateCharacterList(charactersJson) {
 		
 	// Ordenamos la jerarquía de elementos
 	options.appendChild(createButton);
+	options.appendChild(cancelButton);
+}
+
+function populateTattooMenu(tattooZoneArray, businessName, priceMultiplier) {
+	// Añadimos el título al menú
+	let header = document.getElementById('header');
+	header.textContent = businessName;
+	
+	// Obtenemos las listas de tatuajes
+	tattooZones = JSON.parse(tattooZoneArray);
+	multiplier = priceMultiplier;
+	
+	// Mostramos el menú principal
+	populateTattooHome();
+}
+
+function populateTattooHome() {
+	// Obtenemos el nodo contenedor
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Inicializamos las opciones
+	selected = null;
+	drawable = null;
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < tattooZones.length; i++) {
+		// Obtenemos la zona en curso
+		let zone = tattooZones[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		itemDescription.classList.add('item-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = zone;
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Seleccionamos el elemento pulsado
+			selected = i;
+			
+			// Cargamos la lista de tatuajes de la zona
+			mp.trigger('getZoneTattoos', selected);
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+	}
+	
+	// Añadimos el botón
+	let exitButton = document.createElement('div');
+	
+	// Añadimos las clases al botón
+	exitButton.classList.add('single-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	exitButton.textContent = 'Salir';
+	
+	exitButton.onclick = (function() {
+		// Salimos del menú
+		mp.trigger('exitTattooShop');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(exitButton);
+}
+
+function populateZoneTattoos(zoneTattooJson) {
+	// Obtenemos el nodo contenedor
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Parseamos el JSON
+	let zoneTattooArray = JSON.parse(zoneTattooJson);
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < zoneTattooArray.length; i++) {
+		// Obtenemos el componente
+		let tattoo = zoneTattooArray[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = tattoo.name;
+		itemPrice.innerHTML = '<b>Precio unitario: </b>' + Math.round(tattoo.price * multiplier) + '$';
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(drawable !== i) {
+				// Miramos si había algún elemento seleccionado
+				if(drawable != null) {
+					let previousSelected = document.getElementsByClassName('item-row')[drawable];
+					previousSelected.classList.remove('active-item');
+				}
+				
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el nuevo índice seleccionado
+				drawable = i;
+				
+				// Actualizamos el tunning del vehículo
+				mp.trigger('addPlayerTattoo', drawable);
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+	}
+	
+	// Añadimos los botones
+	let purchaseButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	purchaseButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	purchaseButton.textContent = 'Comprar';
+	cancelButton.textContent = 'Atrás';
+	
+	// Ponemos la función para cada elemento
+	purchaseButton.onclick = (function() {
+		// Mandamos la acción de compra si ha seleccionado algo
+		if(selected != null) {
+			//mp.trigger('purchaseItem', selected, purchasedAmount);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Volvemos al inicio
+		populateTattooHome();
+		
+		// Limpiamos los tatuajes no comprados
+		mp.trigger('clearTattoos');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(purchaseButton);
 	options.appendChild(cancelButton);
 }
 

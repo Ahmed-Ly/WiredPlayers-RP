@@ -1709,10 +1709,30 @@ namespace WiredPlayers.globals
                         NAPI.ClientEvent.TriggerClientEvent(player, "showHairdresserMenu");
                         break;
                     case Constants.BUSINESS_TYPE_TATTOO_SHOP:
-                        // Cargamos la lista de tatuajes
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                        int playerSex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
+
+                        // Eliminamos la ropa del personaje
+                        NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
+                        NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
+                        NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
+
+                        // Ropa dependiente del sexo
+                        if (playerSex == 0)
+                        {
+                            NAPI.Player.SetPlayerClothes(player, 4, 61, 0);
+                            NAPI.Player.SetPlayerClothes(player, 6, 34, 0);
+                        }
+                        else
+                        {
+                            NAPI.Player.SetPlayerClothes(player, 4, 15, 0);
+                            NAPI.Player.SetPlayerClothes(player, 6, 35, 0);
+                        }
+
+                        // Cargamos la lista de tatuajes
                         List<TattooModel> tattooList = GetPlayerTattoos(playerId);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showTattooMenu", NAPI.Util.ToJson(tattooList), business.multiplier);
+
+                        NAPI.ClientEvent.TriggerClientEvent(player, "showTattooMenu", NAPI.Util.ToJson(tattooList), NAPI.Util.ToJson(Constants.TATTOO_LIST), business.name, business.multiplier);
                         break;
                     default:
                         List<BusinessItemModel> businessItems = Business.GetBusinessSoldItems(business.type);
