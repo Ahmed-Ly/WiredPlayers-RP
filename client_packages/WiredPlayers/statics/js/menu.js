@@ -759,7 +759,6 @@ function populateZoneTattoos(zoneTattooJson) {
 	let options = document.getElementById('options');
 	
 	// Parseamos el JSON
-	alert(zoneTattooJson);
 	let zoneTattooArray = JSON.parse(zoneTattooJson);
 	
 	// Limpiamos el contenido

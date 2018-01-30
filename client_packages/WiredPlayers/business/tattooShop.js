@@ -25,8 +25,7 @@ mp.events.add('getZoneTattoos', (zone) => {
 	}
 	
 	// Mostramos la lista de tatuajes en el menú
-	let zoneTattoosJson = JSON.stringify(zoneTattoos);
-	mp.events.call('executeFunction', ['populateZoneTattoos', zoneTattoosJson]);
+	mp.events.call('executeFunction', ['populateZoneTattoos', JSON.stringify(zoneTattoos).replace(/'/g, "\\'")]);
 });
 
 mp.events.add('addPlayerTattoo', (index) => {
@@ -47,17 +46,19 @@ mp.events.add('clearTattoos', () => {
 });
 
 mp.events.add('purchaseTattoo', (slot, index) => {
+	mp.gui.chat.push("a");
 	// Obtenemos el sexo del jugador
 	let playerSex = mp.players.local.getVariable('PLAYER_SEX');
 	
 	// Añadimos al array el nuevo tatuaje
 	let tattoo = {};
 	tattoo.slot = slot;
-	tattoo.library = zoneTattoos[i].library;
-	tattoo.library = playerSex === 0 ? zoneTattoos[i].maleHash : zoneTattoos[i].femaleHash;
+	tattoo.library = zoneTattoos[index].library;
+	tattoo.hash = playerSex === 0 ? zoneTattoos[index].maleHash : zoneTattoos[index].femaleHash;
 	
 	// Añadimos el tatuaje a la lista
 	playerTattooArray.push(tattoo);
+	mp.gui.chat.push("a");
 	
 	// Mandamos la acción de compra de tatuaje
 	mp.events.callRemote('purchaseTattoo', slot, index);
