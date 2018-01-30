@@ -319,7 +319,7 @@ namespace WiredPlayers.globals
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                     ItemModel item = GetItemModelFromId(itemId);
-                    if(item != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
+                    if (item != null && item.objectHandle != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
                     {
                         NAPI.Entity.DetachEntity(item.objectHandle);
                         NAPI.Entity.DeleteEntity(item.objectHandle);
