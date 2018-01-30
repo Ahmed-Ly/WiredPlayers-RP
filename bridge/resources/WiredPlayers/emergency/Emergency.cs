@@ -79,7 +79,7 @@ namespace WiredPlayers.emergency
 
         private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 DestroyDeathTimer(player);
             }
@@ -123,7 +123,7 @@ namespace WiredPlayers.emergency
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, true);
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
 
-                int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_SQL_ID);
+                int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_KILLED);
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
                 NAPI.Entity.SetEntityInvincible(player, true);
                 NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);

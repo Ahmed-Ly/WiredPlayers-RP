@@ -63,10 +63,6 @@ namespace WiredPlayers.login
 
                         // Generación de la ropa del personaje
                         Globals.PopulateCharacterClothes(player);
-
-                        // Añadimos la vida y chaleco
-                        NAPI.Player.SetPlayerHealth(player, character.health);
-                        NAPI.Player.SetPlayerArmor(player, character.armor);
                     }
                     else
                     {
@@ -130,11 +126,9 @@ namespace WiredPlayers.login
             NAPI.Player.SetPlayerHealth(player, 100);
             NAPI.Player.SetPlayerArmor(player, 0);
             NAPI.Entity.SetEntityTransparency(player, 0);
-            
-            // Eliminamos el id del jugador
-            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ID);
 
             // Limpiamos las armas que pueda tener
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ID);
             NAPI.Player.RemoveAllPlayerWeapons(player);
 
             // Inicialización de los entity data sincronizados
@@ -151,7 +145,7 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_ROT, rotation);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_PHONE, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_RADIO, 0);
-            NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, 0); 
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_FACTION, 0);
@@ -252,6 +246,8 @@ namespace WiredPlayers.login
             // Carga de los datos básicos del personaje normales
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, character.id);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, character.realName);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_HEALTH, character.health);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ARMOR, character.armor);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_RANK, character.adminRank);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_NAME, character.adminName);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_SPAWN_POS, character.position);

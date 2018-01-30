@@ -725,7 +725,7 @@ function populateTattooHome() {
 			selected = i;
 			
 			// Cargamos la lista de tatuajes de la zona
-			mp.trigger('getZoneTattoos', selected);
+			mp.trigger('getZoneTattoos', i);
 		});
 		
 		// Ordenamos la jerarquía de elementos
@@ -759,6 +759,7 @@ function populateZoneTattoos(zoneTattooJson) {
 	let options = document.getElementById('options');
 	
 	// Parseamos el JSON
+	alert(zoneTattooJson);
 	let zoneTattooArray = JSON.parse(zoneTattooJson);
 	
 	// Limpiamos el contenido
@@ -795,7 +796,7 @@ function populateZoneTattoos(zoneTattooJson) {
 		
 		// Añadimos el contenido de cada elemento
 		itemDescription.textContent = tattoo.name;
-		itemPrice.innerHTML = '<b>Precio unitario: </b>' + Math.round(tattoo.price * multiplier) + '$';
+		itemPrice.innerHTML = '<b>Precio: </b>' + Math.round(tattoo.price * multiplier) + '$';
 		
 		// Ponemos la función para cada elemento
 		itemContainer.onclick = (function() {
@@ -814,7 +815,7 @@ function populateZoneTattoos(zoneTattooJson) {
 				// Guardamos el nuevo índice seleccionado
 				drawable = i;
 				
-				// Actualizamos el tunning del vehículo
+				// Actualizamos los tatuajes
 				mp.trigger('addPlayerTattoo', drawable);
 			}
 		});
@@ -845,7 +846,7 @@ function populateZoneTattoos(zoneTattooJson) {
 	purchaseButton.onclick = (function() {
 		// Mandamos la acción de compra si ha seleccionado algo
 		if(selected != null) {
-			//mp.trigger('purchaseItem', selected, purchasedAmount);
+			mp.trigger('purchaseTattoo', selected, drawable);
 		}
 	});
 	

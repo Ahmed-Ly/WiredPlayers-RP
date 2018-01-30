@@ -307,22 +307,25 @@ namespace WiredPlayers.globals
                 character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
                 character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                 character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-
+                
                 // Datos sincronizados
                 character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                 character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
-
+                
                 // Guardamos en la base de datos
                 Database.SaveCharacterInformation(character);
-
+                
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                     ItemModel item = GetItemModelFromId(itemId);
-                    NAPI.Entity.DetachEntity(item.objectHandle);
-                    NAPI.Entity.DeleteEntity(item.objectHandle);
+                    if(item != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
+                    {
+                        NAPI.Entity.DetachEntity(item.objectHandle);
+                        NAPI.Entity.DeleteEntity(item.objectHandle);
+                    }
                 }
-
+                
                 // Borramos la duda que tenga abierta
                 foreach (AdminTicketModel adminTicket in adminTicketList)
                 {
@@ -1166,6 +1169,8 @@ namespace WiredPlayers.globals
                     {
                         // Sacamos las variables necesarias para spawnear al jugador
                         int playerSqlId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                        int playerHealth = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HEALTH);
+                        int playerArmor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ARMOR);
                         String realName = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
                         Vector3 spawnPosition = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SPAWN_POS);
                         Vector3 spawnRotation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SPAWN_ROT);
@@ -1241,6 +1246,8 @@ namespace WiredPlayers.globals
                         NAPI.Player.SetPlayerName(player, realName);
                         NAPI.Entity.SetEntityPosition(player, spawnPosition);
                         NAPI.Entity.SetEntityRotation(player, spawnRotation);
+                        NAPI.Player.SetPlayerHealth(player, playerHealth);
+                        NAPI.Player.SetPlayerArmor(player, playerArmor);
 
                         // Comprobamos si está muerto
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)

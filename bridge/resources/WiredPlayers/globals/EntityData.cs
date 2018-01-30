@@ -8,6 +8,8 @@ namespace WiredPlayers.globals
         public const String PLAYER_ID = "PLAYER_ID";
         public const String PLAYER_SQL_ID = "PLAYER_SQL_ID";
         public const String PLAYER_NAME = "PLAYER_NAME";
+        public const String PLAYER_HEALTH = "PLAYER_HEALTH";
+        public const String PLAYER_ARMOR = "PLAYER_ARMOR";
         public const String PLAYER_BANK = "PLAYER_BANK";
         public const String PLAYER_MONEY = "PLAYER_MONEY";
         public const String PLAYER_AGE = "PLAYER_AGE";

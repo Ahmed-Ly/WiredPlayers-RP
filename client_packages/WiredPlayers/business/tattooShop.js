@@ -25,7 +25,8 @@ mp.events.add('getZoneTattoos', (zone) => {
 	}
 	
 	// Mostramos la lista de tatuajes en el menú
-	mp.events.call('executeFunction', ['populateZoneTattoos', JSON.stringify(zoneTattoos)]);
+	let zoneTattoosJson = JSON.stringify(zoneTattoos);
+	mp.events.call('executeFunction', ['populateZoneTattoos', zoneTattoosJson]);
 });
 
 mp.events.add('addPlayerTattoo', (index) => {

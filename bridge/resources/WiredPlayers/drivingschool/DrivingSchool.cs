@@ -233,7 +233,7 @@ namespace WiredPlayers.drivingschool
 
         private void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Miramos si tiene el timer activo
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);

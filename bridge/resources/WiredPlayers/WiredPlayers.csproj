@@ -4,7 +4,7 @@
     <RuntimeFrameworkVersion>2.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="gtanetwork.api" Version="0.3.2.1" />
+    <PackageReference Include="gtanetwork.api" Version="0.3.2.3" />
     <PackageReference Include="MySql.Data" Version="6.10.6" />
   </ItemGroup>
 </Project>

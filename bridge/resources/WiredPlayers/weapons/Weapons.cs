@@ -263,13 +263,13 @@ namespace WiredPlayers.weapons
 
         private void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Obtenemos el id del personaje
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(playerId);
 
-                if(weaponCrate != null)
+                if (weaponCrate != null)
                 {
                     weaponCrate.position = new Vector3(player.Position.X, player.Position.Y, player.Position.X - 1.0f);
                     weaponCrate.carriedEntity = String.Empty;
