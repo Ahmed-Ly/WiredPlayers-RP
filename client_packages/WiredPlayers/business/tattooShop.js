@@ -46,7 +46,6 @@ mp.events.add('clearTattoos', () => {
 });
 
 mp.events.add('purchaseTattoo', (slot, index) => {
-	mp.gui.chat.push("a");
 	// Obtenemos el sexo del jugador
 	let playerSex = mp.players.local.getVariable('PLAYER_SEX');
 	
@@ -58,7 +57,6 @@ mp.events.add('purchaseTattoo', (slot, index) => {
 	
 	// Añadimos el tatuaje a la lista
 	playerTattooArray.push(tattoo);
-	mp.gui.chat.push("a");
 	
 	// Mandamos la acción de compra de tatuaje
 	mp.events.callRemote('purchaseTattoo', slot, index);
