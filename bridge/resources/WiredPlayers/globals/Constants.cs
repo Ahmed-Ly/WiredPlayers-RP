@@ -15,6 +15,7 @@ namespace WiredPlayers.globals
         public const String FEMALE_PED_MODEL = "mp_f_freemode_01";
         public const int MALE_PED_HASH = 1885233650;
         public const int FEMALE_PED_HASH = -1667301416;
+        public const int ENVIRONMENT_KILL = 65535;
         public const int ITEMS_PER_INVENTORY_PAGE = 16;
         public const decimal ITEMS_ROBBED_PER_TIME = 1.5m;
         public const int MAX_GARBAGE_ROUTES = 4;

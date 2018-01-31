@@ -123,8 +123,23 @@ namespace WiredPlayers.emergency
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, true);
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
 
-                int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_KILLED);
-                NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
+                if(killer.Value == Constants.ENVIRONMENT_KILL)
+                {
+                    // Miramos si estaba muerto
+                    int databaseKiller = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
+
+                    if(databaseKiller == 0)
+                    {
+                        // Ponemos al entorno como causante real
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
+                    }
+                }
+                else
+                {
+                    int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_SQL_ID);
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
+                }
+
                 NAPI.Entity.SetEntityInvincible(player, true);
                 NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);

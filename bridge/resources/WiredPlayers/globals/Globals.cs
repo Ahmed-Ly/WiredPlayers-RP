@@ -187,9 +187,8 @@ namespace WiredPlayers.globals
                     switch (area.action)
                     {
                         case "character-selector":
-                            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYING) == false)
+                            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
                             {
-                                NAPI.Chat.SendChatMessageToAll("Te seteo creación");
                                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
                             }
                             break;
@@ -1950,7 +1949,7 @@ namespace WiredPlayers.globals
                                     {
                                         foreach (Client rndPlayer in NAPI.Pools.GetAllPlayers()) // Si hay jugadores dentro no se puede vender.
                                         {
-                                            if (NAPI.Data.GetEntityData(rndPlayer, EntityData.PLAYER_PLAYING) == true && NAPI.Data.GetEntityData(rndPlayer, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
+                                            if (NAPI.Data.HasEntityData(rndPlayer, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(rndPlayer, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
                                             {
                                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOUSE_OCCUPIED);
                                                 return;
