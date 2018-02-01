@@ -1712,7 +1712,7 @@ namespace WiredPlayers.globals
                         NAPI.ClientEvent.TriggerClientEvent(player, "showClothesBusinessPurchaseMenu");
                         break;
                     case Constants.BUSINESS_TYPE_BARBER_SHOP:
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showHairdresserMenu");
+                        NAPI.ClientEvent.TriggerClientEvent(player, "showHairdresserMenu", business.name);
                         break;
                     case Constants.BUSINESS_TYPE_TATTOO_SHOP:
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);

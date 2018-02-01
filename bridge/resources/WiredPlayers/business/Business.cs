@@ -5,6 +5,7 @@ using WiredPlayers.model;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 
 namespace WiredPlayers.business
 {
@@ -424,8 +425,8 @@ namespace WiredPlayers.business
             }
         }
 
-        [RemoteEvent("hairStyleChanged")]
-        public void HairStyleChangedEvent(Client player, params object[] arguments)
+        [RemoteEvent("changeHairStyle")]
+        public void ChangeHairStyleEvent(Client player, params object[] arguments)
         {
             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
@@ -438,14 +439,7 @@ namespace WiredPlayers.business
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
                 // Creamos el modelo de datos
-                SkinModel skin = new SkinModel();
-                skin.hairModel = NAPI.Data.GetEntitySharedData(player, EntityData.HAIR_MODEL);
-                skin.firstHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR);
-                skin.secondHairColor = NAPI.Data.GetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR);
-                skin.beardModel = NAPI.Data.GetEntitySharedData(player, EntityData.BEARD_MODEL);
-                skin.beardColor = NAPI.Data.GetEntitySharedData(player, EntityData.BEARD_COLOR);
-                skin.eyebrowsModel = NAPI.Data.GetEntitySharedData(player, EntityData.EYEBROWS_MODEL);
-                skin.eyebrowsColor = NAPI.Data.GetEntitySharedData(player, EntityData.EYEBROWS_COLOR);
+                SkinModel skin = JsonConvert.DeserializeObject<SkinModel>(arguments[0].ToString());
 
                 // Recogemos los datos de peluquería
                 Database.UpdateCharacterHair(playerId, skin);
