@@ -438,11 +438,30 @@ namespace WiredPlayers.business
                 // Obtenemos el id del jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-                // Creamos el modelo de datos
-                SkinModel skin = JsonConvert.DeserializeObject<SkinModel>(arguments[0].ToString());
+                // Obtenemos la nueva imagen
+                dynamic skinModel = NAPI.Util.FromJson(arguments[0].ToString());
 
+                // Creamos el modelo de datos
+                SkinModel skin = new SkinModel();
+                skin.hairModel = skinModel.hairModel;
+                skin.firstHairColor = skinModel.firstHairColor; 
+                skin.secondHairColor = skinModel.secondHairColor; 
+                skin.beardModel = skinModel.beardModel;
+                skin.beardColor = skinModel.beardColor;
+                skin.eyebrowsModel = skinModel.eyebrowsModel;
+                skin.eyebrowsColor = skinModel.eyebrowsColor;
+                
                 // Recogemos los datos de peluquería
                 Database.UpdateCharacterHair(playerId, skin);
+
+                // Guardamos los datos para el cliente
+                NAPI.Data.SetEntitySharedData(player, EntityData.HAIR_MODEL, skin.hairModel);
+                NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR, skin.firstHairColor);
+                NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR, skin.secondHairColor);
+                NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_MODEL, skin.beardModel);
+                NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_COLOR, skin.beardColor);
+                NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_MODEL, skin.eyebrowsModel);
+                NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_COLOR, skin.eyebrowsColor);
 
                 // Restamos el dinero al jugador
                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);

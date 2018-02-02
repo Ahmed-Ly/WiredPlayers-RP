@@ -1,7 +1,7 @@
 ﻿const maleFaceOptions = [
 	{'desc': 'Peinado', 'minValue': 0, 'maxValue': 36}, {'desc': 'Color principal del pelo', 'minValue': 0, 'maxValue': 63}, {'desc': 'Color secundario del pelo', 'minValue': 0, 'maxValue': 63}, 
-	{'desc': 'Barba', 'minValue': -1, 'maxValue': 36}, {'desc': 'Color de la barba', 'minValue': 0, 'maxValue': 63}, 
-	{'desc': 'Cejas', 'minValue': 0, 'maxValue': 33}, {'desc': 'Color de las cejas', 'minValue': 0, 'maxValue': 63}
+	{'desc': 'Cejas', 'minValue': 0, 'maxValue': 33}, {'desc': 'Color de las cejas', 'minValue': 0, 'maxValue': 63}, 
+	{'desc': 'Barba', 'minValue': -1, 'maxValue': 36}, {'desc': 'Color de la barba', 'minValue': 0, 'maxValue': 63}
 ];
 
 const femaleFaceOptions = [
@@ -48,14 +48,15 @@ mp.events.add('updateFacialHair', (slot, value) => {
 
 mp.events.add('applyHairdresserChanges', () => {
 	// Generamos el array con los datos
-	let generatedFace = new Array();
-	generatedFace['hairModel'] = faceHairArray[0];
-	generatedFace['firstHairColor'] = faceHairArray[1];
-	generatedFace['secondHairColor'] = faceHairArray[2];
-	generatedFace['eyebrowsModel'] = faceHairArray[3];
-	generatedFace['eyebrowsColor'] = faceHairArray[4];
-	generatedFace['beardModel'] = faceHairArray[5];
-	generatedFace['beardColor'] = faceHairArray[6];
+	let generatedFace = {};
+	
+	generatedFace.hairModel = faceHairArray[0];
+	generatedFace.firstHairColor = faceHairArray[1];
+	generatedFace.secondHairColor = faceHairArray[2];
+	generatedFace.eyebrowsModel = faceHairArray[3];
+	generatedFace.eyebrowsColor = faceHairArray[4];
+	generatedFace.beardModel = faceHairArray[5];
+	generatedFace.beardColor = faceHairArray[6];
 
 	// Aplicamos el cambio de apariencia
 	mp.events.callRemote('changeHairStyle', JSON.stringify(generatedFace));
