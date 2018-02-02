@@ -1007,6 +1007,233 @@ function populateHairdresserMenu(faceOptionsJson, selectedFaceJson, businessName
 	options.appendChild(cancelButton);
 }
 
+function populateTownHallMenu(townHallOptionsJson) {
+	// Obtenemos la lista de opciones
+	let townHallOptions = JSON.parse(townHallOptionsJson);
+	let header = document.getElementById('header');
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Añadimos la cabecera del menú
+	header.textContent = 'Trámites del ayuntamiento';
+	selected = null;
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < townHallOptions.length; i++) {
+		// Obtenemos el objeto en curso
+		let townHall = townHallOptions[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = townHall.desc;
+		
+		if(townHall.price > 0) {
+			// Si tiene precio, lo mostramos
+			itemPrice.innerHTML = '<b>Precio: </b>' + townHall.price + '$';
+		}
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(selected !== i) {
+				// Miramos si había algún elemento seleccionado
+				if(selected != null) {
+					let previousSelected = document.getElementsByClassName('item-row')[selected];
+					previousSelected.classList.remove('active-item');
+				}
+				
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el nuevo índice seleccionado
+				selected = i;
+				
+				// Cambiamos el texto del botón
+				let leftButton = document.getElementsByClassName('accept-button')[0];
+				leftButton.textContent = townHall.price > 0 ? 'Pagar' : 'Comprobar';
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+	}
+	
+	// Añadimos los botones
+	let acceptButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	acceptButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	acceptButton.textContent = 'Pagar';
+	cancelButton.textContent = 'Salir';
+	
+	// Ponemos la función para cada elemento
+	acceptButton.onclick = (function() {
+		if(selected != null) {
+			// Ejecutamos la acción seleccionada
+			mp.trigger('executeTownHallOperation', selected);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Cerramos la ventana del ayuntamiento
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(acceptButton);
+	options.appendChild(cancelButton);
+}
+
+function populateFinesMenu(finesJson) {
+	// Obtenemos la lista de opciones
+	let finesList = JSON.parse(finesJson);
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	selectedOptions = [];
+	
+	// Limpiamos el contenido
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	// Limpiamos las opciones
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < finesList.length; i++) {
+		// Obtenemos el objeto en curso
+		let fine = finesList[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let purchaseContainer = document.createElement('div');
+		let priceContainer = document.createElement('div');
+		let itemAmountContainer = document.createElement('div');
+		let amountTextContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		let itemPrice = document.createElement('span');
+		let itemAmount = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		purchaseContainer.classList.add('item-purchase');
+		priceContainer.classList.add('item-price-container');
+		itemAmountContainer.classList.add('item-amount-container');
+		amountTextContainer.classList.add('item-amount-desc-container');
+		itemDescription.classList.add('item-description');
+		itemPrice.classList.add('item-price');
+		itemAmount.classList.add('item-amount-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = fine.reason;
+		itemPrice.innerHTML = '<b>Cantidad: </b>' + fine.amount + '$';
+		itemAmount.innerHTML = '<b>Fecha: </b>' + fine.date;
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(selectedOptions.indexOf(i) === -1) {
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el índice seleccionado
+				selectedOptions.push(i);
+			} else {
+				// Eliminamos la selección del elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.remove('active-item');
+				
+				// Eliminamos el índice seleccionado
+				selectedOptions.splice(selectedOptions.indexOf(i), 1);
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+		infoContainer.appendChild(purchaseContainer);
+		purchaseContainer.appendChild(priceContainer);
+		priceContainer.appendChild(itemPrice);
+		purchaseContainer.appendChild(itemAmountContainer);
+		itemAmountContainer.appendChild(amountTextContainer);
+		amountTextContainer.appendChild(itemAmount);
+	}
+	
+	// Añadimos los botones
+	let acceptButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	acceptButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	acceptButton.textContent = 'Pagar';
+	cancelButton.textContent = 'Atrás';
+	
+	// Ponemos la función para cada elemento
+	acceptButton.onclick = (function() {
+		if(selectedOptions.length > 0) {
+			// Pagamos las multas del jugador
+			mp.trigger('payPlayerFines', selectedOptions);
+		}
+	});
+	
+	cancelButton.onclick = (function() {
+		// Volvemos al índice del ayuntamiento
+		mp.trigger('backTownHallIndex');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(acceptButton);
+	options.appendChild(cancelButton);
+}
+
 function findFirstChildByClass(element, className) {
 	let foundElement = null, found;
 	function recurse(element, className, found) {

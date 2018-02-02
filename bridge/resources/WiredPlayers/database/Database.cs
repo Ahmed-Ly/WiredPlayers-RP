@@ -1917,36 +1917,6 @@ namespace WiredPlayers.database
             return fineList;
         }
 
-        public static int GetAllFinesAmount(String name)
-        {
-            int amount = 0;
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT COALESCE(SUM(amount), 0) AS total FROM fines WHERE target = @target";
-                    command.Parameters.AddWithValue("@target", name);
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            amount = reader.GetInt32("total");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAllFinesAmount] " + ex.Message);
-                }
-            }
-
-            return amount;
-        }
-
         public static void InsertFine(FineModel fine)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -1971,7 +1941,7 @@ namespace WiredPlayers.database
             }
         }
 
-        public static void RemoveAllFines(String name)
+        public static void RemoveFines(List<FineModel> fineList)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1980,14 +1950,27 @@ namespace WiredPlayers.database
                     connection.Open();
                     MySqlCommand command = connection.CreateCommand();
 
-                    command.CommandText = "DELETE FROM fines WHERE target = @target";
-                    command.Parameters.AddWithValue("@target", name);
+                    // Creamos la consulta de borrado
+                    command.CommandText = "DELETE FROM fines WHERE officer = @officer AND target = @target AND date = @date LIMIT 1";
 
-                    command.ExecuteNonQuery();
+                    // Recorremos la lista de multas
+                    foreach (FineModel fine in fineList)
+                    {
+                        // Limpiamos la lista de parámetros
+                        command.Parameters.Clear();
+
+                        // Actualizamos la lista de parámetros para cada fila
+                        command.Parameters.AddWithValue("@officer", fine.officer);
+                        command.Parameters.AddWithValue("@target", fine.target);
+                        command.Parameters.AddWithValue("@date", fine.date);
+
+                        // Ejecutamos la query
+                        command.ExecuteNonQuery();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveAllFines] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveFines] " + ex.Message);
                 }
             }
         }

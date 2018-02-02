@@ -423,7 +423,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_NOT_MEDICAL_INSURANCE_MONEY = "Necesitas {0}$ para sacarte el seguro médico.";
         public const String ERR_PLAYER_HAS_TAXI_LICENSE = "Ya tienes una licencia de taxis.";
         public const String ERR_PLAYER_NOT_TAXI_LICENSE_MONEY = "Necesitas {0}$ para sacarte la licencia de taxis.";
-        public const String ERR_PLAYER_NO_FINES = "No tienes ninguna multa pendiente.";
+        public const String ERR_PLAYER_NO_FINES = "No has seleccionado ninguna multa a pagar.";
         public const String ERR_PLAYER_NOT_FINE_MONEY = "Necesitas {0}$ para pagar tus multas.";
         public const String ERR_WEAPON_LICENSE_EXPIRED = "No tienes la licencia de armas vigente."; 
         public const String ERR_PLAYER_CANT_CHAT = "No puedes usar el chat dentro de la sala de selección de personaje.";
