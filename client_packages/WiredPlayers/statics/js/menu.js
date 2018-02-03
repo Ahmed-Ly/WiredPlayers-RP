@@ -484,7 +484,7 @@ function populateFastfoodOrders(ordersJson, distancesJson) {
 	options.appendChild(cancelButton);
 }
 
-function populateCrimesMenu(crimesJson) {
+function populateCrimesMenu(crimesJson, selectedCrimes) {
 	// Obtenemos el nodo contenedor
 	let header = document.getElementById('header');
 	let content = document.getElementById('content');
@@ -493,7 +493,7 @@ function populateCrimesMenu(crimesJson) {
 	// Añadimos el texto de cabecera y obtenemos la lista de delitos
 	let crimesArray = JSON.parse(crimesJson);
 	header.textContent = 'Lista de delitos';
-	selectedOptions = [];
+	selectedOptions = selectedCrimes.length > 0 ? selectedCrimes : [];
 	
 	for(let i = 0; i < crimesArray.length; i++) {
 		// Obtenemos el componente
@@ -582,7 +582,7 @@ function populateCrimesMenu(crimesJson) {
 	applyButton.onclick = (function() {
 		// Entregamos el pedido seleccionado
 		if(selectedOptions.length > 0) {
-			mp.trigger('applyCrimes', selectedOptions);
+			mp.trigger('applyCrimes', JSON.stringify(selectedOptions));
 		}
 	});
 	

@@ -11,7 +11,7 @@ mp.events.add('showCrimesMenu', (crimes) => {
 
 mp.events.add('applyCrimes', (crimes) => {
 	// Guardamos los delitos a aplicar
-	crimesArray = JSON.stringify(crimes);
+	crimesArray = crimes;
 	
 	// Eliminamos el menú de delitos
 	mp.events.call('destroyBrowser');
@@ -33,7 +33,7 @@ mp.events.add('backCrimesMenu', () => {
 	mp.events.call('destroyBrowser');
 	
 	// Mostramos la ventana de confirmación
-	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCrimesMenu', crimesJson, crimesArray]);
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCrimesMenu', crimesJson, JSON.parse(crimesArray)]);
 });
 
 /*
