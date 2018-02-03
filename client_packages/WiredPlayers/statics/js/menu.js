@@ -1169,25 +1169,25 @@ function populateFinesMenu(finesJson) {
 		// Añadimos el contenido de cada elemento
 		itemDescription.textContent = fine.reason;
 		itemPrice.innerHTML = '<b>Cantidad: </b>' + fine.amount + '$';
-		itemAmount.innerHTML = '<b>Fecha: </b>' + fine.date;
+		itemAmount.innerHTML = '<b>Fecha: </b>' + fine.date.split(' ')[0];
 		
 		// Ponemos la función para cada elemento
 		itemContainer.onclick = (function() {
 			// Comprobamos que se ha pulsado en un elemento no seleccionado
-			if(selectedOptions.indexOf(i) === -1) {
+			if(selectedOptions.indexOf(fine) === -1) {
 				// Seleccionamos el elemento pulsado
 				let currentSelected = document.getElementsByClassName('item-row')[i];
 				currentSelected.classList.add('active-item');
 				
 				// Guardamos el índice seleccionado
-				selectedOptions.push(i);
+				selectedOptions.push(fine);
 			} else {
 				// Eliminamos la selección del elemento pulsado
 				let currentSelected = document.getElementsByClassName('item-row')[i];
 				currentSelected.classList.remove('active-item');
 				
 				// Eliminamos el índice seleccionado
-				selectedOptions.splice(selectedOptions.indexOf(i), 1);
+				selectedOptions.splice(selectedOptions.indexOf(fine), 1);
 			}
 		});
 		
@@ -1220,7 +1220,7 @@ function populateFinesMenu(finesJson) {
 	acceptButton.onclick = (function() {
 		if(selectedOptions.length > 0) {
 			// Pagamos las multas del jugador
-			mp.trigger('payPlayerFines', selectedOptions);
+			mp.trigger('payPlayerFines', JSON.stringify(selectedOptions));
 		}
 	});
 	

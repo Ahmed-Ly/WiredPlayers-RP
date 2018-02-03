@@ -106,22 +106,17 @@ namespace WiredPlayers.TownHall
         [RemoteEvent("payPlayerFines")]
         public void PayPlayerFinesEvent(Client player, params object[] arguments)
         {
-            List<FineModel> removedFines = new List<FineModel>();
             List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
-            List<int> paidFines = JsonConvert.DeserializeObject<List<int>>(arguments[0].ToString());
+            List<FineModel> removedFines = JsonConvert.DeserializeObject<List<FineModel>>(arguments[0].ToString());
             int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             int finesProcessed = 0;
             int amount = 0;
 
             // Obtenemos el coste de todas las multas a pagar
-            for(int i = 0; i < fineList.Count; i++)
+            foreach(FineModel fine in removedFines)
             {
-                if(paidFines.Contains(i) == true)
-                {
-                    removedFines.Add(fineList[i]);
-                    amount += fineList[i].amount;
-                    finesProcessed++;
-                }
+                amount += fine.amount;
+                finesProcessed++;
             }
 
             if (amount == 0)

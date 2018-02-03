@@ -71,7 +71,7 @@ namespace WiredPlayers.carshop
 
         private int GetClosestCarShop(Client player, float distance = 2.0f)
         {        
-            int carShop = 0;
+            int carShop = -1;
             if (player.Position.DistanceTo(carShopTextLabel.Position) < distance)
             {
                 carShop = 0;

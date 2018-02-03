@@ -18,9 +18,9 @@ mp.events.add('showPlayerFineList', (playerFines) => {
 	mp.events.call('executeFunction', ['populateFinesMenu', playerFines]);
 });
 
-mp.events.add('payPlayerFines', (finesArray) => {
+mp.events.add('payPlayerFines', (finesArrayJson) => {
 	// Pagamos las multas seleccionadas
-	mp.events.call('payPlayerFines', JSON.stringify(finesArray));
+	mp.events.callRemote('payPlayerFines', finesArrayJson);
 });
 
 mp.events.add('backTownHallIndex', () => {

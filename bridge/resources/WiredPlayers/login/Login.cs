@@ -12,7 +12,6 @@ namespace WiredPlayers.login
     public class Login : Script
     {
         private static Dictionary<String, Timer> spawnTimerList = new Dictionary<String, Timer>();
-        private static Dictionary<String, Timer> loginTimerList = new Dictionary<String, Timer>();
 
         public Login()
         {
@@ -86,10 +85,6 @@ namespace WiredPlayers.login
 
                     // Mostramos el login
                     NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm");
-
-                    // Añadimos el timer por si no carga el CEF
-                    Timer loginTimer = new Timer(OnPlayerLoginTimeoutTimer, player, 7500, Timeout.Infinite);
-                    loginTimerList.Add(player.SocialClubName, loginTimer);
                     break;
             }
 
@@ -104,13 +99,6 @@ namespace WiredPlayers.login
                 // Eliminamos el timer
                 spawnTimer.Dispose();
                 spawnTimerList.Remove(player.SocialClubName);
-            }
-
-            if (loginTimerList.TryGetValue(player.SocialClubName, out Timer loginTimer) == true)
-            {
-                // Eliminamos el timer
-                loginTimer.Dispose();
-                loginTimerList.Remove(player.SocialClubName);
             }
         }
 
@@ -372,28 +360,6 @@ namespace WiredPlayers.login
             }
         }
 
-        public void OnPlayerLoginTimeoutTimer(object playerObject)
-        {
-            try
-            {
-                Client player = (Client)playerObject;
-                NAPI.Data.SetEntityData(player, EntityData.PLAYER_COMMAND_LOGIN, true);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Si aún no te ha aparecido la pantalla de login, puedes usar el comando /login para acceder.");
-
-                // Borramos el timer de la lista
-                Timer loginTimer = loginTimerList[player.SocialClubName];
-                if (loginTimer != null)
-                {
-                    loginTimer.Dispose();
-                    loginTimerList.Remove(player.SocialClubName);
-                }
-            }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerLoginTimeoutTimer] " + ex.Message);
-            }
-        }
-
         [RemoteEvent("registerAccount")]
         public void RegisterAccountEvent(Client player, params object[] arguments)
         {
@@ -407,21 +373,7 @@ namespace WiredPlayers.login
         {
             String password = (String)arguments[0];
             bool login = Database.LoginAccount(player.SocialClubName, password);
-            if (login)
-            {
-                // Borramos el timer de la lista
-                if (loginTimerList.TryGetValue(player.SocialClubName, out Timer loginTimer) == true)
-                {
-                    loginTimer.Dispose();
-                    loginTimerList.Remove(player.SocialClubName);
-                }
-                
-                NAPI.ClientEvent.TriggerClientEvent(player, "clearLoginWindow");
-            }
-            else
-            {
-                NAPI.ClientEvent.TriggerClientEvent(player, "showLoginError");
-            }
+            NAPI.ClientEvent.TriggerClientEvent(player, login ? "clearLoginWindow" : "showLoginError");
         }
 
         [RemoteEvent("changeCharacterSex")]
@@ -530,28 +482,6 @@ namespace WiredPlayers.login
 
             // Llamamos al evento del cliente
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", target, NAPI.Util.ToJson(targetTattooList));
-        }
-
-        [Command("login", Messages.GEN_LOGIN_COMMAND)]
-        public void LoginCommand(Client player, String password)
-        {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_COMMAND_LOGIN) == true)
-            {
-                bool login = Database.LoginAccount(player.SocialClubName, password);
-                if (login)
-                {
-                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_COMMAND_LOGIN);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "clearLoginWindow");
-                }
-                else
-                {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showLoginError");
-                }
-            }
-            else
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_CANT_LOGIN);
-            }
         }
     }
 }
