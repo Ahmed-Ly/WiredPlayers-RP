@@ -5,19 +5,17 @@ namespace WiredPlayers.model
 {
     public class BusinessItemModel
     {
-        public String description { get; internal set; }
-        public String hash { get; internal set; }
-        public int type { get; internal set; }
-        public int products { get; internal set; }
-        public float weight { get; internal set; }
-        public int health { get; internal set; }
-        public int uses { get; internal set; }
-        public Vector3 position { get; internal set; }
-        public Vector3 rotation { get; internal set; }
-        public int business { get; internal set; }
-        public float alcoholLevel { get; internal set; }
-
-        public BusinessItemModel() { }
+        public String description { get; set; }
+        public String hash { get; set; }
+        public int type { get; set; }
+        public int products { get; set; }
+        public float weight { get; set; }
+        public int health { get; set; }
+        public int uses { get; set; }
+        public Vector3 position { get; set; }
+        public Vector3 rotation { get; set; }
+        public int business { get; set; }
+        public float alcoholLevel { get; set; }
 
         public BusinessItemModel(String description, String hash, int type, int products, float weight, int health, int uses, Vector3 position, Vector3 rotation, int business, float alcoholLevel)
         {

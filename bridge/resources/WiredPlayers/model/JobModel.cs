@@ -4,12 +4,10 @@ namespace WiredPlayers.model
 {
     public class JobModel
     {
-        public String descriptionMale { get; internal set; }
-        public String descriptionFemale { get; internal set; }
-        public int job { get; internal set; }
-        public int salary { get; internal set; }
-
-        public JobModel() { }
+        public String descriptionMale { get; set; }
+        public String descriptionFemale { get; set; }
+        public int job { get; set; }
+        public int salary { get; set; }
 
         public JobModel(String descriptionMale, String descriptionFemale, int job, int salary)
         {

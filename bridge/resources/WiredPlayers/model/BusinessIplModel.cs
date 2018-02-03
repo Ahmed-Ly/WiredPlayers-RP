@@ -5,11 +5,9 @@ namespace WiredPlayers.model
 {
     public class BusinessIplModel
     {
-        public int type { get; internal set; }
-        public String ipl { get; internal set; }
-        public Vector3 position { get; internal set; }
-
-        public BusinessIplModel() { }
+        public int type { get; set; }
+        public String ipl { get; set; }
+        public Vector3 position { get; set; }
 
         public BusinessIplModel(int type, String ipl, Vector3 position)
         {

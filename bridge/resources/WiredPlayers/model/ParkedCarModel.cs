@@ -2,9 +2,7 @@
 {
     public class ParkedCarModel
     {
-        public int parkingId { get; internal set; }
-        public VehicleModel vehicle { get; internal set; }
-
-        public ParkedCarModel() { }
+        public int parkingId { get; set; }
+        public VehicleModel vehicle { get; set; }
     }
 }

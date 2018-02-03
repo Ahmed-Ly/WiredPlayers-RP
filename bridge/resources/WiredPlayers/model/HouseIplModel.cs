@@ -5,10 +5,8 @@ namespace WiredPlayers.model
 {
     public class HouseIplModel
     {
-        public String ipl { get; internal set; }
-        public Vector3 position { get; internal set; }
-
-        public HouseIplModel() { }
+        public String ipl { get; set; }
+        public Vector3 position { get; set; }
 
         public HouseIplModel(String ipl, Vector3 position)
         {

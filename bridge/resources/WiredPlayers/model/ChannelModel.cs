@@ -4,10 +4,8 @@ namespace WiredPlayers.model
 {
     public class ChannelModel
     {
-        public int id { get; internal set; }
-        public int owner { get; internal set; }
-        public String password { get; internal set; }
-
-        public ChannelModel() { }
+        public int id { get; set; }
+        public int owner { get; set; }
+        public String password { get; set; }
     }
 }

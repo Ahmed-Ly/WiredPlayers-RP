@@ -5,10 +5,8 @@ namespace WiredPlayers.model
 {
     public class AreaModel
     {
-        public String action { get; internal set; }
-        public ColShape area { get; internal set; }
-
-        public AreaModel() { }
+        public String action { get; set; }
+        public ColShape area { get; set; }
 
         public AreaModel(String action, ColShape area)
         {

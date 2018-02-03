@@ -5,11 +5,9 @@ namespace WiredPlayers.model
 {
     public class GunModel
     {
-        public WeaponHash weapon { get; internal set; }
-        public String ammunition { get; internal set; }
-        public int capacity { get; internal set; }
-
-        public GunModel() { }
+        public WeaponHash weapon { get; set; }
+        public String ammunition { get; set; }
+        public int capacity { get; set; }
 
         public GunModel(WeaponHash weapon, String ammunition, int capacity)
         {

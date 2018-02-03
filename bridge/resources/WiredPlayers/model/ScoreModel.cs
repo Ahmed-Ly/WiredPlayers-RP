@@ -4,11 +4,9 @@ namespace WiredPlayers.model
 {
     public class ScoreModel
     {
-        public int playerId { get; internal set; }
-        public string playerName { get; internal set; }
-        public int playerPing { get; internal set; }
-
-        public ScoreModel() { }
+        public int playerId { get; set; }
+        public string playerName { get; set; }
+        public int playerPing { get; set; }
 
         public ScoreModel(int playerId, String playerName, int playerPing)
         {

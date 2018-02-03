@@ -5,12 +5,12 @@ namespace WiredPlayers.model
 {
     public class PoliceControlModel
     {
-        public int id { get; internal set; }
-        public String name { get; internal set; }
-        public int item { get; internal set; }
-        public Vector3 position { get; internal set; }
-        public Vector3 rotation { get; internal set; }
-        public GTANetworkAPI.Object controlObject { get; internal set; }
+        public int id { get; set; }
+        public String name { get; set; }
+        public int item { get; set; }
+        public Vector3 position { get; set; }
+        public Vector3 rotation { get; set; }
+        public GTANetworkAPI.Object controlObject { get; set; }
 
         public PoliceControlModel() { }
 

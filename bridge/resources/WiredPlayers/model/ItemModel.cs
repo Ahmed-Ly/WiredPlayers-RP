@@ -5,16 +5,14 @@ namespace WiredPlayers.model
 {
     public class ItemModel
     {
-        public int id { get; internal set; }
-        public String hash { get; internal set; }
-        public String ownerEntity { get; internal set; }
-        public int ownerIdentifier { get; internal set; }
-        public int amount { get; internal set; }
-        public Vector3 position { get; internal set; }
-        public uint dimension { get; internal set; }
-        public GTANetworkAPI.Object objectHandle { get; internal set; }
-
-        public ItemModel() { }
+        public int id { get; set; }
+        public String hash { get; set; }
+        public String ownerEntity { get; set; }
+        public int ownerIdentifier { get; set; }
+        public int amount { get; set; }
+        public Vector3 position { get; set; }
+        public uint dimension { get; set; }
+        public GTANetworkAPI.Object objectHandle { get; set; }
 
         public ItemModel Copy()
         {

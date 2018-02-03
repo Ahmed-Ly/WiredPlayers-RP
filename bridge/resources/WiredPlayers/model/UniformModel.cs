@@ -2,14 +2,12 @@
 {
     public class UniformModel
     {
-        public int type { get; internal set; }
-        public int factionJob { get; internal set; }
-        public int characterSex { get; internal set; }
-        public int uniformSlot { get; internal set; }
-        public int uniformDrawable { get; internal set; }
-        public int uniformTexture { get; internal set; }
-
-        public UniformModel() { }
+        public int type { get; set; }
+        public int factionJob { get; set; }
+        public int characterSex { get; set; }
+        public int uniformSlot { get; set; }
+        public int uniformDrawable { get; set; }
+        public int uniformTexture { get; set; }
 
         public UniformModel(int type, int factionJob, int characterSex, int uniformSlot, int uniformDrawable, int uniformTexture)
         {

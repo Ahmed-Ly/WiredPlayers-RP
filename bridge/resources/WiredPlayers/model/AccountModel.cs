@@ -4,10 +4,10 @@ namespace WiredPlayers.model
 {
     public class AccountModel
     {
-        public String socialName { get; internal set; }
-        public String forumName { get; internal set; }
-        public int status { get; internal set; }
-        public int lastCharacter { get; internal set; }
+        public String socialName { get; set; }
+        public String forumName { get; set; }
+        public int status { get; set; }
+        public int lastCharacter { get; set; }
 
         public AccountModel() { }
 

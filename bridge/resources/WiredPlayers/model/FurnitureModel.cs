@@ -4,13 +4,11 @@ namespace WiredPlayers.model
 {
     public class FurnitureModel
     {
-        public int id { get; internal set; }
-        public uint hash { get; internal set; }
-        public uint house { get; internal set; }
-        public Vector3 position { get; internal set; }
-        public Vector3 rotation { get; internal set; }
-        public Object handle { get; internal set; }
-
-        public FurnitureModel() { }
+        public int id { get; set; }
+        public uint hash { get; set; }
+        public uint house { get; set; }
+        public Vector3 position { get; set; }
+        public Vector3 rotation { get; set; }
+        public Object handle { get; set; }
     }
 }

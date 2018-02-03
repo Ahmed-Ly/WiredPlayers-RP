@@ -4,11 +4,9 @@ namespace WiredPlayers.model
 {
     public class EmergencyWarnModel
     {
-        public String patient { get; internal set; }
-        public String paramedic { get; internal set; }
-        public String time { get; internal set; }
-
-        public EmergencyWarnModel() { }
+        public String patient { get; set; }
+        public String paramedic { get; set; }
+        public String time { get; set; }
 
         public EmergencyWarnModel(String patient, String paramedic, String time)
         {

@@ -4,13 +4,11 @@ namespace WiredPlayers.model
 {
     public class WeaponProbabilityModel
     {
-        public int type { get; internal set; }
-        public String hash { get; internal set; }
-        public int amount { get; internal set; }
-        public int minChance { get; internal set; }
-        public int maxChance { get; internal set; }
-
-        public WeaponProbabilityModel() { }
+        public int type { get; set; }
+        public String hash { get; set; }
+        public int amount { get; set; }
+        public int minChance { get; set; }
+        public int maxChance { get; set; }
 
         public WeaponProbabilityModel(int type, String hash, int amount, int minChance, int maxChance)
         {

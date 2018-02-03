@@ -2,10 +2,8 @@
 {
     public class BusinessBlipModel
     {
-        public int id { get; internal set; }
-        public int blip { get; internal set; }
-
-        public BusinessBlipModel() { }
+        public int id { get; set; }
+        public int blip { get; set; }
 
         public BusinessBlipModel(int id, int blip)
         {

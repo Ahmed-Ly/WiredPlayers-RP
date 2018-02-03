@@ -4,12 +4,10 @@ namespace WiredPlayers.model
 {
     public class CrimeModel
     {
-        public String crime { get; internal set; }
-        public int jail { get; internal set; }
-        public int fine { get; internal set; }
-        public String reminder { get; internal set; }
-
-        public CrimeModel() { }
+        public String crime { get; set; }
+        public int jail { get; set; }
+        public int fine { get; set; }
+        public String reminder { get; set; }
 
         public CrimeModel(String crime, int jail, int fine, String reminder)
         {

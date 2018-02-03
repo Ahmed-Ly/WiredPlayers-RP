@@ -1951,7 +1951,7 @@ namespace WiredPlayers.database
                     MySqlCommand command = connection.CreateCommand();
 
                     // Creamos la consulta de borrado
-                    command.CommandText = "DELETE FROM fines WHERE officer = @officer AND target = @target AND date = @date LIMIT 1";
+                    command.CommandText = "DELETE FROM fines WHERE officer = @officer AND target = @target AND date = DATE(@date) LIMIT 1";
 
                     // Recorremos la lista de multas
                     foreach (FineModel fine in fineList)

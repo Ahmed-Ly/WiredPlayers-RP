@@ -2,10 +2,8 @@
 {
     public class TunningPriceModel
     {
-        public int slot { get; internal set; }
-        public int products { get; internal set; }
-
-        public TunningPriceModel() { }
+        public int slot { get; set; }
+        public int products { get; set; }
 
         public TunningPriceModel(int slot, int products)
         {
