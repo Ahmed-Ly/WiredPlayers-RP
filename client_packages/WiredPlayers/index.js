@@ -4,7 +4,6 @@ require('./WiredPlayers/business/tattooShop.js');
 require('./WiredPlayers/business/hairdresser.js');
 require('./WiredPlayers/carshop/carShop.js');
 require('./WiredPlayers/bank/bank.js');
-require('./WiredPlayers/globals/bindings.js');
 require('./WiredPlayers/globals/browser.js');
 require('./WiredPlayers/globals/dxDrawer.js');
 require('./WiredPlayers/globals/globals.js');
