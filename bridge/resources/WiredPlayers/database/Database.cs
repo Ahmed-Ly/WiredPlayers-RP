@@ -16,6 +16,7 @@ using WiredPlayers.telephone;
 using WiredPlayers.admin;
 using System.Collections.Generic;
 using System;
+using System.Globalization;
 
 namespace WiredPlayers.database
 {
@@ -1951,11 +1952,15 @@ namespace WiredPlayers.database
                     MySqlCommand command = connection.CreateCommand();
 
                     // Creamos la consulta de borrado
-                    command.CommandText = "DELETE FROM fines WHERE officer = @officer AND target = @target AND date = DATE(@date) LIMIT 1";
+                    command.CommandText = "DELETE FROM fines WHERE officer = @officer AND target = @target AND date = @date LIMIT 1";
 
                     // Recorremos la lista de multas
                     foreach (FineModel fine in fineList)
                     {
+                        // Convertimos la fecha a base de datos
+                        DateTime dateTime = DateTime.ParseExact(fine.date, "d/M/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+                        fine.date = dateTime.ToString("yyyy-dd-MM HH:mm:ss");
+
                         // Limpiamos la lista de parámetros
                         command.Parameters.Clear();
 
