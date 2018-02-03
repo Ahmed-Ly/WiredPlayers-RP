@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 
 namespace WiredPlayers.police
 {
@@ -99,17 +100,14 @@ namespace WiredPlayers.police
         public void ApplyCrimesToPlayerEvent(Client player, params object[] arguments)
         {
             int fine = 0, jail = 0;
-            String[] crimeList = arguments[0].ToString().Split(',');
             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET);
+            List<CrimeModel> crimeList = JsonConvert.DeserializeObject<List<CrimeModel>>(arguments[0].ToString());
 
             // Calculamos la multa y tiempo de cárcel
-            for (int i = 0; i < Constants.CRIME_LIST.Count; i++)
+            foreach(CrimeModel crime in crimeList)
             {
-                if (crimeList.Contains(Constants.CRIME_LIST.ElementAt(i).crime) == true)
-                {
-                    fine += Constants.CRIME_LIST.ElementAt(i).fine;
-                    jail += Constants.CRIME_LIST.ElementAt(i).jail;
-                }
+                fine += crime.fine;
+                jail += crime.jail;
             }
 
             // Metemos al jugador en una de las celdas
@@ -308,11 +306,11 @@ namespace WiredPlayers.police
         [Command("inculpar")]
         public void InculparCommand(Client player, String targetString)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAIL_AREA) == false)
+            /*if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAIL_AREA) == false)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_JAIL_AREA);
             }
-            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
+            else */if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_ON_DUTY);
             }
@@ -338,7 +336,7 @@ namespace WiredPlayers.police
                     {
                         String crimeList = NAPI.Util.ToJson(Constants.CRIME_LIST);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET, target);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "mostrarMenuDelitos", crimeList);
+                        NAPI.ClientEvent.TriggerClientEvent(player, "showCrimesMenu", crimeList);
                     }
                 }
                 else

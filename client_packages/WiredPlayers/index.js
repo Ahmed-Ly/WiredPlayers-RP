@@ -15,3 +15,4 @@ require('./WiredPlayers/garbage/garbage.js');
 require('./WiredPlayers/mechanic/mechanic.js');
 require('./WiredPlayers/fastfood/fastFood.js');
 require('./WiredPlayers/townhall/townHall.js');
+require('./WiredPlayers/police/police.js');

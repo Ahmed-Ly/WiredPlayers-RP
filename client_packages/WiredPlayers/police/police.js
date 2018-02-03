@@ -1,5 +1,5 @@
 ﻿let crimesJson = null;
-let crimesArray = [];
+let crimesArray = null;
 
 mp.events.add('showCrimesMenu', (crimes) => {
 	// Guardamos la lista de delitos
@@ -17,10 +17,26 @@ mp.events.add('applyCrimes', (crimes) => {
 	mp.events.call('destroyBrowser');
 	
 	// Mostramos la ventana de confirmación
-	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/crimesConfirm.html', 'populateCrimesConfirmation', crimesArray]);
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/crimesConfirm.html', 'populateCrimesConfirmMenu', crimesArray]);
 });
 
+mp.events.add('executePlayerCrimes', () => {
+	// Eliminamos el menú de confirmación
+	mp.events.call('destroyBrowser');
+	
+	// Aplicamos la condena al jugador
+	mp.events.callRemote('applyCrimesToPlayer', crimesArray);
+});
 
+mp.events.add('backCrimesMenu', () => {
+	// Eliminamos el menú de confirmación
+	mp.events.call('destroyBrowser');
+	
+	// Mostramos la ventana de confirmación
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/sideMenu.html', 'populateCrimesMenu', crimesJson, crimesArray]);
+});
+
+/*
 let policeControlBrowser = null;
 let control = "";
 let resolution;
@@ -191,4 +207,4 @@ function policeControlSelectedName(name) {
     NAPI.ShowCursor(false);
     policeControlBrowser = null;
     control = "";
-}
+}*/
