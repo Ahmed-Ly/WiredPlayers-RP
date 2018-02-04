@@ -57,10 +57,10 @@ namespace WiredPlayers.drivingschool
                     if (NAPI.Vehicle.GetVehicleClass(vehicleHash) == Constants.VEHICLE_CLASS_MOTORCYCLES)
                     {
                         int checkPoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT);
-                        if (drivingSchoolTimerList.TryGetValue(playerId, out Timer drivingSchoolTimer) == true)
+                        if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
                         {
                             drivingSchoolTimer.Dispose();
-                            drivingSchoolTimerList.Remove(playerId);
+                            drivingSchoolTimerList.Remove(player.Value);
                         }
                         Checkpoint newCheckpoint = NAPI.Checkpoint.CreateCheckpoint(0, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint], Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1], 2.5f, new Color(198, 40, 40, 200));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);

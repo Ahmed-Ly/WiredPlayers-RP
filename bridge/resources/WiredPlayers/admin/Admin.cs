@@ -1684,7 +1684,7 @@ namespace WiredPlayers.admin
                 {
                     if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
                     {
-                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_INFO + "((Staff [ID: " + player.Value + "] " + player.Name + ": " + message + "..." : Constants.COLOR_ADMIN_INFO + "((Staff [ID: " + playerId + "] " + player.Name + ": " + message + "))");
+                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_INFO + "((Staff [ID: " + player.Value + "] " + player.Name + ": " + message + "..." : Constants.COLOR_ADMIN_INFO + "((Staff [ID: " + player.Value + "] " + player.Name + ": " + message + "))");
                         if (secondMessage.Length > 0)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + secondMessage + "))");
