@@ -114,9 +114,8 @@ namespace WiredPlayers.login
             NAPI.Player.SetPlayerArmor(player, 0);
             NAPI.Entity.SetEntityTransparency(player, 0);
 
-            // Limpiamos las armas y variables
+            // Limpiamos las armas
             NAPI.Player.RemoveAllPlayerWeapons(player);
-            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PLAYING);
 
             // Inicialización de los entity data sincronizados
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, 0);
