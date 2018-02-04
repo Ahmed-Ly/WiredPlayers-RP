@@ -328,6 +328,7 @@ function testVehicle() {
 function namePoliceControl() {
     var name = document.getElementById('name').value;
     mp.trigger('policeControlSelectedName', name);
+    mp.trigger('destroyBrowser');
 }
 
 function preloadContact() {

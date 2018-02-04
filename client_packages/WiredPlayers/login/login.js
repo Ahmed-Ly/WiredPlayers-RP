@@ -1,4 +1,8 @@
-﻿mp.events.add('accountLoginForm', () => {
+﻿mp.events.add('accountLoginForm', (timeJson) => {
+	// Establecemos el tiempo del servidor
+	let currentTime = JSON.parse(timeJson);
+	mp.game.time.setClockTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
+	
 	// Creamos la ventana de login
 	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/accountLogin.html']);
 });

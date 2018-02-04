@@ -1249,6 +1249,90 @@ function populateFinesMenu(finesJson) {
 	options.appendChild(cancelButton);
 }
 
+function populatePoliceControlsMenu(policeControlJson) {
+	// Obtenemos la lista de opciones
+	let policeControls = JSON.parse(policeControlJson);
+	let header = document.getElementById('header');
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	// Añadimos la cabecera del menú
+	header.textContent = 'Controles policiales';
+	
+	for(let i = 0; i < policeControls.length; i++) {
+		// Obtenemos el objeto en curso
+		let control = policeControls[i];
+		
+		// Creamos los elementos para mostrar cada objeto
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
+		
+		// Añadimos las clases a cada elemento
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		itemDescription.classList.add('item-description');
+		
+		// Añadimos el contenido de cada elemento
+		itemDescription.textContent = control;
+		
+		// Ponemos la función para cada elemento
+		itemContainer.onclick = (function() {
+			// Comprobamos que se ha pulsado en un elemento no seleccionado
+			if(selected !== i) {
+				// Miramos si había algún elemento seleccionado
+				if(selected != null) {
+					let previousSelected = document.getElementsByClassName('item-row')[selected];
+					previousSelected.classList.remove('active-item');
+				}
+				
+				// Seleccionamos el elemento pulsado
+				let currentSelected = document.getElementsByClassName('item-row')[i];
+				currentSelected.classList.add('active-item');
+				
+				// Guardamos el nuevo índice seleccionado
+				selected = i;
+			}
+		});
+		
+		// Ordenamos la jerarquía de elementos
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
+	}
+	
+	// Añadimos los botones
+	let acceptButton = document.createElement('div');
+	let cancelButton = document.createElement('div');
+	
+	// Añadimos las clases a cada botón
+	acceptButton.classList.add('double-button', 'accept-button');
+	cancelButton.classList.add('double-button', 'cancel-button');
+	
+	// Añadimos el texto de los botones
+	acceptButton.textContent = 'Cargar';
+	cancelButton.textContent = 'Salir';
+	
+	// Ponemos la función para cada elemento
+	acceptButton.onclick = (function() {
+		// Procesamos la opción y borramos el navegador
+		mp.trigger('proccessPoliceControlAction');
+		mp.trigger('destroyBrowser');
+	});
+	
+	cancelButton.onclick = (function() {
+		// Cerramos la ventana de controles
+		mp.trigger('destroyBrowser');
+	});
+		
+	// Ordenamos la jerarquía de elementos
+	options.appendChild(acceptButton);
+	options.appendChild(cancelButton);
+}
+
 function findFirstChildByClass(element, className) {
 	let foundElement = null, found;
 	function recurse(element, className, found) {

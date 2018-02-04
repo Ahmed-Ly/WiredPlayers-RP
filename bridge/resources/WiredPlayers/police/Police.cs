@@ -178,8 +178,8 @@ namespace WiredPlayers.police
             }
         }
 
-        [RemoteEvent("policeControlNamed")]
-        public void PoliceControlNamedEvent(Client player, params object[] arguments)
+        [RemoteEvent("updatePoliceControlName")]
+        public void UpdatePoliceControlNameEvent(Client player, params object[] arguments)
         {
             String policeControlSource = arguments[0].ToString();
             String policeControlTarget = arguments[1].ToString();

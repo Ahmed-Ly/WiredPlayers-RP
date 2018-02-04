@@ -123,6 +123,9 @@ let fishingBarMax = 0;
 let movementRight = true;
 let fishingAchieveStart = 0;
 
+// Estado de esposas
+let handcuffed = false;
+
 // Comprobación de actualización
 let checkFlagEvery = 500;
 let lastTimeFlagChecked = new Date().getTime();
@@ -192,6 +195,11 @@ mp.events.add('resetSpeedometer', (vehicle) => {
 	mp.events.callRemote('saveVehicleConsumes', vehicle, vehicleKms, vehicleGas);
 });
 
+mp.events.add('toggleHandcuffed', (toggle) => {
+	// Cambiamos el estado de esposado
+	handcuffed = toggle;
+});
+
 mp.events.add('render', () => {
 	// Comprobamos que se haya inicializado todo
 	if(resolution != null) {
@@ -225,11 +233,22 @@ mp.events.add('render', () => {
 			moneySize = money.toString().length + 1;
 			lastTimeFlagChecked = currentTime;
 		}
-
 		
 		// Dibujamos el dinero del jugador
 		mp.game.graphics.drawText(`${money}$`, [0.99 - moneySize * 0.005, 0.05], {font: 7, color: [30, 150, 0, 255], scale: [0.5, 0.5], outline: true});
 		
+		// Miramos si está esposado
+		if(handcuffed) {
+			mp.game.controls.disableControlAction(2, 12, true);
+			mp.game.controls.disableControlAction(2, 13, true);
+			mp.game.controls.disableControlAction(2, 14, true);
+			mp.game.controls.disableControlAction(2, 15, true);
+			mp.game.controls.disableControlAction(2, 16, true);
+			mp.game.controls.disableControlAction(2, 17, true);
+			mp.game.controls.disableControlAction(2, 22, true);
+			mp.game.controls.disableControlAction(2, 24, true);
+			mp.game.controls.disableControlAction(2, 25, true);
+		}
 	}
 });
 /*

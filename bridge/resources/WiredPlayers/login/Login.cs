@@ -82,8 +82,9 @@ namespace WiredPlayers.login
                     // Hacemos al personaje visible
                     NAPI.Entity.SetEntityTransparency(player, 255);
 
-                    // Mostramos el login
-                    NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm");
+                    // Mostramos el login y actualizamos el tiempo
+                    TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm", NAPI.Util.ToJson(currentTime));
                     break;
             }
 
