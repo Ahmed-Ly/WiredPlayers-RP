@@ -6,7 +6,7 @@ using System;
 
 namespace WiredPlayers.chat
 {
-    class Chat : Script
+    public class Chat : Script
     {
         public Chat()
         {

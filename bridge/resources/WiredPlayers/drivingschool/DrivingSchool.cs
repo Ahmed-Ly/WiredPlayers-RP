@@ -8,7 +8,7 @@ using System;
 
 namespace WiredPlayers.drivingschool
 {
-    class DrivingSchool : Script
+    public class DrivingSchool : Script
     {
         private static Dictionary<int, Timer> drivingSchoolTimerList = new Dictionary<int, Timer>();
 

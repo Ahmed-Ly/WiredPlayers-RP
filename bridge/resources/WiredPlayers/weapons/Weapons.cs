@@ -8,7 +8,7 @@ using System;
 
 namespace WiredPlayers.weapons
 {
-    class Weapons : Script
+    public class Weapons : Script
     {
         private static Timer weaponTimer;
         private static List<Timer> vehicleWeaponTimer;

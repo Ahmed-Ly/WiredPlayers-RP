@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace WiredPlayers.police
 {
-    class Police : Script
+    public class Police : Script
     {
         private static Timer reinforcesTimer;
         public static List<PoliceControlModel> policeControlList;

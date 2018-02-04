@@ -10,7 +10,7 @@ using System;
 
 namespace WiredPlayers.mechanic
 {
-    class Mechanic
+    class Mechanic : Script
     {
         public static List<TunningModel> tunningList;
 

@@ -14,7 +14,7 @@ using System;
 
 namespace WiredPlayers.admin
 {
-    public class Admin
+    public class Admin : Script
     {
         public static List<PermissionModel> permissionList;
 

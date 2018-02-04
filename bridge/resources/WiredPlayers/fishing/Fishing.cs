@@ -9,7 +9,7 @@ using System;
 
 namespace WiredPlayers.fishing
 {
-    public class Fishing
+    public class Fishing : Script
     {
         private static Dictionary<int, Timer> fishingTimerList = new Dictionary<int, Timer>();
 

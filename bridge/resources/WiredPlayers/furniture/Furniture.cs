@@ -8,7 +8,7 @@ using System;
 
 namespace WiredPlayers.furniture
 {
-    public class Furniture
+    public class Furniture : Script
     {
         private static List<FurnitureModel> furnitureList;
 

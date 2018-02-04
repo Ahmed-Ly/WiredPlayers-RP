@@ -4,7 +4,7 @@ using System;
 
 namespace WiredPlayers.Animations
 {
-    public class Animations
+    public class Animations : Script
     {
         [Command("recogiendo")]
         public void RecogiendoComamnd(Client player)

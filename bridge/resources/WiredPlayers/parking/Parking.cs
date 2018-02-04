@@ -10,7 +10,7 @@ using System;
 
 namespace WiredPlayers.parking
 {
-    class Parking
+    public class Parking : Script
     {
         public static List<ParkingModel> parkingList;
         public static List<ParkedCarModel> parkedCars;

@@ -7,7 +7,7 @@ using System;
 
 namespace WiredPlayers.bank
 {
-    public class Bank
+    public class Bank : Script
     {
         [RemoteEvent("executeBankOperation")]
         public void ExecuteBankOperationEvent(Client player, params object[] arguments)

@@ -7,7 +7,7 @@ using System;
 
 namespace WiredPlayers.weazelNews
 {
-    class WeazelNews
+    public class WeazelNews : Script
     {
         public static List<AnnoucementModel> annoucementList;
 

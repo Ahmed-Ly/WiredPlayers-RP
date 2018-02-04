@@ -11,7 +11,7 @@ using System;
 
 namespace WiredPlayers.emergency
 {
-    class Emergency : Script
+    public class Emergency : Script
     {
         public static List<BloodModel> bloodList;
         private static Dictionary<int, Timer> deathTimerList = new Dictionary<int, Timer>();

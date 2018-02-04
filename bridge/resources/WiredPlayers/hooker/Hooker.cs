@@ -6,7 +6,7 @@ using System;
 
 namespace WiredPlayers.hooker
 {
-    public class Hooker
+    public class Hooker : Script
     {
         public static Dictionary<int, Timer> sexTimerList = new Dictionary<int, Timer>();
 

@@ -7,7 +7,7 @@ using System;
 
 namespace WiredPlayers.telephone
 {
-    public class Telephone
+    public class Telephone : Script
     {
         public static List<ContactModel> contactList;
 

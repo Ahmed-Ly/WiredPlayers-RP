@@ -7,7 +7,7 @@ using System;
 
 namespace WiredPlayers.house
 {
-    class House
+    public class House : Script
     {
         public static List<HouseModel> houseList;
 

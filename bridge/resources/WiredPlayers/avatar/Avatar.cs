@@ -7,7 +7,7 @@ using System;
 
 namespace WiredPlayers.avatar
 {
-    public class Avatar
+    public class Avatar : Script
     {
         [Command("jugador")]
         public void JugadorCommand(Client player)

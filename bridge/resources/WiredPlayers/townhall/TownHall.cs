@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace WiredPlayers.TownHall
 {
-    class TownHall : Script
+    public class TownHall : Script
     {
         private TextLabel townHallTextLabel;
 
