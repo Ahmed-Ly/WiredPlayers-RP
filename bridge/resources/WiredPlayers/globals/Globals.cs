@@ -363,7 +363,7 @@ namespace WiredPlayers.globals
                 {
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
                     {
-                        ScoreModel scoreModel = scoreList.FirstOrDefault(score => score.playerId == player.Value);
+                        ScoreModel scoreModel = scoreList.First(score => score.playerId == player.Value);
                         scoreModel.playerPing = NAPI.Player.GetPlayerPing(player);
                     }
                 }
