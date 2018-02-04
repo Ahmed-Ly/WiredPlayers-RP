@@ -22,7 +22,6 @@
   <script src="model/AccountModel.cs"/>
   <script src="model/AdminTicketModel.cs"/>
   <script src="model/AnnoucementModel.cs"/>
-  <script src="model/AreaModel.cs"/>
   <script src="model/BankOperationModel.cs"/>
   <script src="model/BloodModel.cs"/>
   <script src="model/BusinessBlipModel.cs"/>
@@ -76,51 +75,39 @@
   <script src="globals/EntityData.cs"/>
   <script src="globals/Globals.cs"/>
   <script src="globals/Messages.cs"/>
-  <!-- <script src="globals/dxDrawer.js"/>
-  <script src="globals/globals.js"/> -->
 
   <!-- Sistema de login -->
   <script src="login/Login.cs"/>
-  <!--  <script src="login/characterCreator.js"/>
-  <script src="login/login.js"/> -->
 
   <!-- Sistema de chat -->
   <script src="chat/Chat.cs"/>
 
   <!-- Sistema de banco -->
   <script src="bank/Bank.cs"/>
-  <!-- <script src="bank/bank.js"/>-->
 
   <!-- Sistema de negocios -->
   <script src="business/Business.cs"/>
-  <!-- <script src="business/business.js"/>
-  <script src="business/tattooShop.js"/>-->
 
   <!-- Sistema de animaciones -->
   <script src="animations/Animations.cs"/>
 
   <!-- Sistema de casas -->
   <script src="house/House.cs"/>
-  <!-- <script src="house/house.js"/>-->
 
   <!-- Sistema de muebles -->
   <script src="furniture/Furniture.cs"/>
-  <!-- <script src="furniture/furniture.js"/>-->
 
   <!-- Sistema de parkings -->
   <script src="parking/Parking.cs"/>
 
   <!-- Sistema de vehículos -->
   <script src="vehicles/Vehicles.cs"/>
-  <!-- <script src="vehicles/vehicles.js"/>-->
 
   <!-- Sistema de autoescuela -->
   <script src="drivingschool/DrivingSchool.cs"/>
-  <!-- <script src="drivingschool/drivingSchool.js"/>-->
 
   <!-- Sistema de concesionario -->
   <script src="carshop/CarShop.cs"/>
-  <!-- <script src="carshop/carShop.js"/>-->
 
   <!-- Sistema de administración -->
   <script src="admin/Admin.cs"/>
@@ -134,19 +121,15 @@
   <!-- Sistema común de facciones y trabajos -->
   <script src="faction/Faction.cs"/>
   <script src="faction/Job.cs"/>
-  <!-- <script src="faction/faction.js"/>-->
 
   <!-- Sistema de telefonía -->
   <script src="telephone/Telephone.cs"/>
-  <!-- <script src="telephone/telephone.js"/>-->
 
   <!-- Sistema de documentación -->
   <script src="townhall/TownHall.cs"/>
-  <!--  <script src="townhall/townHall.js"/>-->
 
   <!-- Sistema de facción policial -->
   <script src="police/Police.cs"/>
-  <!-- <script src="police/police.js"/>-->
 
   <!-- Trabajo de ladrón -->
   <script src="thief/Thief.cs"/>
@@ -156,15 +139,12 @@
 
   <!-- Trabajo de repartidor de comida rápida -->
   <script src="fastfood/FastFood.cs"/>
-  <!-- <script src="fastfood/fastFood.js"/>-->
 
   <!-- Trabajo de basurero -->
   <script src="garbage/Garbage.cs"/>
-  <!-- <script src="garbage/garbage.js"/>-->
 
   <!-- Trabajo de mecánico -->
   <script src="mechanic/Mechanic.cs"/>
-  <!-- <script src="mechanic/mechanic.js"/>-->
 
   <!-- Trabajo y hobby de pesca -->
   <script src="fishing/Fishing.cs"/>
@@ -174,5 +154,4 @@
 
   <!-- Sistema de armas -->
   <script src="weapons/Weapons.cs" />
-  <!-- <script src="weapons/weapons.js" />-->
 </meta>

@@ -25,7 +25,6 @@ namespace WiredPlayers.emergency
 
         private void OnPlayerDeathHandler(Client player, Client killer, uint weapon, CancelEventArgs cancel)
         {
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
             DeathModel death = new DeathModel(player, killer, weapon);
 
             // Creamos las variables para dar el aviso
@@ -54,7 +53,7 @@ namespace WiredPlayers.emergency
             }
 
             // Creamos el aviso y lo añadimos a la lista
-            FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, playerId, deathPlace, deathPosition, -1, deathHour);
+            FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, player.Value, deathPlace, deathPosition, -1, deathHour);
             Faction.factionWarningList.Add(factionWarning);
 
             // Creamos el mensaje de aviso
@@ -71,7 +70,7 @@ namespace WiredPlayers.emergency
 
             // Creamos el timer para poner el estado de muerto
             Timer deathTimer = new Timer(OnDeathTimer, death, 2500, Timeout.Infinite);
-            deathTimerList.Add(playerId, deathTimer);
+            deathTimerList.Add(player.Value, deathTimer);
 
             // Evitamos el respawn
             cancel.Spawn = false;
@@ -103,7 +102,6 @@ namespace WiredPlayers.emergency
                 Client player = ((DeathModel)death).player;
                 Client killer = ((DeathModel)death).killer;
                 uint weapon = ((DeathModel)death).weapon;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 int totalSeconds = Globals.GetTotalSeconds();
 
                 //NAPI.Native.SendNativeToPlayer(player, Hash._RESET_LOCALPLAYER_STATE, player);
@@ -145,11 +143,11 @@ namespace WiredPlayers.emergency
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
 
                 // Borramos el timer de la lista
-                Timer deathTimer = deathTimerList[playerId];
+                Timer deathTimer = deathTimerList[player.Value];
                 if (deathTimer != null)
                 {
                     deathTimer.Dispose();
-                    deathTimerList.Remove(playerId);
+                    deathTimerList.Remove(player.Value);
                 }
             }
             catch(Exception ex)
@@ -177,11 +175,10 @@ namespace WiredPlayers.emergency
 
         public static void DestroyDeathTimer(Client player)
         {
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-            if (deathTimerList.TryGetValue(playerId, out Timer deathTimer) == true)
+            if (deathTimerList.TryGetValue(player.Value, out Timer deathTimer) == true)
             {
                 deathTimer.Dispose();
-                deathTimerList.Remove(playerId);
+                deathTimerList.Remove(player.Value);
             }
 
             NAPI.Entity.SetEntityInvincible(player, false);
@@ -358,9 +355,6 @@ namespace WiredPlayers.emergency
 
                 if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
                 {
-                    // Obtenemos el identificador del jugador
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
                     // Movemos al jugador al hospital
                     TeleportPlayerToHospital(player);
 
@@ -368,7 +362,7 @@ namespace WiredPlayers.emergency
                     DestroyDeathTimer(player);
 
                     // Obtenemos el aviso
-                    FactionWarningModel factionWarn = Faction.GetFactionWarnByTarget(playerId, Constants.FACTION_EMERGENCY);
+                    FactionWarningModel factionWarn = Faction.GetFactionWarnByTarget(player.Value, Constants.FACTION_EMERGENCY);
 
                     if (factionWarn != null)
                     {

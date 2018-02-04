@@ -77,8 +77,7 @@ namespace WiredPlayers.police
             {
                 if(NAPI.Data.HasEntityData(police, EntityData.PLAYER_REINFORCES) == true)
                 {
-                    int policeId = NAPI.Data.GetEntityData(police, EntityData.PLAYER_ID);
-                    ReinforcesModel reinforces = new ReinforcesModel(policeId, police.Position);
+                    ReinforcesModel reinforces = new ReinforcesModel(police.Value, police.Position);
                     policeReinforces.Add(reinforces);
                 }
             }
@@ -792,7 +791,6 @@ namespace WiredPlayers.police
             else
             {
                 // Obtenemos la lista de policías
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => NAPI.Data.GetEntityData(x, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE).ToList();
 
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REINFORCES) == true)
@@ -805,7 +803,7 @@ namespace WiredPlayers.police
                         if(NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 1)
                         {
                             // Mostramos la marca en el mapa
-                            NAPI.ClientEvent.TriggerClientEvent(target, "reinforcesRemove", playerId);
+                            NAPI.ClientEvent.TriggerClientEvent(target, "reinforcesRemove", player.Value);
 
                             // Mandamos el mensaje a los jugadores
                             if (player == target)

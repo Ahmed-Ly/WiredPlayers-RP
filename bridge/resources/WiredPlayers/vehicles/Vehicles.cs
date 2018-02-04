@@ -254,14 +254,11 @@ namespace WiredPlayers.vehicles
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Miramos si tiene el timer activo
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
-                if (gasTimerList.TryGetValue(playerId, out Timer gasTimer) == true)
+                if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
                 {
                     // Eliminamos el timer
                     gasTimer.Dispose();
-                    gasTimerList.Remove(playerId);
+                    gasTimerList.Remove(player.Value);
                 }
             }
         }
@@ -293,7 +290,7 @@ namespace WiredPlayers.vehicles
             if (NAPI.Player.GetPlayerSeatbelt(player) == true)
             {
                 NAPI.Player.SetPlayerSeatbelt(player, false);
-                Chat.DendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
+                Chat.SendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
             }
 
@@ -493,18 +490,17 @@ namespace WiredPlayers.vehicles
             {
                 Vehicle vehicle = (Vehicle)vehicleObject;
                 Client player = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
                 // Reseteamos las variables
                 NAPI.Data.ResetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REFUELING);
 
                 // Borramos el timer de la lista
-                Timer gasTimer = gasTimerList[playerId];
-                if (gasTimer != null)
+                if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
                 {
+                    // Eliminamos el timer
                     gasTimer.Dispose();
-                    gasTimerList.Remove(playerId);
+                    gasTimerList.Remove(player.Value);
                 }
 
                 // Avisamos al jugador
@@ -598,12 +594,12 @@ namespace WiredPlayers.vehicles
             else if (NAPI.Player.GetPlayerSeatbelt(player) == true)
             {
                 NAPI.Player.SetPlayerSeatbelt(player, false);
-                Chat.DendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
+                Chat.SendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
             }
             else
             {
                 NAPI.Player.SetPlayerSeatbelt(player, true);
-                Chat.DendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_FASTEN, Constants.MESSAGE_ME, 20.0f);
+                Chat.SendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_FASTEN, Constants.MESSAGE_ME, 20.0f);
             }
         }
 
@@ -636,12 +632,12 @@ namespace WiredPlayers.vehicles
                     else if (NAPI.Vehicle.GetVehicleLocked(vehicle) == true)
                     {
                         NAPI.Vehicle.SetVehicleLocked(vehicle, false);
-                        Chat.DendMessageToNearbyPlayers(player, Messages.SUC_VEH_UNLOCKED, Constants.MESSAGE_ME, 20.0f);
+                        Chat.SendMessageToNearbyPlayers(player, Messages.SUC_VEH_UNLOCKED, Constants.MESSAGE_ME, 20.0f);
                     }
                     else
                     {
                         NAPI.Vehicle.SetVehicleLocked(vehicle, true);
-                        Chat.DendMessageToNearbyPlayers(player, Messages.SUC_VEH_LOCKED, Constants.MESSAGE_ME, 20.0f);
+                        Chat.SendMessageToNearbyPlayers(player, Messages.SUC_VEH_LOCKED, Constants.MESSAGE_ME, 20.0f);
                     }
                 }
             }
@@ -1113,9 +1109,6 @@ namespace WiredPlayers.vehicles
 
                             if (amount > 0 && playerMoney >= amount)
                             {
-                                // Obtenemos el id del jugador
-                                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
                                 // Rellenamos el vehículo y cobramos
                                 NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, currentGas + gasRefueled);
                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - amount);
@@ -1126,7 +1119,7 @@ namespace WiredPlayers.vehicles
 
                                 // Empezamos el repostaje
                                 Timer gasTimer = new Timer(OnVehicleRefueled, vehicle, (int)Math.Round(gasLeft * 1000), Timeout.Infinite);
-                                gasTimerList.Add(playerId, gasTimer);
+                                gasTimerList.Add(player.Value, gasTimer);
 
                                 // Mandamos el mensaje al jugador
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_REFUELING);

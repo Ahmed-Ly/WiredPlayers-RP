@@ -37,11 +37,10 @@ namespace WiredPlayers.fastfood
                 }
                 else
                 {
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    if (fastFoodTimerList.TryGetValue(playerId, out Timer fastFoodTimer) == true)
+                    if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
                     {
                         fastFoodTimer.Dispose();
-                        fastFoodTimerList.Remove(playerId);
+                        fastFoodTimerList.Remove(player.Value);
                     }
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == false)
                     {
@@ -62,13 +61,12 @@ namespace WiredPlayers.fastfood
             {
                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == vehicle)
                 {
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                     String warn = String.Format(Messages.INF_JOB_VEHICLE_LEFT, 60);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + warn);
                     
                     // Creamos el timer para volver a subirse
                     Timer fastFoodTimer = new Timer(OnFastFoodTimer, player, 60000, Timeout.Infinite);
-                    fastFoodTimerList.Add(playerId, fastFoodTimer);
+                    fastFoodTimerList.Add(player.Value, fastFoodTimer);
                 }
             }
         }
@@ -138,14 +136,11 @@ namespace WiredPlayers.fastfood
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Miramos si tiene el timer activo
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
-                if (fastFoodTimerList.TryGetValue(playerId, out Timer fastFoodTimer) == true)
+                if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
                 {
                     // Eliminamos el timer
                     fastFoodTimer.Dispose();
-                    fastFoodTimerList.Remove(playerId);
+                    fastFoodTimerList.Remove(player.Value);
                 }
             }
         }
@@ -194,7 +189,6 @@ namespace WiredPlayers.fastfood
             try
             {
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
 
                 // Respawneamos el vehículo
@@ -210,11 +204,11 @@ namespace WiredPlayers.fastfood
                 NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
 
                 // Borramos el timer de la lista
-                Timer fastFoodTimer = fastFoodTimerList[playerId];
+                Timer fastFoodTimer = fastFoodTimerList[player.Value];
                 if (fastFoodTimer != null)
                 {
                     fastFoodTimer.Dispose();
-                    fastFoodTimerList.Remove(playerId);
+                    fastFoodTimerList.Remove(player.Value);
                 }
 
                 // Avisamos al jugador

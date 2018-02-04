@@ -22,14 +22,11 @@ namespace WiredPlayers.fishing
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Miramos si tiene el timer activo
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
-                if (fishingTimerList.TryGetValue(playerId, out Timer fishingTimer) == true)
+                if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
                 {
                     // Eliminamos el timer
                     fishingTimer.Dispose();
-                    fishingTimerList.Remove(playerId);
+                    fishingTimerList.Remove(player.Value);
                 }
             }
         }
@@ -39,18 +36,17 @@ namespace WiredPlayers.fishing
             try
             {
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
 
                 // Mandamos el mensaje y aplicamos la animación
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SOMETHING_BAITED);
                 NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
 
                 // Borramos el timer de la lista
-                if (fishingTimerList.TryGetValue(playerId, out Timer fishingTimer) == true)
+                if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
                 {
                     // Eliminamos el timer
                     fishingTimer.Dispose();
-                    fishingTimerList.Remove(playerId);
+                    fishingTimerList.Remove(player.Value);
                 }
 
                 // Empezamos el minijuego
@@ -81,12 +77,9 @@ namespace WiredPlayers.fishing
             // Inicializamos el factor de aleatoriedad
             Random random = new Random();
 
-            // Obtenemos el identificador del jugador
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
             // Creamos el timer para que piquen
             Timer fishingTimer = new Timer(OnFishingPrewarnTimer, player, random.Next(1250, 2500), Timeout.Infinite);
-            fishingTimerList.Add(playerId, fishingTimer);
+            fishingTimerList.Add(player.Value, fishingTimer);
 
             // Aplicamos la animación de lanzar la caña y avisamos al jugador
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_FISHING_ROD_THROWN);
@@ -95,20 +88,17 @@ namespace WiredPlayers.fishing
         [RemoteEvent("fishingCanceled")]
         public void FishingCanceledEvent(Client player, params object[] arguments)
         {
-            // Obtenemos el identificador del jugador
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
             // Cancelamos el estado de pesca del jugador
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Player.FreezePlayer(player, false);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FISHING);
 
             // Borramos el timer de la lista
-            if (fishingTimerList.TryGetValue(playerId, out Timer fishingTimer) == true)
+            if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
                 // Eliminamos el timer
                 fishingTimer.Dispose();
-                fishingTimerList.Remove(playerId);
+                fishingTimerList.Remove(player.Value);
             }
 
             // Mandamos el mensaje al jugador

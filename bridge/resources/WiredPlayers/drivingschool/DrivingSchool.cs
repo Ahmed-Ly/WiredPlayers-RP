@@ -24,7 +24,6 @@ namespace WiredPlayers.drivingschool
 
         private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seatId)
         {
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
             if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
             {
                 VehicleHash vehicleHash = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);
@@ -34,10 +33,10 @@ namespace WiredPlayers.drivingschool
                     if (NAPI.Vehicle.GetVehicleClass(vehicleHash) == Constants.VEHICLE_CLASS_SEDANS)
                     {
                         int checkPoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT);
-                        if (drivingSchoolTimerList.TryGetValue(playerId, out Timer drivingSchoolTimer) == true)
+                        if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
                         {
                             drivingSchoolTimer.Dispose();
-                            drivingSchoolTimerList.Remove(playerId);
+                            drivingSchoolTimerList.Remove(player.Value);
                         }
                         Checkpoint newCheckpoint = NAPI.Checkpoint.CreateCheckpoint(0, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint], Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1], 2.5f, new Color(198, 40, 40, 200));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);
@@ -91,7 +90,6 @@ namespace WiredPlayers.drivingschool
                 // Está subido en un vehículo de autoescuela
                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE) == vehicle && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                 {
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                     String warn = String.Format(Messages.INF_LICENSE_VEHICLE_EXIT, 15);
                     Checkpoint playerDrivingCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
                     NAPI.Entity.DeleteEntity(playerDrivingCheckpoint);
@@ -102,7 +100,7 @@ namespace WiredPlayers.drivingschool
 
                     // Creamos el timer para volver a subirse
                     Timer drivingSchoolTimer = new Timer(OnDrivingTimer, player, 15000, Timeout.Infinite);
-                    drivingSchoolTimerList.Add(playerId, drivingSchoolTimer);
+                    drivingSchoolTimerList.Add(player.Value, drivingSchoolTimer);
                 }
             }
         }
@@ -235,14 +233,11 @@ namespace WiredPlayers.drivingschool
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Miramos si tiene el timer activo
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
-                if (drivingSchoolTimerList.TryGetValue(playerId, out Timer drivingSchoolTimer) == true)
+                if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
                 {
                     // Eliminamos el timer
                     drivingSchoolTimer.Dispose();
-                    drivingSchoolTimerList.Remove(playerId);
+                    drivingSchoolTimerList.Remove(player.Value);
                 }
             }
         }
@@ -280,17 +275,16 @@ namespace WiredPlayers.drivingschool
             {
                 // Obtenemos el jugador y su vehículo
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
 
                 // Finalizamos el examen
                 FinishDrivingExam(player, vehicle);
 
                 // Borramos el timer de la lista
-                if (drivingSchoolTimerList.TryGetValue(playerId, out Timer drivingSchoolTimer) == true)
+                if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
                 {
                     drivingSchoolTimer.Dispose();
-                    drivingSchoolTimerList.Remove(playerId);
+                    drivingSchoolTimerList.Remove(player.Value);
                 }
 
                 // Enviamos un mensaje al jugador

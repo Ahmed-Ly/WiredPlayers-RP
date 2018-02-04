@@ -17,9 +17,6 @@ namespace WiredPlayers.weazelNews
 
         public static void SendNewsMessage(Client player, String message)
         {
-            // Obtención del nombre e id del emisor
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
             // Comprobación de la longitud del mensaje
             String secondMessage = String.Empty;
 

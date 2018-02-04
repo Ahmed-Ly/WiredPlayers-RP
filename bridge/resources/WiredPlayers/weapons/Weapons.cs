@@ -266,8 +266,7 @@ namespace WiredPlayers.weapons
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Obtenemos el id del personaje
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(playerId);
+                WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(player.Value);
 
                 if (weaponCrate != null)
                 {

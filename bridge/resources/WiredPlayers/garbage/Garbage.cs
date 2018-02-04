@@ -38,11 +38,10 @@ namespace WiredPlayers.garbage
                     }
                     else
                     {
-                        int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                        if (garbageTimerList.TryGetValue(playerId, out Timer garbageTimer) == true)
+                        if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
                         {
                             garbageTimer.Dispose();
-                            garbageTimerList.Remove(playerId);
+                            garbageTimerList.Remove(player.Value);
                         }
 
                         // Miramos si empieza una ruta o vuelve al camión
@@ -121,7 +120,6 @@ namespace WiredPlayers.garbage
                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == vehicle && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
                 {
                     Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                     String warn = String.Format(Messages.INF_JOB_VEHICLE_LEFT, 45);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + warn);
                     NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
@@ -129,7 +127,7 @@ namespace WiredPlayers.garbage
 
                     // Creamos el timer para volver a subirse
                     Timer garbageTimer = new Timer(OnGarbageTimer, player, 45000, Timeout.Infinite);
-                    garbageTimerList.Add(playerId, garbageTimer);
+                    garbageTimerList.Add(player.Value, garbageTimer);
                 }
             }
         }
@@ -161,14 +159,11 @@ namespace WiredPlayers.garbage
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Miramos si tiene el timer activo
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
-                if (garbageTimerList.TryGetValue(playerId, out Timer garbageTimer) == true)
+                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
                 {
                     // Eliminamos el timer
                     garbageTimer.Dispose();
-                    garbageTimerList.Remove(playerId);
+                    garbageTimerList.Remove(player.Value);
                 }
             }
         }
@@ -185,7 +180,6 @@ namespace WiredPlayers.garbage
             try
             {
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                 Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
 
@@ -198,11 +192,11 @@ namespace WiredPlayers.garbage
                 NAPI.Data.ResetEntityData(target, EntityData.PLAYER_JOB_CHECKPOINT);
 
                 // Borramos el timer de la lista
-                Timer garbageTimer = garbageTimerList[playerId];
-                if (garbageTimer != null)
+                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
                 {
+                    // Eliminamos el timer
                     garbageTimer.Dispose();
-                    garbageTimerList.Remove(playerId);
+                    garbageTimerList.Remove(player.Value);
                 }
 
                 // Avisamos a los jugadores
@@ -220,7 +214,6 @@ namespace WiredPlayers.garbage
             try
             {
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Client driver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
                 // Recogemos la bolsa de basura
@@ -263,12 +256,11 @@ namespace WiredPlayers.garbage
                     NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
                 }
 
-                // Borramos el timer de la lista
-                Timer garbageTimer = garbageTimerList[playerId];
-                if (garbageTimer != null)
+                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
                 {
+                    // Eliminamos el timer
                     garbageTimer.Dispose();
-                    garbageTimerList.Remove(playerId);
+                    garbageTimerList.Remove(player.Value);
                 }
 
                 // Mandamos el mensaje de que se ha recogido la bolsa de basura
@@ -395,15 +387,14 @@ namespace WiredPlayers.garbage
                             Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
                             if (player.Position.DistanceTo(garbageCheckpoint.Position) < 3.5f)
                             {
-                                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                                if (garbageTimerList.TryGetValue(playerId, out Timer garbageTimer) == false)
+                                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == false)
                                 {
                                     NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl), "anim@move_m@trash", "pickup");
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
 
                                     // Creamos el timer para recoger la basura
                                     garbageTimer = new Timer(OnGarbageCollectedTimer, player, 15000, Timeout.Infinite);
-                                    garbageTimerList.Add(playerId, garbageTimer);
+                                    garbageTimerList.Add(player.Value, garbageTimer);
                                 }
                                 else
                                 {

@@ -55,13 +55,12 @@ namespace WiredPlayers.chat
                     }
 
                     // Mandamos el mensaje a los jugadores cercanos
-                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
+                    SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
                 }
                 else
                 {
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
-                    NAPI.Util.ConsoleOutput("[ID:" + playerId + "]" + player.Name + " dice: " + message);
+                    SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
+                    NAPI.Util.ConsoleOutput("[ID:" + player.Value + "]" + player.Name + " dice: " + message);
                 }
             }
             catch (Exception ex)
@@ -87,136 +86,131 @@ namespace WiredPlayers.chat
                 }
 
                 // Avisamos a los jugadores cercanos de la desconexión
-                DendMessageToNearbyPlayers(player, " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
+                SendMessageToNearbyPlayers(player, " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
             }
         }
 
-        public static void DendMessageToNearbyPlayers(Client player, String message, int type, float range, bool excludePlayer = false)
+        public static void SendMessageToNearbyPlayers(Client player, String message, int type, float range, bool excludePlayer = false)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_ID) == true) {
-                // División en rangos de distancia
-                float distanceGap = range / Constants.CHAT_RANGES;
+            // División en rangos de distancia
+            float distanceGap = range / Constants.CHAT_RANGES;
 
-                // Obtención del nombre e id del emisor
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+            // Comprobación de la longitud del mensaje
+            String secondMessage = String.Empty;
 
-                // Comprobación de la longitud del mensaje
-                String secondMessage = String.Empty;
+            if (message.Length > Constants.CHAT_LENGTH)
+            {
+                // El mensaje tiene una longitud de dos líneas
+                secondMessage = message.Substring(Constants.CHAT_LENGTH, message.Length - Constants.CHAT_LENGTH);
+                message = message.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
+            }
 
-                if (message.Length > Constants.CHAT_LENGTH)
+            foreach (Client target in NAPI.Pools.GetAllPlayers())
+            {
+                if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && player.Dimension == target.Dimension)
                 {
-                    // El mensaje tiene una longitud de dos líneas
-                    secondMessage = message.Substring(Constants.CHAT_LENGTH, message.Length - Constants.CHAT_LENGTH);
-                    message = message.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
-                }
-
-                foreach (Client target in NAPI.Pools.GetAllPlayers())
-                {
-                    if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && player.Dimension == target.Dimension)
+                    if (player != target || (player == target && !excludePlayer))
                     {
-                        if (player != target || (player == target && !excludePlayer))
+                        float distance = player.Position.DistanceTo(target.Position);
+
+                        if (distance <= range)
                         {
-                            float distance = player.Position.DistanceTo(target.Position);
+                            // Obtención del color del mensaje
+                            String chatMessageColor = GetChatMessageColor(distance, distanceGap);
+                            String oocMessageColor = GetOocMessageColor(distance, distanceGap);
 
-                            if (distance <= range)
+                            switch (type)
                             {
-                                // Obtención del color del mensaje
-                                String chatMessageColor = GetChatMessageColor(distance, distanceGap);
-                                String oocMessageColor = GetOocMessageColor(distance, distanceGap);
-
-                                switch (type)
-                                {
-                                    case Constants.MESSAGE_TALK:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " dice: " + message + "..." : chatMessageColor + player.Name + " dice: " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_YELL:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " grita: ¡" + message + "..." : chatMessageColor + player.Name + " grita: ¡" + message + "!");
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage + "!");
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_WHISPER:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " susurra: " + message + "..." : chatMessageColor + player.Name + " susurra: " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_PHONE:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " por teléfono: " + message + "..." : chatMessageColor + player.Name + " por teléfono: " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_RADIO:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " por radio: " + message + "..." : chatMessageColor + player.Name + " por radio: " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_ME:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_ME + player.Name + " " + message + "..." : Constants.COLOR_CHAT_ME + player.Name + " " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_ME + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_DO:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_DO + "[ID: " + playerId + "] " + message + "..." : Constants.COLOR_CHAT_DO + "[ID: " + playerId + "] " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_DO + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_OOC:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? oocMessageColor + "(([ID: " + playerId + "] " + player.Name + ": " + message + "..." : oocMessageColor + "(([ID: " + playerId + "] " + player.Name + ": " + message + "))");
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, oocMessageColor + secondMessage + "))");
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_DISCONNECT:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_HELP + "[ID: " + playerId + "] " + player.Name + ": " + message + "..." : Constants.COLOR_HELP + "[ID: " + playerId + "] " + player.Name + ": " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_MEGAPHONE:
-                                        // Envío del mensaje
-                                        NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_INFO + "[Megáfono de " + player.Name + "]: " + message + "..." : Constants.COLOR_INFO + "[Megáfono de " + player.Name + "]: " + message);
-                                        if (secondMessage.Length > 0)
-                                        {
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + secondMessage);
-                                        }
-                                        break;
-                                    case Constants.MESSAGE_SU_TRUE:
-                                        // Envío del mensaje
-                                        message = String.Format(Messages.SUC_POSSITIVE_RESULT, player.Name);
-                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SU_POSITIVE + message);
-                                        break;
-                                    case Constants.MESSAGE_SU_FALSE:
-                                        // Envío del mensaje
-                                        message = String.Format(Messages.ERR_NEGATIVE_RESULT, player.Name);
-                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ERROR + message);
-                                        break;
-                                }
+                                case Constants.MESSAGE_TALK:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " dice: " + message + "..." : chatMessageColor + player.Name + " dice: " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_YELL:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " grita: ¡" + message + "..." : chatMessageColor + player.Name + " grita: ¡" + message + "!");
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage + "!");
+                                    }
+                                    break;
+                                case Constants.MESSAGE_WHISPER:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " susurra: " + message + "..." : chatMessageColor + player.Name + " susurra: " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_PHONE:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " por teléfono: " + message + "..." : chatMessageColor + player.Name + " por teléfono: " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_RADIO:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? chatMessageColor + player.Name + " por radio: " + message + "..." : chatMessageColor + player.Name + " por radio: " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, chatMessageColor + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_ME:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_ME + player.Name + " " + message + "..." : Constants.COLOR_CHAT_ME + player.Name + " " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_ME + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_DO:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_DO + "[ID: " + player.Value + "] " + message + "..." : Constants.COLOR_CHAT_DO + "[ID: " + player.Value + "] " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_DO + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_OOC:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? oocMessageColor + "(([ID: " + player.Value + "] " + player.Name + ": " + message + "..." : oocMessageColor + "(([ID: " + player.Value + "] " + player.Name + ": " + message + "))");
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, oocMessageColor + secondMessage + "))");
+                                    }
+                                    break;
+                                case Constants.MESSAGE_DISCONNECT:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_HELP + "[ID: " + player.Value + "] " + player.Name + ": " + message + "..." : Constants.COLOR_HELP + "[ID: " + player.Value + "] " + player.Name + ": " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_MEGAPHONE:
+                                    // Envío del mensaje
+                                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_INFO + "[Megáfono de " + player.Name + "]: " + message + "..." : Constants.COLOR_INFO + "[Megáfono de " + player.Name + "]: " + message);
+                                    if (secondMessage.Length > 0)
+                                    {
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + secondMessage);
+                                    }
+                                    break;
+                                case Constants.MESSAGE_SU_TRUE:
+                                    // Envío del mensaje
+                                    message = String.Format(Messages.SUC_POSSITIVE_RESULT, player.Name);
+                                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SU_POSITIVE + message);
+                                    break;
+                                case Constants.MESSAGE_SU_FALSE:
+                                    // Envío del mensaje
+                                    message = String.Format(Messages.ERR_NEGATIVE_RESULT, player.Name);
+                                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ERROR + message);
+                                    break;
                             }
                         }
                     }
@@ -287,7 +281,7 @@ namespace WiredPlayers.chat
             }
             else
             {
-                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
+                SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
             }
         }
 
@@ -300,7 +294,7 @@ namespace WiredPlayers.chat
             }
             else
             {
-                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_YELL, 45.0f);
+                SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_YELL, 45.0f);
             }
         }
 
@@ -313,26 +307,26 @@ namespace WiredPlayers.chat
             }
             else
             {
-                DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_WHISPER, 3.0f);
+                SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_WHISPER, 3.0f);
             }
         }
 
         [Command("me", Messages.GEN_ME_COMMAND, GreedyArg = true)]
         public void MeCommand(Client player, String message)
         {
-            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
+            SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
         [Command("do", Messages.GEN_DO_COMMAND, GreedyArg = true)]
         public void DoCommand(Client player, String message)
         {
-            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
+            SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
         [Command("ooc", Messages.GEN_OOC_COMMAND, GreedyArg = true)]
         public void OocCommand(Client player, String message)
         {
-            DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_OOC, NAPI.Entity.GetEntityDimension(player) > 0 ? 5.0f : 10.0f);
+            SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_OOC, NAPI.Entity.GetEntityDimension(player) > 0 ? 5.0f : 10.0f);
         }
 
         [Command("su")]
@@ -346,7 +340,7 @@ namespace WiredPlayers.chat
             {
                 Random random = new Random();
                 int messageType = random.Next(0, 2) > 0 ? Constants.MESSAGE_SU_TRUE : Constants.MESSAGE_SU_FALSE;
-                DendMessageToNearbyPlayers(player, String.Empty, messageType, 20.0f);
+                SendMessageToNearbyPlayers(player, String.Empty, messageType, 20.0f);
             }
         }
 
@@ -359,7 +353,7 @@ namespace WiredPlayers.chat
                 TextLabel label = NAPI.Data.GetEntityData(player, EntityData.PLAYER_AME);
 
                 // Miramos si tenemos que actualizarlo o quitárselo
-                if(message.Length > 0)
+                if (message.Length > 0)
                 {
                     // Actualizamos el texto
                     NAPI.TextLabel.SetTextLabelText(label, "*" + message + "*");
@@ -383,14 +377,14 @@ namespace WiredPlayers.chat
         [Command("megafono", Messages.GEN_MEGAPHONE_COMMAND, Alias = "m", GreedyArg = true)]
         public void MegafonoCommand(Client player, String message)
         {
-            if(NAPI.Player.IsPlayerInAnyVehicle(player) == true)
+            if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
             {
                 NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                 int vehicleFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
 
-                if(vehicleFaction == Constants.FACTION_POLICE || vehicleFaction == Constants.FACTION_EMERGENCY)
+                if (vehicleFaction == Constants.FACTION_POLICE || vehicleFaction == Constants.FACTION_EMERGENCY)
                 {
-                    DendMessageToNearbyPlayers(player, message, Constants.MESSAGE_MEGAPHONE, 45.0f);
+                    SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_MEGAPHONE, 45.0f);
                 }
                 else
                 {
@@ -409,7 +403,7 @@ namespace WiredPlayers.chat
             Client target = null;
             String[] args = arguments.Trim().Split(' ');
 
-            if(Int32.TryParse(args[0], out int targetId) == true)
+            if (Int32.TryParse(args[0], out int targetId) == true)
             {
                 // Hemos recibido el id del jugador
                 target = Globals.GetPlayerById(targetId);
@@ -420,7 +414,7 @@ namespace WiredPlayers.chat
                     return;
                 }
             }
-            else if(args.Length > 2)
+            else if (args.Length > 2)
             {
                 target = NAPI.Player.GetPlayerFromName(args[0] + " " + args[1]);
                 args = args.Where(w => w != args[1]).ToArray();
@@ -433,18 +427,14 @@ namespace WiredPlayers.chat
             }
 
             // Miramos si el jugador está conectado
-            if(target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
+            if (target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
             {
-                if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE)
+                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_MPS_ONLY_ADMIN);
                 }
                 else
                 {
-                    // Obtenemos las ids de ambos jugadores
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    targetId = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ID);
-
                     // Unimos el mensaje y lo dividimos si su longitud excede la permitida
                     String message = String.Join(" ", args);
                     String secondMessage = String.Empty;
@@ -457,8 +447,8 @@ namespace WiredPlayers.chat
                     }
 
                     // Creamos los mensajes a enviar a emisor y receptor
-                    NAPI.Chat.SendChatMessageToPlayer(player, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_MP + "((Mensaje privado a [ID: " + targetId + "] " + target.Name + ": " + message + "..." : Constants.COLOR_ADMIN_MP + "((Mensaje privado a [ID: " + targetId + "] " + target.Name + ": " + message + "))");
-                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_MP + "((Mensaje privado de [ID: " + playerId + "] " + player.Name + ": " + message + "..." : Constants.COLOR_ADMIN_MP + "((Mensaje privado de [ID: " + playerId + "] " + player.Name + ": " + message + "))");
+                    NAPI.Chat.SendChatMessageToPlayer(player, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_MP + "((Mensaje privado a [ID: " + target.Value + "] " + target.Name + ": " + message + "..." : Constants.COLOR_ADMIN_MP + "((Mensaje privado a [ID: " + target.Value + "] " + target.Name + ": " + message + "))");
+                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_ADMIN_MP + "((Mensaje privado de [ID: " + player.Value + "] " + player.Name + ": " + message + "..." : Constants.COLOR_ADMIN_MP + "((Mensaje privado de [ID: " + player.Value + "] " + player.Name + ": " + message + "))");
                     if (secondMessage.Length > 0)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_MP + secondMessage + "))");

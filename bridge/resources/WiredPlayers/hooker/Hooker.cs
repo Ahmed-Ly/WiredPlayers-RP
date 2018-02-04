@@ -19,11 +19,10 @@ namespace WiredPlayers.hooker
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                if (sexTimerList.TryGetValue(playerId, out Timer sexTimer) == true)
+                if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
                 {
                     sexTimer.Dispose();
-                    sexTimerList.Remove(playerId);
+                    sexTimerList.Remove(player.Value);
                 }
             }
         }
@@ -33,7 +32,6 @@ namespace WiredPlayers.hooker
             try
             {
                 Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                 Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
 
                 // Paramos las animaciones
@@ -50,11 +48,10 @@ namespace WiredPlayers.hooker
                 NAPI.Data.ResetEntityData(target, EntityData.PLAYER_ALREADY_FUCKING);
 
                 // Borramos el timer de la lista
-                Timer sexTimer = sexTimerList[playerId];
-                if (sexTimer != null)
+                if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
                 {
                     sexTimer.Dispose();
-                    sexTimerList.Remove(playerId);
+                    sexTimerList.Remove(player.Value);
                 }
 
                 // Enviamos el mensaje

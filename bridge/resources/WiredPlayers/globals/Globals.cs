@@ -26,7 +26,7 @@ namespace WiredPlayers.globals
         public static List<ItemModel> itemList;
         public static List<ScoreModel> scoreList;
         public static List<AdminTicketModel> adminTicketList;
-        public static List<AreaModel> areaList;
+        public static List<ColShape> eventAreaList;
         private Timer minuteTimer;
         private Timer playersCheckTimer;
 
@@ -51,7 +51,7 @@ namespace WiredPlayers.globals
             Client target = null;
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
-                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID) == id)
+                if (player.Value == id)
                 {
                     target = player;
                     break;
@@ -90,16 +90,16 @@ namespace WiredPlayers.globals
 
         private void OnResourceStart()
         {
-            areaList = new List<AreaModel>();
+            eventAreaList = new List<ColShape>();
             scoreList = new List<ScoreModel>();
             adminTicketList = new List<AdminTicketModel>();
             fastFoodOrderList = new List<FastFoodOrderModel>();
 
             // Área para cambiar de personaje en el lobby
             ColShape characterSelectionRectangle = NAPI.ColShape.Create2DColShape(151.25f, -1002.18f, 1.8f, 2.5f);
-            AreaModel characterSelectionArea = new AreaModel("character-selector", characterSelectionRectangle);
             NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
-            areaList.Add(characterSelectionArea);
+            NAPI.Data.SetEntityData(characterSelectionRectangle, EntityData.SHAPE_CAPTION, "character-selector");
+            eventAreaList.Add(characterSelectionRectangle);
 
             // Añadimos el interior del concesionario
             NAPI.World.RequestIpl("shr_int");
@@ -115,37 +115,36 @@ namespace WiredPlayers.globals
 
             // Área para abrir las puertas principales del concesionario
             ColShape motorSportRectangle = NAPI.ColShape.Create2DColShape(-62.61f, -1094.54f, 4.69f, 2.71f);
-            AreaModel motorSportArea = new AreaModel("motorsport-main-doors", motorSportRectangle);
-            //NAPI.RegisterCustomColShape(motorSportRectangle);
-            areaList.Add(motorSportArea);
+            NAPI.Data.SetEntityData(motorSportRectangle, EntityData.SHAPE_CAPTION, "motorsport-main-doors");
+            eventAreaList.Add(motorSportRectangle);
 
             // Área para abrir las puertas del parking del concesionario
             ColShape motorSportParkingRectangle = NAPI.ColShape.Create2DColShape(-40.63f, -1110.12f, 4.02f, 4.02f);
-            AreaModel motorSportParkingArea = new AreaModel("motorsport-parking-doors", motorSportParkingRectangle);
-            areaList.Add(motorSportParkingArea);
+            NAPI.Data.SetEntityData(motorSportParkingRectangle, EntityData.SHAPE_CAPTION, "motorsport-parking-doors");
+            eventAreaList.Add(motorSportParkingRectangle);
 
             // Área para bloquear puertas de negocios
             ColShape supermarketRectangle = NAPI.ColShape.Create2DColShape(-711.5449f, -915.5397f, 204.56f, 204.25f);
-            AreaModel supermarketArea = new AreaModel("supermarket", supermarketRectangle);
-            areaList.Add(supermarketArea);
+            NAPI.Data.SetEntityData(supermarketRectangle, EntityData.SHAPE_CAPTION, "supermarket");
+            eventAreaList.Add(supermarketRectangle);
 
             ColShape clubhouseRectangle = NAPI.ColShape.Create2DColShape(981.7533f, -102.7987f, 877f, 881.1f);
-            AreaModel clubhouseArea = new AreaModel("clubhouse", clubhouseRectangle);
-            areaList.Add(clubhouseArea);
+            NAPI.Data.SetEntityData(clubhouseRectangle, EntityData.SHAPE_CAPTION, "clubhouse");
+            eventAreaList.Add(clubhouseRectangle);
 
             ColShape vanillaRectangle = NAPI.ColShape.Create2DColShape(127.9552f, -1298.503f, 1171.7653f, 1167.0788f);
-            AreaModel vanillaArea = new AreaModel("vanilla", vanillaRectangle);
-            areaList.Add(vanillaArea);
+            NAPI.Data.SetEntityData(vanillaRectangle, EntityData.SHAPE_CAPTION, "vanilla");
+            eventAreaList.Add(vanillaRectangle);
 
             // Área para condenar a jugadores
-            ColShape jailRectangle = NAPI.ColShape.Create2DColShape(458.8354f, -992.3193f, 6.3419f, 4.65f);
-            AreaModel jailArea = new AreaModel("jail", jailRectangle);
-            areaList.Add(jailArea);
+            ColShape jailRectangle = NAPI.ColShape.Create2DColShape(459.8638f, -992.2576f, 6.3419f, 4.65f);
+            NAPI.Data.SetEntityData(jailRectangle, EntityData.SHAPE_CAPTION, "jail");
+            eventAreaList.Add(jailRectangle);
 
             // Área para los vestuarios del LSPD
             ColShape lspdRoomLockersRectangle = NAPI.ColShape.Create2DColShape(455.3337f, -990.8022f, 527.39f, 544.29f);
-            AreaModel roomLockersArea = new AreaModel("lockerslspd", lspdRoomLockersRectangle);
-            areaList.Add(roomLockersArea);
+            NAPI.Data.SetEntityData(lspdRoomLockersRectangle, EntityData.SHAPE_CAPTION, "lockerslspd");
+            eventAreaList.Add(lspdRoomLockersRectangle);
 
             for (int i = 0; i < NAPI.Server.GetMaxPlayers(); i++)
             {
@@ -180,88 +179,86 @@ namespace WiredPlayers.globals
 
         private void OnPlayerEnterColShape(ColShape shape, Client player)
         {
-            foreach (AreaModel area in areaList)
+            NAPI.Chat.SendChatMessageToAll("asdas");
+            // Miramos si es un área prestablecida
+            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
             {
-                if (area.area == shape)
-                {
-                    switch (area.action)
-                    {
-                        case "character-selector":
-                            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
-                            {
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
-                            }
-                            break;
-                        case "motorsport-main-doors":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, false, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, false, 0f, false);
-                            break;
-                        case "motorsport-parking-doors":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, false, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, false, 0f, false);
-                            break;
-                        case "jail":
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_AREA, true);
-                            break;
-                        case "supermarket":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                            break;
-                        case "clubhouse":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                            break;
-                        case "vanilla":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                            break;
-                        case "lockerslspd":
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA, true);
-                            break;
-                    }
+                // Obtenemos el texto identificativo
+                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
 
-                    break;
+                switch (shapeCaption)
+                {
+                    case "character-selector":
+                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
+                        {
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
+                        }
+                        break;
+                    case "motorsport-main-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, false, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, false, 0f, false);
+                        break;
+                    case "motorsport-parking-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, false, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, false, 0f, false);
+                        break;
+                    case "jail":
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_AREA, true);
+                        break;
+                    case "supermarket":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        break;
+                    case "clubhouse":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
+                        break;
+                    case "vanilla":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
+                        break;
+                    case "lockerslspd":
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA, true);
+                        break;
                 }
             }
         }
 
         private void OnPlayerExitColShape(ColShape shape, Client player)
         {
-            foreach (AreaModel area in areaList)
+            // Miramos si es un área prestablecida
+            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
             {
-                if (area.area == shape)
-                {
-                    switch (area.action)
-                    {
-                        case "character-selector":
-                            NAPI.Chat.SendChatMessageToAll("Te quito creación");
-                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
-                            break;
-                        case "motorsport-main-doors":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, true, 0f, false);
-                            break;
-                        case "motorsport-parking-doors":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, true, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, true, 0f, false);
-                            break;
-                        case "supermarket":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                            break;
-                        case "clubhouse":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                            break;
-                        case "vanilla":
-                            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                            break;
-                        case "jail":
-                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JAIL_AREA);
-                            break;
-                        case "lockerslspd":
-                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA);
-                            break;
-                    }
+                // Obtenemos el texto identificativo
+                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
 
-                    break;
+                switch (shapeCaption)
+                {
+                    case "character-selector":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
+                        break;
+                    case "motorsport-main-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, true, 0f, false);
+                        break;
+                    case "motorsport-parking-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, true, 0f, false);
+                        break;
+                    case "supermarket":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        break;
+                    case "clubhouse":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
+                        break;
+                    case "vanilla":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
+                        break;
+                    case "jail":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JAIL_AREA);
+                        break;
+                    case "lockerslspd":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA);
+                        break;
                 }
             }
         }
@@ -271,10 +268,7 @@ namespace WiredPlayers.globals
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Se elimina el personaje de la lista de conectados
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                ScoreModel scoreModel = scoreList.ElementAt(playerId);
-                scoreModel.playerName = String.Empty;
-                scoreModel.playerPing = 0;
+                scoreList.RemoveAll(score => score.playerId == player.Value);
 
                 // Guardamos los datos del personaje
                 PlayerModel character = new PlayerModel();
@@ -306,14 +300,14 @@ namespace WiredPlayers.globals
                 character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
                 character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                 character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-                
+
                 // Datos sincronizados
                 character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                 character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
-                
+
                 // Guardamos en la base de datos
                 Database.SaveCharacterInformation(character);
-                
+
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
@@ -324,16 +318,9 @@ namespace WiredPlayers.globals
                         NAPI.Entity.DeleteEntity(item.objectHandle);
                     }
                 }
-                
+
                 // Borramos la duda que tenga abierta
-                foreach (AdminTicketModel adminTicket in adminTicketList)
-                {
-                    if (adminTicket.playerId == playerId)
-                    {
-                        adminTicketList.Remove(adminTicket);
-                        break;
-                    }
-                }
+                adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
             }
         }
         /*
@@ -382,8 +369,7 @@ namespace WiredPlayers.globals
                 {
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
                     {
-                        int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                        ScoreModel scoreModel = scoreList.ElementAt(playerId);
+                        ScoreModel scoreModel = scoreList.FirstOrDefault(score => score.playerId == player.Value);
                         scoreModel.playerPing = NAPI.Player.GetPlayerPing(player);
                     }
                 }
@@ -400,7 +386,7 @@ namespace WiredPlayers.globals
             {
                 // Ajustamos la hora del servidor
                 TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
-                //NAPI.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
+                NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
 
                 int totalSeconds = GetTotalSeconds();
                 foreach (Client player in NAPI.Pools.GetAllPlayers())
@@ -412,7 +398,7 @@ namespace WiredPlayers.globals
                         {
                             // Reducimos el tiempo entre empleos
                             int employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
-                            if(employeeCooldown > 0)
+                            if (employeeCooldown > 0)
                             {
                                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
                             }
@@ -433,7 +419,7 @@ namespace WiredPlayers.globals
 
                         // Miramos si tiene tiempo de descanso de trabajo
                         int jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
-                        if(jobCooldown > 0)
+                        if (jobCooldown > 0)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
                         }
@@ -445,7 +431,7 @@ namespace WiredPlayers.globals
                             if (jailTime == 1)
                             {
                                 // Miramos dónde spawnear
-                                if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC)
+                                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC)
                                 {
                                     NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[3]);
                                 }
@@ -461,27 +447,27 @@ namespace WiredPlayers.globals
                                 // Mandamos el mensaje al jugador
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_UNJAILED);
                             }
-                            else if(jailTime > 0)
+                            else if (jailTime > 0)
                             {
                                 jailTime--;
                                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, jailTime);
                             }
                         }
-                        
+
                         // Bajamos el nivel de alcohol
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) == true)
                         {
                             // Calculamos el nivel de alcohol
                             float drunkLevel = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
 
-                            if(drunkLevel <= 0.0f)
+                            if (drunkLevel <= 0.0f)
                             {
                                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL);
                             }
                             else
                             {
                                 // Miramos si ha bajado del límite de alcohol
-                                if(drunkLevel < Constants.WASTED_LEVEL)
+                                if (drunkLevel < Constants.WASTED_LEVEL)
                                 {
                                     NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE);
                                     NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
@@ -640,7 +626,7 @@ namespace WiredPlayers.globals
             // Ingresos extra por nivel
             int levelEarnings = GetPlayerLevel(player) * Constants.PAID_PER_LEVEL;
             total += levelEarnings;
-            if(levelEarnings > 0)
+            if (levelEarnings > 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Ingresos extra: " + levelEarnings + "$");
             }
@@ -700,7 +686,7 @@ namespace WiredPlayers.globals
             // Añadimos el log de pago
             Database.LogPayment("Payday", player.Name, "Payday", total);
         }
-        
+
         private Vector3 GetPlayerFastFoodDeliveryDestination()
         {
             Random random = new Random();
@@ -868,7 +854,7 @@ namespace WiredPlayers.globals
                     InventoryModel inventoryItem = new InventoryModel();
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
-                    if(businessItem != null)
+                    if (businessItem != null)
                     {
                         inventoryItem.description = businessItem.description;
                         inventoryItem.type = businessItem.type;
@@ -951,7 +937,7 @@ namespace WiredPlayers.globals
         public static void PopulateCharacterClothes(Client player)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-            foreach (ClothesModel clothes in Globals.clothesList)
+            foreach (ClothesModel clothes in clothesList)
             {
                 if (clothes.player == playerId && clothes.dressed)
                 {
@@ -970,9 +956,9 @@ namespace WiredPlayers.globals
         public static List<TattooModel> GetPlayerTattoos(int playerId)
         {
             List<TattooModel> tattooModelList = new List<TattooModel>();
-            foreach(TattooModel tattoo in tattooList)
+            foreach (TattooModel tattoo in tattooList)
             {
-                if(tattoo.player == playerId)
+                if (tattoo.player == playerId)
                 {
                     tattooModelList.Add(tattoo);
                 }
@@ -1227,19 +1213,9 @@ namespace WiredPlayers.globals
                             NAPI.Entity.SetEntityDimension(player, 0);
                         }
 
-                        // Añadimos el jugador a la lista de conectados
-                        for (int i = 0; i < scoreList.Count; i++)
-                        {
-                            ScoreModel scoreModel = scoreList.ElementAt(i);
-                            if (scoreModel.playerName == String.Empty)
-                            {
-                                scoreModel.playerName = player.Name;
-                                scoreModel.playerPing = NAPI.Player.GetPlayerPing(player);
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_ID, i);
-                                NAPI.Player.SetPlayerNametag(player, "[ID: " + i + "] " + player.Name);
-                                break;
-                            }
-                        }
+                        // Añadimos el jugador a la lista
+                        ScoreModel scoreModel = new ScoreModel(player.Value, player.Name, player.Ping);
+                        scoreList.Add(scoreModel);
 
                         // Spawneamos al jugador en el mundo
                         NAPI.Player.SetPlayerName(player, realName);
@@ -1251,9 +1227,6 @@ namespace WiredPlayers.globals
                         // Comprobamos si está muerto
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
                         {
-                            // Ponemos al personaje en estado muerto
-                            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
                             // Creamos las variables para dar el aviso
                             Vector3 deathPosition = null;
                             String deathPlace = String.Empty;
@@ -1280,7 +1253,7 @@ namespace WiredPlayers.globals
                             }
 
                             // Creamos el aviso y lo añadimos a la lista
-                            FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, playerId, deathPlace, deathPosition, -1, deathHour);
+                            FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, player.Value, deathPlace, deathPosition, -1, deathHour);
                             Faction.factionWarningList.Add(factionWarning);
 
                             // Creamos el mensaje de aviso
@@ -1321,18 +1294,11 @@ namespace WiredPlayers.globals
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
                     }
                 }
-                else
+                else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_CREATOR_AREA) == true)
                 {
-                    foreach(AreaModel area in areaList)
-                    {
-                        if(NAPI.ColShape.IsPointWithinColshape(area.area, player.Position) && area.action == "character-selector")
-                        {
-                            // Mostramos el menú de personajes
-                            List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
-                            NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerCharacters", NAPI.Util.ToJson(playerList));
-                            break;
-                        }
-                    }
+                    // Mostramos el menú de personajes
+                    List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerCharacters", NAPI.Util.ToJson(playerList));
                 }
             }
         }
@@ -1559,7 +1525,7 @@ namespace WiredPlayers.globals
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_TRUNK);
 
                     // Enviamos el mensaje
-                    Chat.DendMessageToNearbyPlayers(player, Messages.INF_TRUNK_ITEM_WITHDRAW, Constants.MESSAGE_ME, 20.0f);
+                    Chat.SendMessageToNearbyPlayers(player, Messages.INF_TRUNK_ITEM_WITHDRAW, Constants.MESSAGE_ME, 20.0f);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
                     break;
             }
@@ -1763,15 +1729,15 @@ namespace WiredPlayers.globals
                 {
                     if (player.Position.DistanceTo(parking.position) < 2.5f && parking.type == Constants.PARKING_TYPE_SCRAPYARD)
                     {
-                        if(amount > 0)
+                        if (amount > 0)
                         {
                             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-                            if(playerMoney >= amount)
+                            if (playerMoney >= amount)
                             {
                                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                                 ItemModel item = GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
-                                if(item == null)
+                                if (item == null)
                                 {
                                     item = new ItemModel();
                                     item.amount = amount;
@@ -2040,7 +2006,7 @@ namespace WiredPlayers.globals
                                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                                 ItemModel fishModel = GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_FISH);
 
-                                if(fishModel == null)
+                                if (fishModel == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_FISH_SELLABLE);
                                 }
@@ -2232,19 +2198,19 @@ namespace WiredPlayers.globals
         [Command("ceder", Messages.GEN_GIVE_COMMAND)]
         public void CederCommand(Client player, String targetString)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if(target == null)
+                if (target == null)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
                 }
-                else if(player.Position.DistanceTo(target.Position) > 2.0f)
+                else if (player.Position.DistanceTo(target.Position) > 2.0f)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_TOO_FAR);
                 }
-                else if(NAPI.Data.HasEntityData(target, EntityData.PLAYER_RIGHT_HAND) == true)
+                else if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_TARGET_RIGHT_HAND_NOT_EMPTY);
                 }
@@ -2274,7 +2240,7 @@ namespace WiredPlayers.globals
                         BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                         NAPI.Entity.DetachEntity(item.objectHandle);
                         NAPI.Entity.AttachEntityToEntity(item.objectHandle, target, "PH_R_Hand", businessItem.position, businessItem.rotation);
-                        
+
                         // Creamos los mensajes para los usuarios
                         playerMessage = String.Format(Messages.INF_ITEM_GIVEN, businessItem.description.ToLower(), target.Name);
                         targetMessage = String.Format(Messages.INF_ITEM_RECEIVED, player.Name, businessItem.description.ToLower());
@@ -2340,7 +2306,7 @@ namespace WiredPlayers.globals
                     }
                     break;
                 case "pintura":
-                    if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE) == true)
+                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE) == true)
                     {
                         // Obtenemos el mecánico y vehículo
                         Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
@@ -2399,27 +2365,27 @@ namespace WiredPlayers.globals
                 switch (accept.ToLower())
                 {
                     case "reparacion":
-                        if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE) == true)
+                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE) == true)
                         {
                             // Obtenemos el mecánico
                             Client mechanic = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
-                            
+
                             if (mechanic != null && mechanic.Position.DistanceTo(player.Position) < 5.0f)
                             {
                                 int price = NAPI.Data.GetEntityData(player, EntityData.JOB_OFFER_PRICE);
                                 int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-                                
+
                                 if (playerMoney >= price)
                                 {
                                     // Obtenemos el vehículo a reparar y la parte
                                     String type = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAIR_TYPE);
                                     Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE);
-                                    
+
                                     // Obtenemos el dinero y productos del mecánico
                                     int mechanicId = NAPI.Data.GetEntityData(mechanic, EntityData.PLAYER_SQL_ID);
                                     int mechanicMoney = NAPI.Data.GetEntitySharedData(mechanic, EntityData.PLAYER_MONEY);
                                     ItemModel item = GetPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
-                                    
+
                                     switch (type.ToLower())
                                     {
                                         case "chasis":
@@ -2453,9 +2419,9 @@ namespace WiredPlayers.globals
                                             }
                                             break;
                                     }
-                                    
+
                                     // Descontamos los productos y pagamos
-                                    if(player != mechanic)
+                                    if (player != mechanic)
                                     {
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
                                         NAPI.Data.SetEntitySharedData(mechanic, EntityData.PLAYER_MONEY, mechanicMoney + price);
@@ -2579,7 +2545,7 @@ namespace WiredPlayers.globals
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_REPAIR_OFFERED);
                         }
-                            
+
                         break;
                     case "servicio":
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ALREADY_FUCKING) == true)
@@ -2615,7 +2581,6 @@ namespace WiredPlayers.globals
                                         }
                                         else
                                         {
-                                            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
                                             int targetMoney = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY);
                                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - amount);
                                             NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, targetMoney + amount);
@@ -2640,7 +2605,7 @@ namespace WiredPlayers.globals
 
                                                 // Creamos el timer para acabar el servicio
                                                 Timer sexTimer = new Timer(Hooker.OnSexServiceTimer, player, 120000, Timeout.Infinite);
-                                                Hooker.sexTimerList.Add(playerId, sexTimer);
+                                                Hooker.sexTimerList.Add(player.Value, sexTimer);
                                             }
                                             else
                                             {
@@ -2649,7 +2614,7 @@ namespace WiredPlayers.globals
 
                                                 // Creamos el timer para acabar el servicio
                                                 Timer sexTimer = new Timer(Hooker.OnSexServiceTimer, player, 180000, Timeout.Infinite);
-                                                Hooker.sexTimerList.Add(playerId, sexTimer);
+                                                Hooker.sexTimerList.Add(player.Value, sexTimer);
                                             }
 
                                             // Añadimos el log del pago
@@ -2806,13 +2771,13 @@ namespace WiredPlayers.globals
                             {
                                 // Calculamos el dinero del pagador
                                 int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
-                                
+
                                 if (money >= amount)
                                 {
 
                                     // Obtenemos la casa
                                     HouseModel house = House.GetHouseById(houseId);
-                                    
+
                                     //SEGURIDAD ADICIONAL: Se podría abusar de vender a la vez la casa al estado y a una persona.
                                     if (house.owner == target.Name)
                                     {
@@ -2909,7 +2874,7 @@ namespace WiredPlayers.globals
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_RIGHT_HAND_OCCUPIED);
             }
-            else if(NAPI.Data.HasEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE) == true)
+            else if (NAPI.Data.HasEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE) == true)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_BOTH_HAND_OCCUPIED);
             }
@@ -2919,8 +2884,7 @@ namespace WiredPlayers.globals
                 if (item != null)
                 {
                     // Obtenemos el objeto del suelo
-                    int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                    ItemModel playerItem = GetPlayerItemModelFromHash(playerId, item.hash);
+                    ItemModel playerItem = GetPlayerItemModelFromHash(player.Value, item.hash);
 
                     // Borramos el objeto
                     NAPI.Entity.DeleteEntity(item.objectHandle);
@@ -2955,11 +2919,11 @@ namespace WiredPlayers.globals
                 else
                 {
                     WeaponCrateModel weaponCrate = Weapons.GetClosestWeaponCrate(player);
-                    if(weaponCrate != null)
+                    if (weaponCrate != null)
                     {
                         int index = Weapons.weaponCrateList.IndexOf(weaponCrate);
                         weaponCrate.carriedEntity = Constants.ITEM_ENTITY_PLAYER;
-                        weaponCrate.carriedIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
+                        weaponCrate.carriedIdentifier = player.Value;
                         NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.OnlyAnimateUpperBody | Constants.AnimationFlags.AllowPlayerControl), "anim@heists@box_carry@", "idle");
                         NAPI.Entity.AttachEntityToEntity(weaponCrate.crateObject, player, "PH_R_Hand", new Vector3(0.0f, -0.5f, -0.25f), new Vector3(0.0f, 0.0f, 0.0f));
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE, index);
@@ -2971,11 +2935,11 @@ namespace WiredPlayers.globals
                 }
             }
         }
-        
+
         [Command("tirar")]
         public void TirarCommand(Client player)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                 ItemModel item = GetItemModelFromId(itemId);
@@ -3021,11 +2985,10 @@ namespace WiredPlayers.globals
                 String message = String.Format(Messages.INF_PLAYER_INVENTORY_DROP, businessItem.description.ToLower());
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
             }
-            else if(NAPI.Data.HasEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE) == true)
+            else if (NAPI.Data.HasEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE) == true)
             {
-                // Obtenemos el id del personaje
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-                WeaponCrateModel weaponCrate = Weapons.GetPlayerCarriedWeaponCrate(playerId);
+                // Obtenemos el la caja del personaje
+                WeaponCrateModel weaponCrate = Weapons.GetPlayerCarriedWeaponCrate(player.Value);
 
                 if (weaponCrate != null)
                 {
@@ -3051,13 +3014,10 @@ namespace WiredPlayers.globals
         [Command("duda", Messages.GEN_HELP_REQUEST, GreedyArg = true)]
         public void DudaCommand(Client player, String message)
         {
-            // Obtenemos el id del jugador
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ID);
-
             // Miramos si tiene alguna duda abierta
             foreach (AdminTicketModel ticket in adminTicketList)
             {
-                if (playerId == ticket.playerId)
+                if (player.Value == ticket.playerId)
                 {
                     ticket.question = message;
                     return;
@@ -3066,7 +3026,7 @@ namespace WiredPlayers.globals
 
             // No tiene ninguna duda, creamos una nueva
             AdminTicketModel adminTicket = new AdminTicketModel();
-            adminTicket.playerId = playerId;
+            adminTicket.playerId = player.Value;
             adminTicket.question = message;
             adminTicketList.Add(adminTicket);
 
@@ -3083,7 +3043,7 @@ namespace WiredPlayers.globals
                 }
             }
         }
-        
+
         [Command("puerta")]
         public void PuertaCommand(Client player)
         {
@@ -3148,7 +3108,7 @@ namespace WiredPlayers.globals
                         clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_MASK);
                         if (action.ToLower() == "poner")
                         {
-                            if(clothes == null)
+                            if (clothes == null)
                             {
                                 clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.CLOTHES_MASK && c.type == 0).First();
                                 if (clothes == null)
@@ -3275,7 +3235,7 @@ namespace WiredPlayers.globals
                             }
                             else
                             {
-                                if(NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_FEMALE)
+                                if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_FEMALE)
                                 {
                                     NAPI.Player.SetPlayerAccessory(player, Constants.ACCESSORY_HATS, 57, 0);
                                 }
@@ -3294,7 +3254,7 @@ namespace WiredPlayers.globals
                             if (clothes == null)
                             {
                                 clothes = GetPlayerClothes(playerId).Where(c => c.slot == Constants.ACCESSORY_GLASSES && c.type == 1).First();
-                                if(clothes == null)
+                                if (clothes == null)
                                 {
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_GLASSES_BOUGHT);
                                 }
