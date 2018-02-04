@@ -493,7 +493,17 @@ function populateCrimesMenu(crimesJson, selectedCrimes) {
 	// Añadimos el texto de cabecera y obtenemos la lista de delitos
 	let crimesArray = JSON.parse(crimesJson);
 	header.textContent = 'Lista de delitos';
-	selectedOptions = selectedCrimes.length > 0 ? selectedCrimes : [];
+	selectedOptions = [];
+	
+	if(selectedCrimes.length > 0) {
+		// Obtenemos los delitos
+		let crimes = JSON.parse(selectedCrimes);
+		
+		for(let i = 0; i < crimes.length; i++) {
+			// Añadimos el delito
+			selectedOptions.push(crimes[i]);
+		}
+	}
 	
 	for(let i = 0; i < crimesArray.length; i++) {
 		// Obtenemos el componente
@@ -523,9 +533,14 @@ function populateCrimesMenu(crimesJson, selectedCrimes) {
 		itemPrice.classList.add('item-price');
 		itemAmount.classList.add('item-amount-description');
 		
-		if(selectedOptions.indexOf(crime) > -1) {
-			// Marcamos el delito como aplicable
-			itemContainer.classList.add('active-item');
+		for(let c = 0; c < selectedOptions.length; c++) {
+			if(JSON.stringify(crime) === JSON.stringify(selectedOptions[c])) {
+				// Marcamos el delito como aplicable
+				itemContainer.classList.add('active-item');
+				selectedOptions.splice(c, 1);
+				selectedOptions.push(crime);
+				break;
+			}
 		}
 		
 		// Añadimos el contenido de cada elemento
