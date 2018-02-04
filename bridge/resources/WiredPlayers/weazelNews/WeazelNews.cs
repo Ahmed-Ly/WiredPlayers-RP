@@ -7,13 +7,9 @@ using System;
 
 namespace WiredPlayers.weazelNews
 {
-    class WeazelNews : Script
+    class WeazelNews
     {
         public static List<AnnoucementModel> annoucementList;
-
-        public WeazelNews()
-        {
-        }
 
         public static void SendNewsMessage(Client player, String message)
         {
@@ -110,9 +106,9 @@ namespace WiredPlayers.weazelNews
                 }
                 else if (target == player)
                 {
-                    foreach(Client interviewed in NAPI.Pools.GetAllPlayers())
+                    foreach (Client interviewed in NAPI.Pools.GetAllPlayers())
                     {
-                        if(NAPI.Data.HasEntityData(interviewed, EntityData.PLAYER_ON_AIR) && interviewed != player)
+                        if (NAPI.Data.HasEntityData(interviewed, EntityData.PLAYER_ON_AIR) && interviewed != player)
                         {
                             NAPI.Data.ResetEntityData(interviewed, EntityData.PLAYER_ON_AIR);
                             NAPI.Data.ResetEntityData(interviewed, EntityData.PLAYER_JOB_PARTNER);
@@ -156,7 +152,7 @@ namespace WiredPlayers.weazelNews
                 {
                     Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                    if(NAPI.Data.HasEntityData(target, EntityData.PLAYER_ON_AIR) == true)
+                    if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_ON_AIR) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ON_AIR);
                     }
@@ -174,7 +170,7 @@ namespace WiredPlayers.weazelNews
         private int GetRemainingFounds()
         {
             int remaining = 0;
-            
+
             foreach (AnnoucementModel announcement in annoucementList)
             {
                 if (announcement.given)
@@ -188,7 +184,7 @@ namespace WiredPlayers.weazelNews
             }
             return remaining;
         }
-        
+
         [Command("premiar", Messages.GEN_NEWS_PRIZE, GreedyArg = true)]
         public void PremiarCommand(Client player, String targetString, int prize, string contest)
         {
@@ -207,7 +203,7 @@ namespace WiredPlayers.weazelNews
                 if (target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                 {
                     int prizeAmount = GetRemainingFounds();
-                    if(prizeAmount >= prize)
+                    if (prizeAmount >= prize)
                     {
                         AnnoucementModel prizeModel = new AnnoucementModel();
                         int targetMoney = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY);

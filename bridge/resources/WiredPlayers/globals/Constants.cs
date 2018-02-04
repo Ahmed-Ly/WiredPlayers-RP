@@ -198,7 +198,7 @@ namespace WiredPlayers.globals
         public const String ITEM_HASH_PACK_BEER_AM = "4241316616";
         public const String ITEM_HASH_BOTTLE_COGNAC = "1404018125";
         public const String ITEM_HASH_BOTTLE_CAVA = "3846720762";
-        
+
         public const String ITEM_HASH_CIGARRETES_PACK_OPEN = "1079465856";
 
         // Items electrónica
@@ -326,7 +326,7 @@ namespace WiredPlayers.globals
         public const int JOB_MECHANIC = 3;
         public const int JOB_GARBAGE = 4;
         public const int JOB_HOOKER = 5;
-        public const int JOB_FISHERMAN = 6; 
+        public const int JOB_FISHERMAN = 6;
 
         // Tipos de entidades "dueñas" de los objetos
         public const String ITEM_ENTITY_GROUND = "Ground";
@@ -3301,7 +3301,7 @@ namespace WiredPlayers.globals
             new BusinessBlipModel(3, 93),
             new BusinessBlipModel(117, 93),
             new BusinessBlipModel(259, 71),
-            new BusinessBlipModel(276, 68),            
+            new BusinessBlipModel(276, 68),
             new BusinessBlipModel(280, 136),
             new BusinessBlipModel(282, 121),
             new BusinessBlipModel(283, 446),

@@ -43,7 +43,7 @@ namespace WiredPlayers.faction
             FactionWarningModel warn = null;
             foreach (FactionWarningModel factionWarn in factionWarningList)
             {
-                if(factionWarn.playerId == playerId && factionWarn.faction == faction)
+                if (factionWarn.playerId == playerId && factionWarn.faction == faction)
                 {
                     warn = factionWarn;
                     break;
@@ -143,9 +143,9 @@ namespace WiredPlayers.faction
             bool isInternalAffairs = false;
 
             if (faction == Constants.FACTION_TOWNHALL && (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(target, EntityData.PLAYER_RANK) == 7))
-                {
-                    isInternalAffairs = true;
-                }
+            {
+                isInternalAffairs = true;
+            }
 
             return isInternalAffairs;
         }
@@ -190,7 +190,7 @@ namespace WiredPlayers.faction
 
                     // Mandar a jugadores cercanos al que manda mensaje de radio
                     Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_RADIO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
-                    
+
                 }
                 else
                 {
@@ -281,7 +281,7 @@ namespace WiredPlayers.faction
                     {
                         if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE)
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(target,secondMessage.Length > 0 ? Constants.COLOR_RADIO_POLICE + "[RADIO] " + rank + " " + player.Name + " dice: " + message + "..." : Constants.COLOR_RADIO_POLICE + "[RADIO] " + rank + " " + player.Name + " dice: " + message);
+                            NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_RADIO_POLICE + "[RADIO] " + rank + " " + player.Name + " dice: " + message + "..." : Constants.COLOR_RADIO_POLICE + "[RADIO] " + rank + " " + player.Name + " dice: " + message);
                             if (secondMessage.Length > 0)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_RADIO_POLICE + secondMessage);
@@ -904,7 +904,7 @@ namespace WiredPlayers.faction
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
 
-            if(faction == Constants.FACTION_POLICE || faction == Constants.FACTION_EMERGENCY)
+            if (faction == Constants.FACTION_POLICE || faction == Constants.FACTION_EMERGENCY)
             {
                 // Inicializamos los contadores
                 int currentElement = 0;
@@ -915,10 +915,10 @@ namespace WiredPlayers.faction
 
                 foreach (FactionWarningModel factionWarning in factionWarningList)
                 {
-                    if(factionWarning.faction == faction)
+                    if (factionWarning.faction == faction)
                     {
                         String message = String.Empty;
-                        if(factionWarning.place.Length > 0)
+                        if (factionWarning.place.Length > 0)
                         {
                             message = currentElement + ". Hora: " + factionWarning.hour + ", lugar: " + factionWarning.place;
                         }
@@ -928,7 +928,7 @@ namespace WiredPlayers.faction
                         }
 
                         // Miramos si ha sido atendido
-                        if(factionWarning.takenBy > -1)
+                        if (factionWarning.takenBy > -1)
                         {
                             Client target = Globals.GetPlayerById(factionWarning.takenBy);
                             message += ", estado: atendido por " + target.Name;
@@ -960,7 +960,7 @@ namespace WiredPlayers.faction
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_POLICE_EMERGENCY_FACTION);
             }
         }
-    
+
         [Command("atender", Messages.GEN_ATENDER_COMMAND)]
         public void AtenderCommand(Client player, int warning)
         {
@@ -973,15 +973,15 @@ namespace WiredPlayers.faction
                     FactionWarningModel factionWarning = factionWarningList.ElementAt(warning);
 
                     // Comprobamos si está en la facción correcta y si está cogido el aviso
-                    if(factionWarning.faction != faction)
+                    if (factionWarning.faction != faction)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FACTION_WARNING_NOT_FOUND);
                     }
-                    else if(factionWarning.takenBy > -1)
+                    else if (factionWarning.takenBy > -1)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FACTION_WARNING_TAKEN);
                     }
-                    else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
+                    else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_HAVE_FACTION_WARNING);
                     }
@@ -1046,17 +1046,17 @@ namespace WiredPlayers.faction
         public void MiembrosCommand(Client player)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
-            if(faction > 0)
+            if (faction > 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Miembros conectados:");
-                foreach(Client target in NAPI.Pools.GetAllPlayers())
+                foreach (Client target in NAPI.Pools.GetAllPlayers())
                 {
-                    if(NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == faction)
+                    if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == faction)
                     {
                         // Obtenemos las variables del personaje
                         String rank = GetPlayerFactionRank(target);
 
-                        if(rank == String.Empty)
+                        if (rank == String.Empty)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "[Id: " + player.Value + "] " + target.Name);
                         }

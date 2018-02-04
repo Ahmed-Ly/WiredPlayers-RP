@@ -10,17 +10,13 @@ using System;
 
 namespace WiredPlayers.mechanic
 {
-    class Mechanic : Script
+    class Mechanic
     {
         public static List<TunningModel> tunningList;
 
-        public Mechanic()
-        {
-        }
-
         public static void AddTunningToVehicle(Vehicle vehicle)
         {
-            foreach(TunningModel tunning in tunningList)
+            foreach (TunningModel tunning in tunningList)
             {
                 if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID) == tunning.vehicle)
                 {
@@ -32,16 +28,16 @@ namespace WiredPlayers.mechanic
         public static bool PlayerInValidRepairPlace(Client player)
         {
             // Miramos si está en algún taller
-            foreach(BusinessModel business in Business.businessList)
+            foreach (BusinessModel business in Business.businessList)
             {
-                if(business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
+                if (business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
                 {
                     return true;
                 }
             }
 
             // Miramos si tiene una grúa cerca
-            foreach(Vehicle vehicle in NAPI.Pools.GetAllVehicles())
+            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
             {
                 VehicleHash vehicleHash = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);
                 if (vehicleHash == VehicleHash.TowTruck || vehicleHash == VehicleHash.TowTruck2)
@@ -56,9 +52,9 @@ namespace WiredPlayers.mechanic
         private TunningModel GetVehicleTunningComponent(int vehicleId, int slot, int component)
         {
             TunningModel tunning = null;
-            foreach(TunningModel tunningModel in tunningList)
+            foreach (TunningModel tunningModel in tunningList)
             {
-                if(tunningModel.vehicle == vehicleId && tunningModel.slot == slot && tunningModel.component == component)
+                if (tunningModel.vehicle == vehicleId && tunningModel.slot == slot && tunningModel.component == component)
                 {
                     tunning = tunningModel;
                     break;
@@ -318,7 +314,7 @@ namespace WiredPlayers.mechanic
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
             }
         }
-        
+
         [Command("reparar", Messages.GEN_MECHANIC_REPAIR_COMMAND)]
         public void RepararCommand(Client player, int vehicleId, String type, int price = 0)
         {
@@ -334,18 +330,18 @@ namespace WiredPlayers.mechanic
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
-            else if(PlayerInValidRepairPlace(player) == false)
+            else if (PlayerInValidRepairPlace(player) == false)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VALID_REPAIR_PLACE);
             }
             else
             {
                 Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
-                if(vehicle == null)
+                if (vehicle == null)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
                 }
-                else if(NAPI.Entity.GetEntityPosition(vehicle).DistanceTo(player.Position) > 5.0f)
+                else if (NAPI.Entity.GetEntityPosition(vehicle).DistanceTo(player.Position) > 5.0f)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_WANTED_VEHICLE_FAR);
                 }
@@ -360,9 +356,9 @@ namespace WiredPlayers.mechanic
                             spentProducts = Constants.PRICE_VEHICLE_CHASSIS;
                             break;
                         case "puertas":
-                            for(int i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                             {
-                                if(NAPI.Vehicle.IsVehicleDoorBroken(vehicle, i) == true)
+                                if (NAPI.Vehicle.IsVehicleDoorBroken(vehicle, i) == true)
                                 {
                                     spentProducts += Constants.PRICE_VEHICLE_DOORS;
                                 }
@@ -391,13 +387,13 @@ namespace WiredPlayers.mechanic
                             return;
                     }
 
-                    if(price > 0)
+                    if (price > 0)
                     {
                         // Obtenemos los productos del mecánico
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                         ItemModel item = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
-                        if(item != null && item.amount >= spentProducts)
+                        if (item != null && item.amount >= spentProducts)
                         {
                             // Obtenemos la facción del vehículo
                             int vehicleFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
@@ -462,12 +458,12 @@ namespace WiredPlayers.mechanic
             }
             else
             {
-                foreach(BusinessModel business in Business.businessList)
+                foreach (BusinessModel business in Business.businessList)
                 {
-                    if(business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
+                    if (business.type == Constants.BUSINESS_TYPE_MECHANIC && player.Position.DistanceTo(business.position) < 25.0f)
                     {
                         Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
-                        if(vehicle != null)
+                        if (vehicle != null)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
                             NAPI.ClientEvent.TriggerClientEvent(player, "showRepaintMenu");

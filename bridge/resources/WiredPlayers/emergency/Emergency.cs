@@ -19,7 +19,6 @@ namespace WiredPlayers.emergency
         public Emergency()
         {
             Event.OnPlayerDeath += OnPlayerDeathHandler;
-            Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
             Event.OnUpdate += OnUpdateHandler;
         }
 
@@ -40,7 +39,7 @@ namespace WiredPlayers.emergency
                 deathPosition = house.position;
                 deathPlace = house.name;
             }
-            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
             {
                 int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
                 BusinessModel business = Business.GetBusinessById(businessId);
@@ -76,12 +75,10 @@ namespace WiredPlayers.emergency
             cancel.Spawn = false;
         }
 
-        private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
-            {
-                DestroyDeathTimer(player);
-            }
+            // Eliminamos el temporizador de muerte
+            DestroyDeathTimer(player);
         }
 
         private void OnUpdateHandler()
@@ -121,12 +118,12 @@ namespace WiredPlayers.emergency
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_CAN_RAGDOLL, player, true);
                 //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_TO_RAGDOLL, player, -1, -1, 0, false, false, false);
 
-                if(killer.Value == Constants.ENVIRONMENT_KILL)
+                if (killer.Value == Constants.ENVIRONMENT_KILL)
                 {
                     // Miramos si estaba muerto
                     int databaseKiller = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
 
-                    if(databaseKiller == 0)
+                    if (databaseKiller == 0)
                     {
                         // Ponemos al entorno como causante real
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
@@ -150,7 +147,7 @@ namespace WiredPlayers.emergency
                     deathTimerList.Remove(player.Value);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.Message);
             }
@@ -159,9 +156,9 @@ namespace WiredPlayers.emergency
         private int GetRemainingBlood()
         {
             int remaining = 0;
-            foreach(BloodModel blood in bloodList)
+            foreach (BloodModel blood in bloodList)
             {
-                if(blood.used)
+                if (blood.used)
                 {
                     remaining--;
                 }
@@ -241,7 +238,7 @@ namespace WiredPlayers.emergency
         [Command("reanimar", Messages.GEN_REANIMATE_COMMAND)]
         public void ReanimarCommand(Client player, String targetString)
         {
-            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_EMERGENCY_FACTION);
             }
@@ -249,7 +246,7 @@ namespace WiredPlayers.emergency
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_ON_DUTY);
             }
-            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
@@ -261,7 +258,7 @@ namespace WiredPlayers.emergency
                 {
                     if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_KILLED) != 0)
                     {
-                        if(GetRemainingBlood() > 0)
+                        if (GetRemainingBlood() > 0)
                         {
                             // Eliminamos el timer
                             DestroyDeathTimer(target);

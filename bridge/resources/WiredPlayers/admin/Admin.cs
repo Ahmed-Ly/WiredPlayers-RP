@@ -7,30 +7,28 @@ using WiredPlayers.emergency;
 using WiredPlayers.business;
 using WiredPlayers.parking;
 using WiredPlayers.house;
+using WiredPlayers.weapons;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using WiredPlayers.weapons;
 
 namespace WiredPlayers.admin
 {
-    public class Admin : Script
+    public class Admin
     {
         public static List<PermissionModel> permissionList;
-
-        public Admin() { }
 
         private bool HasUserCommandPermission(Client player, String command, String option = "")
         {
             bool hasPermission = false;
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-            foreach(PermissionModel permission in permissionList)
+            foreach (PermissionModel permission in permissionList)
             {
-                if(permission.playerId == playerId && command == permission.command)
+                if (permission.playerId == playerId && command == permission.command)
                 {
                     // Miramos si es opción o no
-                    if(option == String.Empty || option == permission.option)
+                    if (option == String.Empty || option == permission.option)
                     {
                         hasPermission = true;
                         break;
@@ -54,7 +52,7 @@ namespace WiredPlayers.admin
         [Command("aviso", Messages.GEN_AVISO_COMMAND, GreedyArg = true)]
         public void AvisoCommand(Client player, String message)
         {
-            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 // Comprobación de la longitud del mensaje
                 String secondMessage = String.Empty;
@@ -696,7 +694,7 @@ namespace WiredPlayers.admin
                                     {
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_CREATE_COMMAND);
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_CREATE_TYPES_FIRST_COMMAND);
-                                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_CREATE_TYPES_FIRST_COMMAND2); 
+                                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_CREATE_TYPES_FIRST_COMMAND2);
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_CREATE_TYPES_FIRST_COMMAND3);
                                     }
                                 }
@@ -1747,7 +1745,7 @@ namespace WiredPlayers.admin
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if(target != null)
+                if (target != null)
                 {
                     String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
                     String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";

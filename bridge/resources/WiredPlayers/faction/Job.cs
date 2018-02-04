@@ -14,7 +14,7 @@ namespace WiredPlayers.faction
             new JobPickModel(Constants.JOB_HOOKER, new Vector3(136.58f, -1278.55f, 29.45f), Messages.DESC_JOB_HOOKER),
             new JobPickModel(Constants.JOB_GARBAGE, new Vector3(-322.088f, -1546.014f, 31.01991f), Messages.DESC_JOB_GARBAGE),
             new JobPickModel(Constants.JOB_MECHANIC, new Vector3(486.5268f, -1314.683f, 29.22961f), Messages.DESC_JOB_MECHANIC),
-            new JobPickModel(Constants.JOB_THIEF, new Vector3(-198.225f, -1699.521f, 33.46679f), Messages.DESC_JOB_THIEF) 
+            new JobPickModel(Constants.JOB_THIEF, new Vector3(-198.225f, -1699.521f, 33.46679f), Messages.DESC_JOB_THIEF)
         };
 
         public Job()
@@ -38,7 +38,7 @@ namespace WiredPlayers.faction
             NAPI.Blip.SetBlipName(fastFoodBlip, "Trabajo de repartidor");
             NAPI.Blip.SetBlipSprite(fastFoodBlip, 501);
             NAPI.Blip.SetBlipShortRange(fastFoodBlip, true);
-            
+
             foreach (JobPickModel job in jobList)
             {
                 NAPI.TextLabel.CreateTextLabel("/empleo", job.position, 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);

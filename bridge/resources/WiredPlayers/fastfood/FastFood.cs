@@ -1,11 +1,10 @@
 ﻿using GTANetworkAPI;
 using WiredPlayers.globals;
-using WiredPlayers.house;
 using WiredPlayers.model;
 using System.Collections.Generic;
 using System.Threading;
-using System;
 using System.Linq;
+using System;
 
 namespace WiredPlayers.fastfood
 {
@@ -18,7 +17,6 @@ namespace WiredPlayers.fastfood
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
             Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
         private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
@@ -63,7 +61,7 @@ namespace WiredPlayers.fastfood
                 {
                     String warn = String.Format(Messages.INF_JOB_VEHICLE_LEFT, 60);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + warn);
-                    
+
                     // Creamos el timer para volver a subirse
                     Timer fastFoodTimer = new Timer(OnFastFoodTimer, player, 60000, Timeout.Infinite);
                     fastFoodTimerList.Add(player.Value, fastFoodTimer);
@@ -132,16 +130,13 @@ namespace WiredPlayers.fastfood
             }
         }
 
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
             {
-                if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
-                {
-                    // Eliminamos el timer
-                    fastFoodTimer.Dispose();
-                    fastFoodTimerList.Remove(player.Value);
-                }
+                // Eliminamos el timer
+                fastFoodTimer.Dispose();
+                fastFoodTimerList.Remove(player.Value);
             }
         }
 
@@ -165,9 +160,10 @@ namespace WiredPlayers.fastfood
         private FastFoodOrderModel GetFastfoodOrderFromId(int orderId)
         {
             FastFoodOrderModel order = null;
-            
-            foreach(FastFoodOrderModel orderModel in Globals.fastFoodOrderList) {
-                if(orderModel.id == orderId)
+
+            foreach (FastFoodOrderModel orderModel in Globals.fastFoodOrderList)
+            {
+                if (orderModel.id == orderId)
                 {
                     order = orderModel;
                     break;
@@ -283,7 +279,7 @@ namespace WiredPlayers.fastfood
                 // Obtenemos los pedidos entregables
                 List<FastFoodOrderModel> fastFoodOrders = Globals.fastFoodOrderList.Where(o => !o.taken).ToList();
 
-                if(fastFoodOrders.Count > 0)
+                if (fastFoodOrders.Count > 0)
                 {
 
                     List<float> distancesList = new List<float>();

@@ -4,12 +4,8 @@ using System;
 
 namespace WiredPlayers.Animations
 {
-    public class Animations : Script
+    public class Animations
     {
-        public Animations()
-        {
-        }
-
         [Command("recogiendo")]
         public void RecogiendoComamnd(Client player)
         {
@@ -150,7 +146,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("mecanico", Messages.GEN_ANIMS_MECHANIC)] 
+        [Command("mecanico", Messages.GEN_ANIMS_MECHANIC)]
         public void MecanicoCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -180,7 +176,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("cavar")] 
+        [Command("cavar")]
         public void CavarCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -272,7 +268,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("venaqui")] 
+        [Command("venaqui")]
         public void VenaquiCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -938,7 +934,7 @@ namespace WiredPlayers.Animations
                 }
             }
         }
-        
+
         [Command("bailesexy", Messages.GEN_ANIMS_SEXY_DANCE)]
         public void BailesexyCommand(Client player, int action)
         {
@@ -1421,7 +1417,7 @@ namespace WiredPlayers.Animations
                     default:
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_ANIMS_CHEER);
                         break;
-                }          
+                }
             }
         }
 
@@ -1509,7 +1505,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("indiferencia")] 
+        [Command("indiferencia")]
         public void IndiferenciaCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -1635,5 +1631,5 @@ namespace WiredPlayers.Animations
             }
         }
     }
-    
+
 }

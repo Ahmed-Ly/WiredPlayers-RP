@@ -17,7 +17,6 @@ namespace WiredPlayers.garbage
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
             Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
         private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
@@ -72,7 +71,7 @@ namespace WiredPlayers.garbage
                             Client partner = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_PARTNER);
                             if (partner == driver)
                             {
-                                if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 1)
+                                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 1)
                                 {
                                     // Unimos los dos jugadores como compañeros
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_PARTNER, driver);
@@ -155,16 +154,13 @@ namespace WiredPlayers.garbage
             }
         }
 
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
             {
-                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
-                {
-                    // Eliminamos el timer
-                    garbageTimer.Dispose();
-                    garbageTimerList.Remove(player.Value);
-                }
+                // Eliminamos el timer
+                garbageTimer.Dispose();
+                garbageTimerList.Remove(player.Value);
             }
         }
 
@@ -290,7 +286,7 @@ namespace WiredPlayers.garbage
         {
             Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(driver));
             Client partner = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_PARTNER);
-            
+
             // Respawneamos el vehículo
             RespawnGarbageVehicle(vehicle);
 
@@ -312,7 +308,7 @@ namespace WiredPlayers.garbage
             NAPI.Data.ResetEntityData(partner, EntityData.PLAYER_JOB_VEHICLE);
             NAPI.Data.ResetEntityData(partner, EntityData.PLAYER_ANIMATION);
 
-            if(!canceled)
+            if (!canceled)
             {
                 // Pagamos a los jugadores lo ganado
                 int driverMoney = NAPI.Data.GetEntitySharedData(driver, EntityData.PLAYER_MONEY);
@@ -411,7 +407,7 @@ namespace WiredPlayers.garbage
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_PARTNER) == true)
                         {
                             Client partner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
-                            if(partner != player)
+                            if (partner != player)
                             {
                                 // Tiene un compañero asignado
                                 GTANetworkAPI.Object trashBag = null;

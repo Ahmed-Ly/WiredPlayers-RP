@@ -11,7 +11,7 @@ namespace WiredPlayers.globals
         public const String GEN_FURNITURE_COMMAND = "USO: /muebles [Colocar|Mover|Quitar]";
         public const String GEN_POLICE_CONTROL_COMMAND = "USO: /control [Cargar|Guardar|Renombrar|Eliminar|Limpiar]";
         public const String GEN_POLICE_PUT_COMMAND = "USO: /poner [Cono|Baliza|Barrera|Clavos]";
-        public const String GEN_POLICE_REMOVE_COMMAND = "USO: /quitar [Cono|Baliza|Barrera|Clavos]"; 
+        public const String GEN_POLICE_REMOVE_COMMAND = "USO: /quitar [Cono|Baliza|Barrera|Clavos]";
         public const String GEN_TP_COMMAND = "USO: /tpa [Id. jugador/Nombre jugador]";
         public const String GEN_BRING_COMMAND = "USO: /traer [Id. jugador/Nombre jugador]";
         public const String GEN_REVIVE_COMMAND = "USO: /revivir [Id. jugador/Nombre jugador]";
@@ -22,9 +22,9 @@ namespace WiredPlayers.globals
         public const String GEN_VEHICLE_COLOR_COMMAND = "USO: /vehiculo modificar color [Color primario (R,G,B)] [Color secundario (R,G,B)]";
         public const String GEN_VEHICLE_DIMENSION_COMMAND = "USO: /vehiculo modificar dimension [Id. vehículo] [Valor]";
         public const String GEN_VEHICLE_FACTION_COMMAND = "USO: /vehiculo modificar faccion [Valor]";
-        public const String GEN_VEHICLE_OWNER_COMMAND = "USO: /vehiculo modificar dueño [Nombre] [Apellido]"; 
+        public const String GEN_VEHICLE_OWNER_COMMAND = "USO: /vehiculo modificar dueño [Nombre] [Apellido]";
         public const String GEN_VEHICLE_BRING_COMMAND = "USO: /vehiculo traer [Id. vehículo]";
-        public const String GEN_VEHICLE_GOTO_COMMAND = "USO: /vehiculo tpa [Id. vehículo]"; 
+        public const String GEN_VEHICLE_GOTO_COMMAND = "USO: /vehiculo tpa [Id. vehículo]";
         public const String GEN_BUSINESS_COMMAND = "USO: /negocio [Info|Crear|Modificar|Eliminar]";
         public const String GEN_BUSINESS_CREATE_COMMAND = "USO: /negocio crear [Tipo negocio]";
         public const String GEN_BUSINESS_MODIFY_COMMAND = "USO: /negocio modificar [Nombre|Tipo]";
@@ -71,14 +71,14 @@ namespace WiredPlayers.globals
         public const String GEN_REANIMATE_COMMAND = "USO: /reanimar [Id. jugador/Nombre jugador]";
         public const String GEN_EXTRACT_COMMAND = "USO: /extraer [Id. jugador/Nombre jugador]";
         public const String GEN_MECHANIC_REPAIR_COMMAND = "USO: /reparar [Id. vehículo] [Chasis|Puertas|Ruedas|Lunas|Motor] [Precio]";
-        public const String GEN_MECHANIC_REPAINT_COMMAND = "USO: /repintar [Id. vehículo]"; 
+        public const String GEN_MECHANIC_REPAINT_COMMAND = "USO: /repintar [Id. vehículo]";
         public const String GEN_HOOKER_SERVICE_COMMAND = "USO: /servicio [Sexo|Oral] [Id. jugador/Nombre jugador] [Precio]";
         public const String GEN_SAY_COMMAND = "USO: /decir [Mensaje]";
         public const String GEN_YELL_COMMAND = "USO: /gritar [Mensaje]";
         public const String GEN_WHISPER_COMMAND = "USO: /susurrar [Mensaje]";
         public const String GEN_ME_COMMAND = "USO: /me [Mensaje]";
         public const String GEN_DO_COMMAND = "USO: /do [Mensaje]";
-        public const String GEN_OOC_COMMAND = "USO: /ooc [Mensaje]"; 
+        public const String GEN_OOC_COMMAND = "USO: /ooc [Mensaje]";
         public const String GEN_AME_COMMAND = "USO: /ame [Mensaje]";
         public const String GEN_F_COMMAND = "USO: /f [Mensaje]";
         public const String GEN_R_COMMAND = "USO: /r [Mensaje]";
@@ -166,7 +166,7 @@ namespace WiredPlayers.globals
         public const String ADM_PLAYER_FACTION_MODIFIED = "Has cambiado a '{0}' la facción de {1}.";
         public const String ADM_PLAYER_JOB_MODIFIED = "Has cambiado a '{0}' el trabajo de {1}.";
         public const String ADM_PLAYER_RANK_MODIFIED = "Has cambiado a '{0}' el rango en facción de {1}.";
-        public const String ADM_PLAYER_DIMENSION_MODIFIED = "Has cambiado a '{0}' la dimensión de {1}."; 
+        public const String ADM_PLAYER_DIMENSION_MODIFIED = "Has cambiado a '{0}' la dimensión de {1}.";
         public const String ADM_HOUSE_CREATED = "Has creado una casa en tu posición.";
         public const String ADM_HOUSE_DELETED = "Has eliminado la casa más cercana.";
         public const String ADM_HOUSE_INTERIOR_MODIFIED = "Has cambiado a '{0}' el interior de la casa.";
@@ -191,7 +191,7 @@ namespace WiredPlayers.globals
         public const String ADM_SPECTATING_PLAYER = "Estás reconeando a {0}.";
         public const String ADM_SPECT_STOPPED = "Has dejado de reconear.";
         public const String ADM_PLAYER_JAILED = "{0} ha sido encarcelado {1} minutos. Razón: {2}";
-        public const String ADM_KICKED_ALL = "Se han expulsado todos los jugadores del servidor."; 
+        public const String ADM_KICKED_ALL = "Se han expulsado todos los jugadores del servidor.";
         public const String ADM_WEAPON_EVENT_STARTED = "Se ha iniciado el evento de armas.";
 
         // Mensajes de información
@@ -236,7 +236,7 @@ namespace WiredPlayers.globals
         public const String INF_PLAYER_WAITING_PARTNER = "Espera a que tu compañero se suba al camión.";
         public const String INF_WAIT_GARBAGE_DRIVER = "Espera a que tu compañero esté subido en el camión.";
         public const String INF_GARBAGE_ROUTE_CANCELED = "Has cancelado la ruta de basurero.";
-        public const String INF_ROUTE_CANCELED = "Has cancelado la ruta, ve a la central a dejar tu vehículo."; 
+        public const String INF_ROUTE_CANCELED = "Has cancelado la ruta, ve a la central a dejar tu vehículo.";
         public const String INF_ROUTE_FINISHED = "Has finalizado la ruta, ve a la central a dejar tu vehículo.";
         public const String INF_GARBAGE_COLLECTED = "Has recogido la bolsa de basura.";
         public const String INF_GARBAGE_EARNINGS = "Has ganado {0}$ por completar la ruta de basurero.";
@@ -370,7 +370,7 @@ namespace WiredPlayers.globals
         public const String INF_MOTO_LICENSE_REMOVED = "Le has retirado la licencia de motocicletas a {0}.";
         public const String INF_MOTO_LICENSE_LOST = "El comisario {0} te ha retirado la licencia de motocicletas.";
         public const String INF_HAIRCUT_PURCHASED = "Has pagado {0}$ por tu cambio de look.";
-        public const String INF_TATTOO_PURCHASED = "Has pagado {0}$ por tu tatuaje."; 
+        public const String INF_TATTOO_PURCHASED = "Has pagado {0}$ por tu tatuaje.";
         public const String INF_REPAIR_PRICE = "La reparación consumirá {0} productos.";
         public const String INF_VEHICLE_REPAIRED_BY = "{0} ha reparado tu vehículo por {1}$.";
         public const String INF_VEHICLE_REPAIRED_TO = "Has reparado el vehículo de {0} por {1}$.";
@@ -425,7 +425,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_NOT_TAXI_LICENSE_MONEY = "Necesitas {0}$ para sacarte la licencia de taxis.";
         public const String ERR_PLAYER_NO_FINES = "No has seleccionado ninguna multa a pagar.";
         public const String ERR_PLAYER_NOT_FINE_MONEY = "Necesitas {0}$ para pagar tus multas.";
-        public const String ERR_WEAPON_LICENSE_EXPIRED = "No tienes la licencia de armas vigente."; 
+        public const String ERR_WEAPON_LICENSE_EXPIRED = "No tienes la licencia de armas vigente.";
         public const String ERR_PLAYER_CANT_CHAT = "No puedes usar el chat dentro de la sala de selección de personaje.";
         public const String ERR_PLAYER_CANT_COMMAND = "No puedes usar comandos dentro de la sala de selección de personaje.";
         public const String ERR_NO_VEHICLES_NEAR = "No tienes ningún vehículo cerca.";
@@ -452,7 +452,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_NOT_POLICE_FACTION = "No perteneces al departamento de policía.";
         public const String ERR_PLAYER_NOT_NEWS_FACTION = "No perteneces a Weazel News.";
         public const String ERR_PLAYER_NOT_EMERGENCY_FACTION = "No perteneces al departamento de emergencias.";
-        public const String ERR_PLAYER_NOT_POLICE_EMERGENCY_FACTION = "No perteneces al departamento de policía ni al de emergencias.";        
+        public const String ERR_PLAYER_NOT_POLICE_EMERGENCY_FACTION = "No perteneces al departamento de policía ni al de emergencias.";
         public const String ERR_PLAYER_NOT_IN_HOUSE = "No estás dentro de ninguna casa.";
         public const String ERR_PLAYER_NOT_HOUSE_OWNER = "No eres el propietario de esta casa.";
         public const String ERR_PLAYER_HOUSE_RENTED = "Ya estás viviendo de alquiler en una casa.";
@@ -469,7 +469,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_JOB_RESTRICTION = "No has pasado el tiempo requerido en tu trabajo actual.";
         public const String ERR_PLAYER_HAS_JOB = "Ya tienes un empleo.";
         public const String ERR_PLAYER_NO_JOB = "No tienes ningún empleo.";
-        public const String ERR_PLAYER_NO_FACTION = "No estás en ninguna facción."; 
+        public const String ERR_PLAYER_NO_FACTION = "No estás en ninguna facción.";
         public const String ERR_NOT_SERVICE = "No te encuentras de servicio.";
         public const String ERR_NOT_FASTFOOD = "No eres repartidor de comida rápida.";
         public const String ERR_ORDER_NONE = "No hay ningún pedido en la lista para atender.";
@@ -485,18 +485,18 @@ namespace WiredPlayers.globals
         public const String ERR_NOT_HOOKER = "No eres prostituta.";
         public const String ERR_ALREADY_LOCKPICKING = "Ya estás forzando una cerradura.";
         public const String ERR_ALREADY_FUCKING = "Ya estás ejerciendo la prostitución.";
-        public const String ERR_PLAYER_CANT_LOCKPICK_OWN_VEHICLE = "No puedes forzar la puerta de tu vehículo."; 
+        public const String ERR_PLAYER_CANT_LOCKPICK_OWN_VEHICLE = "No puedes forzar la puerta de tu vehículo.";
         public const String ERR_PLAYER_CANT_HOTWIRE_OWN_VEHICLE = "No puedes hacer un puente en tu propio vehículo.";
         public const String ERR_PLAYER_CANT_ROB_OWN_HOUSE = "No puedes robar en tu propia casa.";
         public const String ERR_PLAYER_CANT_ROB_OWN_VEHICLE = "No puedes robar en tu propio vehículo.";
-        public const String ERR_PLAYER_COOLDOWN_THIEF = "Aún sigues nervioso por el último robo, podrás volver a robar pasada 1 hora."; 
+        public const String ERR_PLAYER_COOLDOWN_THIEF = "Aún sigues nervioso por el último robo, podrás volver a robar pasada 1 hora.";
         public const String ERR_VEH_ALREADY_UNLOCKED = "Este vehículo ya está abierto.";
         public const String ERR_PLAYER_NOT_MECHANIC = "No eres mecánico.";
         public const String ERR_NO_POLICE_CONTROLS = "No hay ningún control policial guardado.";
         public const String ERR_PLAYER_CANT_ROB = "No hay nada que robar cerca.";
         public const String ERR_PLAYER_ALREADY_STEALING = "Ya estás robando objetos.";
         public const String ERR_PLAYER_NOT_STOLEN_ITEMS = "No tienes ningún objeto robado.";
-        public const String ERR_NOT_IN_PAWN_SHOW = "No estás en ninguna tienda de empeños."; 
+        public const String ERR_NOT_IN_PAWN_SHOW = "No estás en ninguna tienda de empeños.";
         public const String ERR_PLAYER_ALREADY_HOTWIRING = "Ya estás haciendo un puente al vehículo.";
         public const String ERR_PLAYER_STOPPED_HOTWIRE = "Has abandonado el vehículo y has dejado de intentar hacer el puente.";
         public const String ERR_ENGINE_ALREADY_STARTED = "Este vehículo ya tiene el motor encendido.";
@@ -508,11 +508,11 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_FINED_HIMSELF = "No te puedes multar a ti mismo.";
         public const String ERR_PLAYER_IS_DEAD = "No puedes hacer eso estando inconsciente.";
         public const String ERR_BUSINESS_LOCKED = "El negocio está cerrado con llave.";
-        public const String ERR_PLAYER_NOT_BUSINESS_OWNER = "No eres el dueño del negocio."; 
+        public const String ERR_PLAYER_NOT_BUSINESS_OWNER = "No eres el dueño del negocio.";
         public const String ERR_ITEM_NOT_CONSUMABLE = "No tienes nada consumible en la mano.";
         public const String ERR_NO_ITEMS_TRUNK = "El maletero del vehículo está vacío.";
         public const String ERR_NO_ITEMS_INVENTORY = "No tienes ningún objeto en el inventario.";
-        public const String ERR_NO_ITEMS_NEAR = "No tienes ningún objeto cerca de ti."; 
+        public const String ERR_NO_ITEMS_NEAR = "No tienes ningún objeto cerca de ti.";
         public const String ERR_LEFT_HAND_EMPTY = "No tienes ningún objeto en tu mano izquierda.";
         public const String ERR_RIGHT_HAND_EMPTY = "No tienes ningún objeto en tu mano derecha.";
         public const String ERR_LEFT_HAND_OCCUPIED = "Ya tienes un objeto en tu mano izquierda.";
@@ -525,10 +525,10 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_NOT_GARBAGE = "No eres basurero.";
         public const String ERR_GARBAGE_IN_VEHICLE = "No puedes recoger basura desde el vehículo.";
         public const String ERR_NOT_GARBAGE_NEAR = "No tienes ninguna bolsa de basura cerca.";
-        public const String ERR_ALREADY_GARBAGE = "Ya estás recogiendo la basura."; 
+        public const String ERR_ALREADY_GARBAGE = "Ya estás recogiendo la basura.";
         public const String ERR_PLAYER_NOT_IN_NEWS_VAN = "Debes estar en la parte de atras izquierda de la furgoneta de retransmisión de Weazel News.";
         public const String ERR_PLAYER_NOT_JAIL_AREA = "No estás en la entrada de los calabozos.";
-        public const String ERR_PLAYER_SEARCHED_HIMSELF = "No puedes cachearte a ti mismo."; 
+        public const String ERR_PLAYER_SEARCHED_HIMSELF = "No puedes cachearte a ti mismo.";
         public const String ERR_NOT_PARKING_NEAR = "No estás cerca de ningún estacionamiento.";
         public const String ERR_VEHICLE_FACTION_PARK = "No puedes aparcar este vehículo.";
         public const String ERR_PARKING_FULL = "No caben más vehículos en este aparcamiento.";
@@ -538,7 +538,7 @@ namespace WiredPlayers.globals
         public const String ERR_NOT_IN_VEHICLE_TYPE_CAR = "Debes estar dentro de un coche.";
         public const String ERR_HOOKER_OFFERED_HIMSELF = "No puedes ofrecerte un servicio a ti mismo.";
         public const String ERR_NOT_HOUSE_NEAR = "No hay ninguna casa cerca de ti.";
-        public const String ERR_HOUSE_INTERIOR_MODIFY = "El valor de interior debe estar entre 0 y {0}."; 
+        public const String ERR_HOUSE_INTERIOR_MODIFY = "El valor de interior debe estar entre 0 y {0}.";
         public const String ERR_HOUSE_PRICE_MODIFY = "El precio de la casa debe ser superior a 0$.";
         public const String ERR_HOUSE_STATUS_MODIFY = "El estado de la casa tiene que estar entre 0 y 2.";
         public const String ERR_HOUSE_RENTAL_MODIFY = "El precio de alquiler de la casa debe ser superior a 0$.";
@@ -565,11 +565,11 @@ namespace WiredPlayers.globals
         public const String ERR_CONTACT_LIST_EMPTY = "No tienes ningún contacto en la agenda.";
         public const String ERR_PLAYER_NOT_DRIVING_SCHOOL = "No estás en la autoescuela.";
         public const String ERR_VEHICLE_DRIVING_NOT_SUITABLE = "Este vehículo no es adecuado para tu licencia.";
-        public const String ERR_NOT_TESTING_VEHICLE = "No estás autorizado a probar este vehículo."; 
+        public const String ERR_NOT_TESTING_VEHICLE = "No estás autorizado a probar este vehículo.";
         public const String ERR_DRIVING_SCHOOL_MONEY = "Necesitas {0}$ para presentarte al examen.";
         public const String ERR_PLAYER_ALREADY_LICENSE = "Tu licencia aún está vigente.";
         public const String ERR_PLAYER_NOT_TOWNHALL = "No estás en el ayuntamiento.";
-        public const String ERR_ON_AIR = "El jugador objetivo ya está participando en una entrevista."; 
+        public const String ERR_ON_AIR = "El jugador objetivo ya está participando en una entrevista.";
         public const String ERR_NOT_ON_AIR = "El jugador objetivo no está participando en una entrevista.";
         public const String ERR_WHEEL_NOT_POPPED = "Esta rueda no necesita ser reparada.";
         public const String ERR_PLAYER_NOT_IN_ROOM_LOCKERS = "No estás en los vestuarios de comisaria.";
@@ -592,7 +592,7 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_REFUELING = "Ya estás repostando un vehículo.";
         public const String ERR_VEHICLE_REFUELING = "El vehículo ya está siendo repostado.";
         public const String ERR_VEHICLE_START_REFUELING = "No puedes arrancar el vehículo mientras está repostando.";
-        public const String ERR_VEHICLE_START_WEAPON_UNPACKING = "No puedes arrancar el vehículo mientras están sacando armas."; 
+        public const String ERR_VEHICLE_START_WEAPON_UNPACKING = "No puedes arrancar el vehículo mientras están sacando armas.";
         public const String ERR_VEHICLE_NOT_MEGAPHONE = "Éste vehículo no tiene un megáfono instalado.";
         public const String ERR_FACTION_WARNING_NOT_FOUND = "No se ha encontrado el aviso seleccionado.";
         public const String ERR_FACTION_WARNING_TAKEN = "El aviso seleccionado ya está siendo atendido.";
@@ -647,11 +647,11 @@ namespace WiredPlayers.globals
         public const String ERR_NO_FISHING_ROD = "No tienes una caña en la mano derecha.";
         public const String ERR_PLAYER_NO_BAITS = "No tienes nada que usar como cebo.";
         public const String ERR_PLAYER_NOT_FISHING_ZONE = "No estás en ninguna zona de pesca.";
-        public const String ERR_NOT_FISHING_BUSINESS = "No estás en ninguna tienda de pesca."; 
+        public const String ERR_NOT_FISHING_BUSINESS = "No estás en ninguna tienda de pesca.";
         public const String ERR_FISHING_CANCELED = "Has tirado de la caña demasiado pronto.";
         public const String ERR_FISHING_FAILED = "El pez se ha escapado del anzuelo.";
         public const String ERR_PLAYER_ALREADY_FISHING = "Ya estás pescando.";
-        public const String ERR_NO_FISH_SELLABLE = "No tienes pescado para vender."; 
+        public const String ERR_NO_FISH_SELLABLE = "No tienes pescado para vender.";
 
         // Mensajes descriptivos.
         public const String DESC_JOB_HOOKER = "Prostitución - Gana dinero vendiendo tu cuerpo, es tan sencillo como eso.Tú eliges tus clientes y tus precios.";

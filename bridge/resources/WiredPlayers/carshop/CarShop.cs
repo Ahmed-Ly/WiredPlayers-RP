@@ -42,7 +42,7 @@ namespace WiredPlayers.carshop
             NAPI.Blip.SetBlipName(shipShopBlip, "Concesionario de barcos");
             NAPI.Blip.SetBlipSprite(shipShopBlip, 455);
         }
-        
+
         private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_TESTING_VEHICLE) == true)
@@ -50,7 +50,7 @@ namespace WiredPlayers.carshop
                 if (NAPI.Player.IsPlayerInAnyVehicle(player) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) == checkpoint)
                 {
                     Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_TESTING_VEHICLE);
-                    if(NAPI.Player.GetPlayerVehicle(player) == vehicle)
+                    if (NAPI.Player.GetPlayerVehicle(player) == vehicle)
                     {
                         // Destruímos el vehículo y checkpoint
                         Checkpoint testCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
@@ -70,7 +70,7 @@ namespace WiredPlayers.carshop
         }
 
         private int GetClosestCarShop(Client player, float distance = 2.0f)
-        {        
+        {
             int carShop = -1;
             if (player.Position.DistanceTo(carShopTextLabel.Position) < distance)
             {
@@ -90,9 +90,9 @@ namespace WiredPlayers.carshop
         private List<CarShopVehicleModel> GetVehicleListInCarShop(int carShop)
         {
             List<CarShopVehicleModel> vehicleList = new List<CarShopVehicleModel>();
-            foreach(CarShopVehicleModel vehicle in Constants.CARSHOP_VEHICLE_LIST)
+            foreach (CarShopVehicleModel vehicle in Constants.CARSHOP_VEHICLE_LIST)
             {
-                if(vehicle.carShop == carShop)
+                if (vehicle.carShop == carShop)
                 {
                     vehicleList.Add(vehicle);
                 }
@@ -309,12 +309,12 @@ namespace WiredPlayers.carshop
             // Mandamos el mensaje
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_TEST_VEHICLE);
         }
-        
+
         [Command("catalogo")]
         public void CatalogoCommand(Client player)
         {
             int carShop = GetClosestCarShop(player);
-            if(carShop > -1)
+            if (carShop > -1)
             {
                 // Obtenemos la lista de vehículos
                 List<CarShopVehicleModel> carList = GetVehicleListInCarShop(carShop);
@@ -323,7 +323,7 @@ namespace WiredPlayers.carshop
                 foreach (CarShopVehicleModel carShopVehicle in carList)
                 {
                     VehicleHash vehicleHash = NAPI.Util.VehicleNameToModel(carShopVehicle.model);
-                    carShopVehicle.speed = (int) Math.Round(NAPI.Vehicle.GetVehicleMaxSpeed(vehicleHash) * 3.6f);
+                    carShopVehicle.speed = (int)Math.Round(NAPI.Vehicle.GetVehicleMaxSpeed(vehicleHash) * 3.6f);
                 }
 
                 // Mostramos el catálogo

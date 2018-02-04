@@ -7,13 +7,9 @@ using System;
 
 namespace WiredPlayers.telephone
 {
-    public class Telephone : Script
+    public class Telephone
     {
         public static List<ContactModel> contactList;
-
-        public Telephone()
-        {
-        }
 
         private ContactModel GetContactFromId(int contactId)
         {
@@ -391,7 +387,7 @@ namespace WiredPlayers.telephone
                         int targetPhone = GetNumerFromContactName(called, playerPhone);
 
                         // Comprobamos que el número existe
-                        if(targetPhone > 0)
+                        if (targetPhone > 0)
                         {
                             foreach (Client target in NAPI.Pools.GetAllPlayers())
                             {
@@ -443,7 +439,7 @@ namespace WiredPlayers.telephone
                     // Comprobamos si el jugador está llamando
                     if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_CALLING) == true)
                     {
-                        if(NAPI.Data.GetEntityData(target, EntityData.PLAYER_CALLING) is int)
+                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_CALLING) is int)
                         {
                             int factionJob = NAPI.Data.GetEntityData(target, EntityData.PLAYER_CALLING);
                             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);

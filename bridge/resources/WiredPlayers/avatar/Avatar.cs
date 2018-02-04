@@ -7,12 +7,8 @@ using System;
 
 namespace WiredPlayers.avatar
 {
-    public class Avatar : Script
+    public class Avatar
     {
-        public Avatar()
-        {
-        }
-
         [Command("jugador")]
         public void JugadorCommand(Client player)
         {
@@ -31,7 +27,7 @@ namespace WiredPlayers.avatar
             // Miramos si tiene un trabajo
             foreach (JobModel jobModel in Constants.JOB_LIST)
             {
-                if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == jobModel.job)
+                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == jobModel.job)
                 {
                     job = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
                     break;

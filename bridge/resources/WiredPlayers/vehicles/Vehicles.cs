@@ -21,18 +21,17 @@ namespace WiredPlayers.vehicles
 
         public Vehicles()
         {
-            Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
             Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
             Event.OnVehicleDeath += OnVehicleDeath;
         }
-        
+
         public void LoadDatabaseVehicles()
         {
             List<VehicleModel> vehicleList = Database.LoadAllVehicles();
             Parking.parkedCars = new List<ParkedCarModel>();
-            
+
             foreach (VehicleModel vehModel in vehicleList)
             {
                 if (vehModel.parking == 0)
@@ -42,7 +41,7 @@ namespace WiredPlayers.vehicles
                     NAPI.Vehicle.SetVehicleEngineStatus(vehicle, vehModel.engine == 0 ? false : true);
                     NAPI.Vehicle.SetVehicleLocked(vehicle, vehModel.locked == 0 ? false : true);
                     NAPI.Entity.SetEntityDimension(vehicle, Convert.ToUInt32(vehModel.dimension));
-                    
+
                     // Añadimos el color
                     if (vehModel.colorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
                     {
@@ -57,7 +56,7 @@ namespace WiredPlayers.vehicles
                         NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(firstColor[0]), Int32.Parse(firstColor[1]), Int32.Parse(firstColor[2]));
                         NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondColor[0]), Int32.Parse(secondColor[1]), Int32.Parse(secondColor[2]));
                     }
-                    
+
                     // Aumentamos el motor de vehículos policiales
                     if (vehModel.faction == Constants.FACTION_POLICE)
                     {
@@ -98,7 +97,7 @@ namespace WiredPlayers.vehicles
                 }
             }
         }
-        
+
         public static void CreateVehicle(Client player, VehicleModel vehModel, bool adminCreated)
         {
             int vehicleId = Database.AddNewVehicle(vehModel);
@@ -250,16 +249,13 @@ namespace WiredPlayers.vehicles
             return trunkUsed;
         }
 
-        private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
             {
-                if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
-                {
-                    // Eliminamos el timer
-                    gasTimer.Dispose();
-                    gasTimerList.Remove(player.Value);
-                }
+                // Eliminamos el timer
+                gasTimer.Dispose();
+                gasTimerList.Remove(player.Value);
             }
         }
 
@@ -270,7 +266,7 @@ namespace WiredPlayers.vehicles
                 // Obtenemos el checkpoint con el localizador
                 Checkpoint vehicleCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PARKED_VEHICLE);
 
-                if(vehicleCheckpoint == checkpoint)
+                if (vehicleCheckpoint == checkpoint)
                 {
                     // Borramos el checkpoint
                     NAPI.Entity.DeleteEntity(vehicleCheckpoint);
@@ -396,13 +392,13 @@ namespace WiredPlayers.vehicles
                 vehicleModel.parked = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKED);
                 vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
                 vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
-                
+
                 NAPI.Task.Run(() =>
                 {
                     // Borramos el vehículo destruído del servidor
                     NAPI.Entity.DeleteEntity(vehicle);
                 });
-                
+
                 if (vehicleModel.faction == Constants.FACTION_NONE && NAPI.Vehicle.GetVehicleOccupants(vehicle).Count > 0)
                 {
                     // Buscamos el desguace
@@ -427,7 +423,7 @@ namespace WiredPlayers.vehicles
                         // Recreamos el vehículo
                         vehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicleModel.model), vehicleModel.position, vehicleModel.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
                     });
-                    
+
                     NAPI.Vehicle.SetVehicleNumberPlate(vehicle, vehicleModel.plate == String.Empty ? "LS " + (1000 + vehicleModel.id) : vehicleModel.plate);
                     NAPI.Entity.SetEntityDimension(vehicle, Convert.ToUInt32(vehicleModel.dimension));
                     NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);

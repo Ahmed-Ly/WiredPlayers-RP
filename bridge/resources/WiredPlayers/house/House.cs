@@ -7,13 +7,9 @@ using System;
 
 namespace WiredPlayers.house
 {
-    class House : Script
+    class House
     {
         public static List<HouseModel> houseList;
-
-        public House()
-        {
-        }
 
         public void LoadDatabaseHouses()
         {
@@ -30,7 +26,7 @@ namespace WiredPlayers.house
             HouseModel house = null;
             foreach (HouseModel houseModel in houseList)
             {
-                if(houseModel.id == id)
+                if (houseModel.id == id)
                 {
                     house = houseModel;
                     break;
@@ -42,9 +38,9 @@ namespace WiredPlayers.house
         public static HouseModel GetClosestHouse(Client player, float distance = 1.5f)
         {
             HouseModel house = null;
-            foreach(HouseModel houseModel in houseList)
+            foreach (HouseModel houseModel in houseList)
             {
-                if(player.Position.DistanceTo(houseModel.position) < distance)
+                if (player.Position.DistanceTo(houseModel.position) < distance)
                 {
                     house = houseModel;
                     distance = player.Position.DistanceTo(houseModel.position);
@@ -56,9 +52,9 @@ namespace WiredPlayers.house
         public static Vector3 GetHouseExitPoint(String ipl)
         {
             Vector3 exit = null;
-            foreach(HouseIplModel houseIpl in Constants.HOUSE_IPL_LIST)
+            foreach (HouseIplModel houseIpl in Constants.HOUSE_IPL_LIST)
             {
-                if(houseIpl.ipl == ipl)
+                if (houseIpl.ipl == ipl)
                 {
                     exit = houseIpl.position;
                     break;
@@ -75,7 +71,7 @@ namespace WiredPlayers.house
         public static String GetHouseLabelText(HouseModel house)
         {
             String label = String.Empty;
-            switch(house.status)
+            switch (house.status)
             {
                 case Constants.HOUSE_STATE_NONE:
                     label = house.name + "\n" + "Estado: Ocupada";
@@ -92,9 +88,9 @@ namespace WiredPlayers.house
 
         public static void BuyHouse(Client player, HouseModel house)
         {
-            if(house.status == Constants.HOUSE_STATE_BUYABLE)
+            if (house.status == Constants.HOUSE_STATE_BUYABLE)
             {
-                if(NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) >= house.price)
+                if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) >= house.price)
                 {
                     int bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) - house.price;
                     String message = String.Format(Messages.INF_HOUSE_BUY, house.name, house.price);
@@ -165,11 +161,11 @@ namespace WiredPlayers.house
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
                 HouseModel house = GetHouseById(houseId);
-                if(house == null || house.owner != player.Name)
+                if (house == null || house.owner != player.Name)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_HOUSE_OWNER);
                 }
-                else if(amount > 0)
+                else if (amount > 0)
                 {
                     house.rental = amount;
                     house.status = Constants.HOUSE_STATE_RENTABLE;
@@ -258,14 +254,14 @@ namespace WiredPlayers.house
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_HOUSE_RENTED);
                     }
                 }
-            }         
+            }
         }
 
         [Command("armario")]
         public void ArmarioCommand(Client player)
         {
             int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-            if(houseId > 0)
+            if (houseId > 0)
             {
                 HouseModel house = GetHouseById(houseId);
                 if (HasPlayerHouseKeys(player, house) == true)
@@ -273,7 +269,7 @@ namespace WiredPlayers.house
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                     List<ClothesModel> clothesList = Globals.GetPlayerClothes(playerId);
                     List<String> clothesNames = Globals.GetClothesNames(clothesList);
-                    if(clothesList.Count > 0)
+                    if (clothesList.Count > 0)
                     {
                         NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerWardrobe", NAPI.Util.ToJson(clothesList), NAPI.Util.ToJson(clothesNames));
                     }

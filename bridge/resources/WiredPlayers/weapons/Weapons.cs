@@ -21,14 +21,13 @@ namespace WiredPlayers.weapons
             Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
             Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Event.OnPlayerWeaponSwitch += OnPlayerWeaponSwitch;
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
         public static void GivePlayerWeaponItems(Client player)
         {
             int itemId = 0;
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-            foreach(ItemModel item in Globals.itemList)
+            foreach (ItemModel item in Globals.itemList)
             {
                 if (!Int32.TryParse(item.hash, out itemId) && item.ownerIdentifier == playerId && item.ownerEntity == Constants.ITEM_ENTITY_WHEEL)
                 {
@@ -57,7 +56,7 @@ namespace WiredPlayers.weapons
             NAPI.Player.SetPlayerWeaponAmmo(player, weapon, bullets);
 
             // Miramos si es un arma registrada
-            if(licensed)
+            if (licensed)
             {
                 Database.AddLicensedWeapon(weaponModel.id, player.Name);
             }
@@ -94,9 +93,9 @@ namespace WiredPlayers.weapons
         public static ItemModel GetEquippedWeaponItemModelByHash(int playerId, WeaponHash weapon)
         {
             ItemModel item = null;
-            foreach(ItemModel itemModel in Globals.itemList)
+            foreach (ItemModel itemModel in Globals.itemList)
             {
-                if(itemModel.ownerIdentifier == playerId && (itemModel.ownerEntity == Constants.ITEM_ENTITY_WHEEL || itemModel.ownerEntity == Constants.ITEM_ENTITY_RIGHT_HAND) && weapon.ToString() == itemModel.hash)
+                if (itemModel.ownerIdentifier == playerId && (itemModel.ownerEntity == Constants.ITEM_ENTITY_WHEEL || itemModel.ownerEntity == Constants.ITEM_ENTITY_RIGHT_HAND) && weapon.ToString() == itemModel.hash)
                 {
                     item = itemModel;
                     break;
@@ -108,7 +107,7 @@ namespace WiredPlayers.weapons
         public static WeaponCrateModel GetClosestWeaponCrate(Client player, float distance = 1.5f)
         {
             WeaponCrateModel weaponCrate = null;
-            foreach(WeaponCrateModel weaponCrateModel in weaponCrateList)
+            foreach (WeaponCrateModel weaponCrateModel in weaponCrateList)
             {
                 if (player.Position.DistanceTo(weaponCrateModel.position) < distance && weaponCrateModel.carriedEntity == String.Empty)
                 {
@@ -136,9 +135,9 @@ namespace WiredPlayers.weapons
         public static void WeaponsPrewarn()
         {
             // Avisamos a todos los jugadores de facciones conectados
-            foreach(Client player in NAPI.Pools.GetAllPlayers())
+            foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
-                if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WEAPON_PREWARN);
                 }
@@ -153,13 +152,13 @@ namespace WiredPlayers.weapons
             vehicleWeaponTimer = new List<Timer>();
             weaponCrateList = new List<WeaponCrateModel>();
         }
-        
+
         private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
-            if(NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
             {
                 int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                if(!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING) && GetVehicleWeaponCrates(vehicleId) > 0)
+                if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING) && GetVehicleWeaponCrates(vehicleId) > 0)
                 {
                     // Avisamos de la posición de entrega
                     Vector3 weaponPosition = new Vector3(-2085.543f, 2600.857f, -0.4712417f);
@@ -173,7 +172,7 @@ namespace WiredPlayers.weapons
 
         private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
         {
-            if(NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) == true)
+            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) == true)
             {
                 int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && GetVehicleWeaponCrates(vehicleId) > 0)
@@ -191,10 +190,10 @@ namespace WiredPlayers.weapons
                 {
                     NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                    if(GetVehicleWeaponCrates(vehicleId) > 0)
+                    if (GetVehicleWeaponCrates(vehicleId) > 0)
                     {
                         // Borramos el checkpoint
-                        Checkpoint weaponCheckpoint= NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
+                        Checkpoint weaponCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
                         NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
                         NAPI.Entity.DeleteEntity(weaponCheckpoint);
@@ -214,11 +213,11 @@ namespace WiredPlayers.weapons
 
         private void OnPlayerWeaponSwitch(Client player, WeaponHash oldWeapon, WeaponHash newWeapon)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
                 // Obtenemos el identificador del jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                
+
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
@@ -230,7 +229,7 @@ namespace WiredPlayers.weapons
                         return;
                     }
                 }
-                
+
                 // Obtenemos los modelos de armas antiguo y nuevos
                 ItemModel oldWeaponModel = GetEquippedWeaponItemModelByHash(playerId, oldWeapon);
                 ItemModel currentWeaponModel = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
@@ -261,23 +260,20 @@ namespace WiredPlayers.weapons
             }
         }
 
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            // Obtenemos el id del personaje
+            WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(player.Value);
+
+            if (weaponCrate != null)
             {
-                // Obtenemos el id del personaje
-                WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(player.Value);
+                weaponCrate.position = new Vector3(player.Position.X, player.Position.Y, player.Position.X - 1.0f);
+                weaponCrate.carriedEntity = String.Empty;
+                weaponCrate.carriedIdentifier = 0;
 
-                if (weaponCrate != null)
-                {
-                    weaponCrate.position = new Vector3(player.Position.X, player.Position.Y, player.Position.X - 1.0f);
-                    weaponCrate.carriedEntity = String.Empty;
-                    weaponCrate.carriedIdentifier = 0;
-
-                    // Colocamos el objeto en su posición
-                    NAPI.Entity.DetachEntity(weaponCrate.crateObject);
-                    NAPI.Entity.SetEntityPosition(weaponCrate.crateObject, weaponCrate.position);
-                }
+                // Colocamos el objeto en su posición
+                NAPI.Entity.DetachEntity(weaponCrate.crateObject);
+                NAPI.Entity.SetEntityPosition(weaponCrate.crateObject, weaponCrate.position);
             }
         }
 
@@ -288,7 +284,7 @@ namespace WiredPlayers.weapons
             List<Vector3> weaponSpawns = new List<Vector3>();
             List<CrateSpawnModel> cratesInSpawn = GetSpawnsInPosition(spawnPosition);
 
-            while(weaponSpawns.Count < Constants.MAX_CRATES_SPAWN)
+            while (weaponSpawns.Count < Constants.MAX_CRATES_SPAWN)
             {
                 Vector3 crateSpawn = cratesInSpawn[random.Next(cratesInSpawn.Count)].position;
                 if (weaponSpawns.Contains(crateSpawn) == false)
@@ -302,24 +298,24 @@ namespace WiredPlayers.weapons
         private static List<CrateSpawnModel> GetSpawnsInPosition(int spawnPosition)
         {
             List<CrateSpawnModel> crateSpawnList = new List<CrateSpawnModel>();
-            foreach(CrateSpawnModel crateSpawn in Constants.CRATE_SPAWN_LIST)
+            foreach (CrateSpawnModel crateSpawn in Constants.CRATE_SPAWN_LIST)
             {
-                if(crateSpawn.spawnPoint == spawnPosition)
+                if (crateSpawn.spawnPoint == spawnPosition)
                 {
                     crateSpawnList.Add(crateSpawn);
                 }
             }
             return crateSpawnList;
         }
-        
+
         private static CrateContentModel GetRandomCrateContent(int type, int chance)
         {
             CrateContentModel crateContent = new CrateContentModel();
 
             // Miramos el objeto a crear
-            foreach(WeaponProbabilityModel weaponAmmo in Constants.WEAPON_CHANCE_LIST)
+            foreach (WeaponProbabilityModel weaponAmmo in Constants.WEAPON_CHANCE_LIST)
             {
-                if(weaponAmmo.type == type && weaponAmmo.minChance <= chance && weaponAmmo.maxChance >= chance)
+                if (weaponAmmo.type == type && weaponAmmo.minChance <= chance && weaponAmmo.maxChance >= chance)
                 {
                     crateContent.item = weaponAmmo.hash;
                     crateContent.amount = weaponAmmo.amount;
@@ -405,9 +401,9 @@ namespace WiredPlayers.weapons
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
 
             // Desempaquetamos las armas
-            foreach(WeaponCrateModel weaponCrate in weaponCrateList)
+            foreach (WeaponCrateModel weaponCrate in weaponCrateList)
             {
-                if(weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
+                if (weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
                 {
                     // Creamos el arma del cajón
                     ItemModel item = new ItemModel();
@@ -425,9 +421,9 @@ namespace WiredPlayers.weapons
             }
 
             // Avisamos al conductor de que ya está disponible
-            foreach(Client player in NAPI.Pools.GetAllPlayers())
+            foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
-                if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE) == vehicle)
+                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE) == vehicle)
                 {
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_VEHICLE);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WEAPONS_UNPACKED);
@@ -460,9 +456,9 @@ namespace WiredPlayers.weapons
         private int GetVehicleWeaponCrates(int vehicleId)
         {
             int crates = 0;
-            foreach(WeaponCrateModel weaponCrate in weaponCrateList)
+            foreach (WeaponCrateModel weaponCrate in weaponCrateList)
             {
-                if(weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
+                if (weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
                 {
                     crates++;
                 }
@@ -512,7 +508,7 @@ namespace WiredPlayers.weapons
         [Command("armarios")]
         public void ArmariosCommand(Client player)
         {
-            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_S_GAME_MASTER)
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_S_GAME_MASTER)
             {
                 if (weaponTimer == null)
                 {

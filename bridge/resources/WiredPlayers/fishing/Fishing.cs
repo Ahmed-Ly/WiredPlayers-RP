@@ -9,25 +9,17 @@ using System;
 
 namespace WiredPlayers.fishing
 {
-    public class Fishing : Script
+    public class Fishing
     {
         private static Dictionary<int, Timer> fishingTimerList = new Dictionary<int, Timer>();
 
-        public Fishing()
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
-        }
-
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
-                if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
-                {
-                    // Eliminamos el timer
-                    fishingTimer.Dispose();
-                    fishingTimerList.Remove(player.Value);
-                }
+                // Eliminamos el timer
+                fishingTimer.Dispose();
+                fishingTimerList.Remove(player.Value);
             }
         }
 
@@ -191,21 +183,21 @@ namespace WiredPlayers.fishing
         [Command("pescar")]
         public void PescarCommand(Client player)
         {
-            if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHING) == true)
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHING) == true)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_ALREADY_FISHING);
             }
-            else if(NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+            else if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
             {
                 NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                 VehicleHash vehicleModel = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);
-                if(vehicleModel == VehicleHash.Marquis || vehicleModel == VehicleHash.Tug)
+                if (vehicleModel == VehicleHash.Marquis || vehicleModel == VehicleHash.Tug)
                 {
                     if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_FISHERMAN)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FISHERMAN);
                     }
-                    else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHABLE) == false)
+                    else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHABLE) == false)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_FISHING_ZONE);
                     }
@@ -219,25 +211,25 @@ namespace WiredPlayers.fishing
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_FISHING_BOAT);
                 }
             }
-            else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+            else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int fishingRodId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                 ItemModel fishingRod = Globals.GetItemModelFromId(fishingRodId);
 
-                if(fishingRod != null && fishingRod.hash == Constants.ITEM_HASH_FISHING_ROD)
+                if (fishingRod != null && fishingRod.hash == Constants.ITEM_HASH_FISHING_ROD)
                 {
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                     ItemModel bait = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_BAIT);
-                    if(bait != null && bait.amount > 0)
+                    if (bait != null && bait.amount > 0)
                     {
-                        foreach(Vector3 fishingPosition in Constants.FISHING_POSITION_LIST)
+                        foreach (Vector3 fishingPosition in Constants.FISHING_POSITION_LIST)
                         {
                             // Ponemos al jugador mirando al mar
                             NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 142.532f));
                             NAPI.Player.FreezePlayer(player, true);
 
                             // Le quitamos una unidad de cebo
-                            if(bait.amount == 1)
+                            if (bait.amount == 1)
                             {
                                 Globals.itemList.Remove(bait);
                                 Database.RemoveItem(bait.id);
@@ -249,12 +241,12 @@ namespace WiredPlayers.fishing
                             }
 
                             // Iniciamos la pesca
-                            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@base", "base");                            
+                            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@base", "base");
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_FISHING, true);
                             NAPI.ClientEvent.TriggerClientEvent(player, "startPlayerFishing");
                             return;
                         }
-                        
+
                         // Avisamos de que no se encuentra en la zona de pesca
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FISHING_ZONE);
                     }

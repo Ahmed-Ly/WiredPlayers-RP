@@ -9,6 +9,14 @@ using WiredPlayers.hooker;
 using WiredPlayers.parking;
 using WiredPlayers.faction;
 using WiredPlayers.vehicles;
+using WiredPlayers.drivingschool;
+using WiredPlayers.emergency;
+using WiredPlayers.fastfood;
+using WiredPlayers.fishing;
+using WiredPlayers.garbage;
+using WiredPlayers.login;
+using WiredPlayers.police;
+using WiredPlayers.thief;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
@@ -173,7 +181,6 @@ namespace WiredPlayers.globals
 
         private void OnPlayerEnterColShape(ColShape shape, Client player)
         {
-            NAPI.Chat.SendChatMessageToAll("asdas");
             // Miramos si es un área prestablecida
             if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
             {
@@ -259,10 +266,44 @@ namespace WiredPlayers.globals
 
         private void OnPlayerDisconnected(Client player, byte type, string reason)
         {
+            // Eliminamos el timer de spawn si existe
+            Login.OnPlayerDisconnected(player, type, reason);
+
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
+                // Eliminamos el estado de conexión
+                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PLAYING);
+
                 // Se elimina el personaje de la lista de conectados
                 scoreList.RemoveAll(score => score.playerId == player.Value);
+
+                // Borramos la duda que tenga abierta
+                adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
+
+                // Llamamos a todos los eventos de las otras clases
+                Chat.OnPlayerDisconnected(player, type, reason);
+                DrivingSchool.OnPlayerDisconnected(player, type, reason);
+                Emergency.OnPlayerDisconnected(player, type, reason);
+                FastFood.OnPlayerDisconnected(player, type, reason);
+                Fishing.OnPlayerDisconnected(player, type, reason);
+                Garbage.OnPlayerDisconnected(player, type, reason);
+                Hooker.OnPlayerDisconnected(player, type, reason);
+                Police.OnPlayerDisconnected(player, type, reason);
+                Thief.OnPlayerDisconnected(player, type, reason);
+                Vehicles.OnPlayerDisconnected(player, type, reason);
+                Weapons.OnPlayerDisconnected(player, type, reason);
+
+                // Si lleva algo en la mano, lo borramos
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+                {
+                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
+                    ItemModel item = GetItemModelFromId(itemId);
+                    if (item != null && item.objectHandle != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
+                    {
+                        NAPI.Entity.DetachEntity(item.objectHandle);
+                        NAPI.Entity.DeleteEntity(item.objectHandle);
+                    }
+                }
 
                 // Guardamos los datos del personaje
                 PlayerModel character = new PlayerModel();
@@ -301,20 +342,6 @@ namespace WiredPlayers.globals
 
                 // Guardamos en la base de datos
                 Database.SaveCharacterInformation(character);
-
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
-                {
-                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                    ItemModel item = GetItemModelFromId(itemId);
-                    if (item != null && item.objectHandle != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
-                    {
-                        NAPI.Entity.DetachEntity(item.objectHandle);
-                        NAPI.Entity.DeleteEntity(item.objectHandle);
-                    }
-                }
-
-                // Borramos la duda que tenga abierta
-                adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
             }
         }
         /*
@@ -1288,7 +1315,7 @@ namespace WiredPlayers.globals
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
                     }
                 }
-                else if(NAPI.Data.HasEntityData(player, EntityData.PLAYER_CREATOR_AREA) == true)
+                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_CREATOR_AREA) == true)
                 {
                     // Mostramos el menú de personajes
                     List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);

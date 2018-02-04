@@ -7,12 +7,8 @@ using System;
 
 namespace WiredPlayers.bank
 {
-    public class Bank : Script
+    public class Bank
     {
-        public Bank()
-        {
-        }
-
         [RemoteEvent("executeBankOperation")]
         public void ExecuteBankOperationEvent(Client player, params object[] arguments)
         {
@@ -22,9 +18,9 @@ namespace WiredPlayers.bank
             String name = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
 
             // Verificamos que la cantidad es válida
-            if(Int32.TryParse(arguments[1].ToString(), out int amount) == true)
+            if (Int32.TryParse(arguments[1].ToString(), out int amount) == true)
             {
-                if(amount > 0)
+                if (amount > 0)
                 {
                     switch ((int)arguments[0])
                     {
@@ -70,7 +66,7 @@ namespace WiredPlayers.bank
                                 if (Database.FindCharacter(targetName) == true)
                                 {
                                     Client target = NAPI.Pools.GetAllPlayers().Find(x => x.Name == targetName);
-                                    if(target == player)
+                                    if (target == player)
                                     {
                                         response = "No puedes realizar una transferencia a tu cuenta";
                                     }

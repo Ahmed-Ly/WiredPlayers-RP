@@ -10,15 +10,10 @@ using System;
 
 namespace WiredPlayers.parking
 {
-    class Parking : Script
+    class Parking
     {
         public static List<ParkingModel> parkingList;
         public static List<ParkedCarModel> parkedCars;
-
-        public Parking()
-        {
-
-        }
 
         public void LoadDatabaseParkings()
         {
@@ -33,9 +28,9 @@ namespace WiredPlayers.parking
         public static ParkingModel GetClosestParking(Client player, float distance = 1.5f)
         {
             ParkingModel parking = null;
-            foreach(ParkingModel parkingModel in parkingList)
+            foreach (ParkingModel parkingModel in parkingList)
             {
-                if(parkingModel.position.DistanceTo(player.Position) < distance)
+                if (parkingModel.position.DistanceTo(player.Position) < distance)
                 {
                     distance = parkingModel.position.DistanceTo(player.Position);
                     parking = parkingModel;
@@ -47,9 +42,9 @@ namespace WiredPlayers.parking
         public static int GetParkedCarAmount(ParkingModel parking)
         {
             int totalVehicles = 0;
-            foreach(ParkedCarModel parkedCar in parkedCars)
+            foreach (ParkedCarModel parkedCar in parkedCars)
             {
-                if(parkedCar.parkingId == parking.id)
+                if (parkedCar.parkingId == parking.id)
                 {
                     totalVehicles++;
                 }
@@ -60,7 +55,7 @@ namespace WiredPlayers.parking
         public static String GetParkingLabelText(int type)
         {
             String labelText = String.Empty;
-            switch(type)
+            switch (type)
             {
                 case Constants.PARKING_TYPE_PUBLIC:
                     labelText = "Parking público";
@@ -81,9 +76,9 @@ namespace WiredPlayers.parking
         public static ParkingModel GetParkingById(int parkingId)
         {
             ParkingModel parking = null;
-            foreach(ParkingModel parkingModel in parkingList)
+            foreach (ParkingModel parkingModel in parkingList)
             {
-                if(parkingModel.id == parkingId)
+                if (parkingModel.id == parkingId)
                 {
                     parking = parkingModel;
                     break;
@@ -97,7 +92,7 @@ namespace WiredPlayers.parking
             ParkedCarModel vehicle = null;
             foreach (ParkedCarModel parkedCar in parkedCars)
             {
-                if(parkedCar.vehicle.id == vehicleId)
+                if (parkedCar.vehicle.id == vehicleId)
                 {
                     vehicle = parkedCar;
                     break;
@@ -158,7 +153,7 @@ namespace WiredPlayers.parking
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
             }
-            else if(NAPI.Data.GetEntityData(NAPI.Player.GetPlayerVehicle(player), EntityData.VEHICLE_FACTION) != Constants.FACTION_NONE)
+            else if (NAPI.Data.GetEntityData(NAPI.Player.GetPlayerVehicle(player), EntityData.VEHICLE_FACTION) != Constants.FACTION_NONE)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_FACTION_PARK);
             }
@@ -168,7 +163,7 @@ namespace WiredPlayers.parking
                 if (Vehicles.HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
-                } 
+                }
                 else
                 {
                     foreach (ParkingModel parking in parkingList)
@@ -245,7 +240,7 @@ namespace WiredPlayers.parking
                     if (player.Position.DistanceTo(parking.position) < 2.5f)
                     {
                         // Miramos si el vehículo está en el parking
-                        if(parking.id == vehicle.parking)
+                        if (parking.id == vehicle.parking)
                         {
                             // Obtenemos el dinero del jugador
                             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
@@ -259,7 +254,7 @@ namespace WiredPlayers.parking
                                     break;
                                 case Constants.PARKING_TYPE_DEPOSIT:
                                     // Cobramos el dinero por sacarlo del depósito del LSPD
-                                    if(playerMoney >= Constants.PRICE_PARKING_DEPOSIT)
+                                    if (playerMoney >= Constants.PRICE_PARKING_DEPOSIT)
                                     {
                                         // Restamos el dinero del jugador
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - Constants.PRICE_PARKING_DEPOSIT);

@@ -8,13 +8,9 @@ using System;
 
 namespace WiredPlayers.furniture
 {
-    public class Furniture : Script
+    public class Furniture
     {
         private static List<FurnitureModel> furnitureList;
-
-        public Furniture()
-        {
-        }
 
         public void LoadDatabaseFurniture()
         {
@@ -71,9 +67,9 @@ namespace WiredPlayers.furniture
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
                 HouseModel house = House.GetHouseById(houseId);
-                if(house != null && house.owner == player.Name)
+                if (house != null && house.owner == player.Name)
                 {
-                    switch(action.ToLower())
+                    switch (action.ToLower())
                     {
                         case "colocar":
                             FurnitureModel furniture = new FurnitureModel();

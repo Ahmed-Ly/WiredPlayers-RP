@@ -11,7 +11,6 @@ namespace WiredPlayers.chat
         public Chat()
         {
             Event.OnChatMessage += OnChatMessageHandler;
-            Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
         }
 
         private void OnChatMessageHandler(Client player, string message, CancelEventArgs e)
@@ -73,21 +72,18 @@ namespace WiredPlayers.chat
             }
         }
 
-        private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            // Quitamos la etiqueta descriptiva
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_AME) == true)
             {
-                // Quitamos la etiqueta descriptiva
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_AME) == true)
-                {
-                    TextLabel label = NAPI.Data.GetEntityData(player, EntityData.PLAYER_AME);
-                    NAPI.Entity.DetachEntity(label);
-                    NAPI.Entity.DeleteEntity(label);
-                }
-
-                // Avisamos a los jugadores cercanos de la desconexión
-                SendMessageToNearbyPlayers(player, " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
+                TextLabel label = NAPI.Data.GetEntityData(player, EntityData.PLAYER_AME);
+                NAPI.Entity.DetachEntity(label);
+                NAPI.Entity.DeleteEntity(label);
             }
+
+            // Avisamos a los jugadores cercanos de la desconexión
+            SendMessageToNearbyPlayers(player, player.Name + " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
         }
 
         public static void SendMessageToNearbyPlayers(Client player, String message, int type, float range, bool excludePlayer = false)

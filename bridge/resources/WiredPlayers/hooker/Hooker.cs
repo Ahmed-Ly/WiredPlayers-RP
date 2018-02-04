@@ -6,24 +6,16 @@ using System;
 
 namespace WiredPlayers.hooker
 {
-    public class Hooker : Script
+    public class Hooker
     {
         public static Dictionary<int, Timer> sexTimerList = new Dictionary<int, Timer>();
 
-        public Hooker()
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
-        }
-
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
             {
-                if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
-                {
-                    sexTimer.Dispose();
-                    sexTimerList.Remove(player.Value);
-                }
+                sexTimer.Dispose();
+                sexTimerList.Remove(player.Value);
             }
         }
 
@@ -83,7 +75,7 @@ namespace WiredPlayers.hooker
             else
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
-                
+
                 if (NAPI.Player.GetPlayerVehicleSeat(target) != Constants.VEHICLE_SEAT_DRIVER)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CLIENT_NOT_VEHICLE_DRIVING);

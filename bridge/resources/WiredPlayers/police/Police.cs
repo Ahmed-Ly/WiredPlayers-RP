@@ -20,7 +20,6 @@ namespace WiredPlayers.police
         public Police()
         {
             Event.OnResourceStart += OnResourceStart;
-            Event.OnPlayerDisconnected += OnPlayerDisconnectedHandler;
         }
 
         private void OnResourceStart()
@@ -29,7 +28,7 @@ namespace WiredPlayers.police
             reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
         }
 
-        private void OnPlayerDisconnectedHandler(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, byte type, string reason)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HANDCUFFED) == true)
             {
@@ -71,11 +70,11 @@ namespace WiredPlayers.police
             // Obtenemos los miembros de policía
             List<ReinforcesModel> policeReinforces = new List<ReinforcesModel>();
             List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => NAPI.Data.GetEntityData(x, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE).ToList();
-            
+
             // Recogemos todas las posiciones
-            foreach(Client police in policeMembers)
+            foreach (Client police in policeMembers)
             {
-                if(NAPI.Data.HasEntityData(police, EntityData.PLAYER_REINFORCES) == true)
+                if (NAPI.Data.HasEntityData(police, EntityData.PLAYER_REINFORCES) == true)
                 {
                     ReinforcesModel reinforces = new ReinforcesModel(police.Value, police.Position);
                     policeReinforces.Add(reinforces);
@@ -85,9 +84,9 @@ namespace WiredPlayers.police
             // Convertimos la lista a JSON
             String reinforcesJsonList = NAPI.Util.ToJson(policeReinforces);
 
-            foreach(Client police in policeMembers)
+            foreach (Client police in policeMembers)
             {
-                if(NAPI.Data.HasEntityData(police, EntityData.PLAYER_PLAYING) == true)
+                if (NAPI.Data.HasEntityData(police, EntityData.PLAYER_PLAYING) == true)
                 {
                     // Actualizamos la posición para cada policía
                     NAPI.ClientEvent.TriggerClientEvent(police, "updatePoliceReinforces", reinforcesJsonList);
@@ -103,7 +102,7 @@ namespace WiredPlayers.police
             List<CrimeModel> crimeList = JsonConvert.DeserializeObject<List<CrimeModel>>(arguments[0].ToString());
 
             // Calculamos la multa y tiempo de cárcel
-            foreach(CrimeModel crime in crimeList)
+            foreach (CrimeModel crime in crimeList)
             {
                 fine += crime.fine;
                 jail += crime.jail;
@@ -234,7 +233,7 @@ namespace WiredPlayers.police
             else
             {
                 Vehicle vehicle = Globals.GetClosestVehicle(player, 3.5f);
-                if(vehicle == null)
+                if (vehicle == null)
                 {
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                     String model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
@@ -317,7 +316,8 @@ namespace WiredPlayers.police
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
-            else */if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
+            else */
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_POLICE_FACTION);
             }
@@ -334,10 +334,10 @@ namespace WiredPlayers.police
                     else
                     {
                         */
-                           String crimeList = NAPI.Util.ToJson(Constants.CRIME_LIST);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET, target);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showCrimesMenu", crimeList);
-                  //  }
+                    String crimeList = NAPI.Util.ToJson(Constants.CRIME_LIST);
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET, target);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showCrimesMenu", crimeList);
+                    //  }
                 }
                 else
                 {
@@ -353,7 +353,7 @@ namespace WiredPlayers.police
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FINE_COMMAND);
             }
-            else if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
             }
@@ -776,7 +776,7 @@ namespace WiredPlayers.police
         [Command("refuerzos", Alias = "sr")]
         public void RefuerzosCommand(Client player)
         {
-            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_POLICE_FACTION);
             }
@@ -800,7 +800,7 @@ namespace WiredPlayers.police
 
                     foreach (Client target in policeMembers)
                     {
-                        if(NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 1)
+                        if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 1)
                         {
                             // Mostramos la marca en el mapa
                             NAPI.ClientEvent.TriggerClientEvent(target, "reinforcesRemove", player.Value);
@@ -825,7 +825,7 @@ namespace WiredPlayers.police
                     // Creamos el mensaje
                     String targetMessage = String.Format(Messages.INF_TARGET_REINFORCES_ASKED, player.Name);
 
-                    foreach(Client target in policeMembers)
+                    foreach (Client target in policeMembers)
                     {
                         if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 1)
                         {
@@ -850,15 +850,15 @@ namespace WiredPlayers.police
         [Command("licencia", Messages.GEN_LICENSE_COMMAND, GreedyArg = true)]
         public void LicenciaCommand(Client player, String args)
         {
-            if(NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) == 6)
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) == 6)
             {
                 String[] arguments = args.Trim().Split(' ');
-                if(arguments.Length == 3 || arguments.Length == 4)
+                if (arguments.Length == 3 || arguments.Length == 4)
                 {
                     Client target = null;
 
                     // Miramos cuál es el jugador objetivo
-                    if(Int32.TryParse(arguments[2], out int targetId) && arguments.Length == 3)
+                    if (Int32.TryParse(arguments[2], out int targetId) && arguments.Length == 3)
                     {
                         target = Globals.GetPlayerById(targetId);
                     }
@@ -872,7 +872,7 @@ namespace WiredPlayers.police
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
                     }
-                    else if(player.Position.DistanceTo(target.Position) > 2.5f)
+                    else if (player.Position.DistanceTo(target.Position) > 2.5f)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_TOO_FAR);
                     }

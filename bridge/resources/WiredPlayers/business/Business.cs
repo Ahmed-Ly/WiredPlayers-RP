@@ -5,7 +5,6 @@ using WiredPlayers.model;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Newtonsoft.Json;
 
 namespace WiredPlayers.business
 {
@@ -51,7 +50,7 @@ namespace WiredPlayers.business
                 // Miramos si está entre los destacados
                 foreach (BusinessBlipModel blipModel in Constants.BUSINESS_BLIP_LIST)
                 {
-                    if(blipModel.id == businessModel.id)
+                    if (blipModel.id == businessModel.id)
                     {
                         Blip businessBlip = NAPI.Blip.CreateBlip(businessModel.position);
                         NAPI.Blip.SetBlipName(businessBlip, businessModel.name);
@@ -66,9 +65,9 @@ namespace WiredPlayers.business
         public static BusinessModel GetBusinessById(int businessId)
         {
             BusinessModel business = null;
-            foreach(BusinessModel businessModel in businessList)
+            foreach (BusinessModel businessModel in businessList)
             {
-                if(businessModel.id == businessId)
+                if (businessModel.id == businessId)
                 {
                     business = businessModel;
                     break;
@@ -80,9 +79,9 @@ namespace WiredPlayers.business
         public static BusinessModel GetClosestBusiness(Client player, float distance = 2.0f)
         {
             BusinessModel business = null;
-            foreach(BusinessModel businessModel in businessList)
+            foreach (BusinessModel businessModel in businessList)
             {
-                if(player.Position.DistanceTo(businessModel.position) < distance)
+                if (player.Position.DistanceTo(businessModel.position) < distance)
                 {
                     business = businessModel;
                     distance = player.Position.DistanceTo(business.position);
@@ -94,9 +93,9 @@ namespace WiredPlayers.business
         public static List<BusinessItemModel> GetBusinessSoldItems(int business)
         {
             List<BusinessItemModel> businessItems = new List<BusinessItemModel>();
-            foreach(BusinessItemModel businessItem in Constants.BUSINESS_ITEM_LIST)
+            foreach (BusinessItemModel businessItem in Constants.BUSINESS_ITEM_LIST)
             {
-                if(businessItem.business == business)
+                if (businessItem.business == business)
                 {
                     businessItems.Add(businessItem);
                 }
@@ -135,9 +134,9 @@ namespace WiredPlayers.business
         public static List<BusinessClothesModel> GetBusinessClothesFromSlotType(int sex, int type, int slot)
         {
             List<BusinessClothesModel> businessClothesList = new List<BusinessClothesModel>();
-            foreach(BusinessClothesModel clothes in Constants.BUSINESS_CLOTHES_LIST)
+            foreach (BusinessClothesModel clothes in Constants.BUSINESS_CLOTHES_LIST)
             {
-                if(clothes.type == type && (clothes.sex == sex || Constants.SEX_NONE == clothes.sex) && clothes.bodyPart == slot)
+                if (clothes.type == type && (clothes.sex == sex || Constants.SEX_NONE == clothes.sex) && clothes.bodyPart == slot)
                 {
                     businessClothesList.Add(clothes);
                 }
@@ -162,13 +161,13 @@ namespace WiredPlayers.business
         public static String GetBusinessTypeIpl(int type)
         {
             String businessIpl = String.Empty;
-            foreach(BusinessIplModel iplModel in Constants.BUSINESS_IPL_LIST)
+            foreach (BusinessIplModel iplModel in Constants.BUSINESS_IPL_LIST)
             {
-                if(iplModel.type == type)
+                if (iplModel.type == type)
                 {
                     businessIpl = iplModel.ipl;
                     break;
-                    
+
                 }
             }
             return businessIpl;
@@ -444,13 +443,13 @@ namespace WiredPlayers.business
                 // Creamos el modelo de datos
                 SkinModel skin = new SkinModel();
                 skin.hairModel = skinModel.hairModel;
-                skin.firstHairColor = skinModel.firstHairColor; 
-                skin.secondHairColor = skinModel.secondHairColor; 
+                skin.firstHairColor = skinModel.firstHairColor;
+                skin.secondHairColor = skinModel.secondHairColor;
                 skin.beardModel = skinModel.beardModel;
                 skin.beardColor = skinModel.beardColor;
                 skin.eyebrowsModel = skinModel.eyebrowsModel;
                 skin.eyebrowsColor = skinModel.eyebrowsColor;
-                
+
                 // Recogemos los datos de peluquería
                 Database.UpdateCharacterHair(playerId, skin);
 

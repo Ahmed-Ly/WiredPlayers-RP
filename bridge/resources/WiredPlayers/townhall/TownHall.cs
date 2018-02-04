@@ -113,7 +113,7 @@ namespace WiredPlayers.TownHall
             int amount = 0;
 
             // Obtenemos el coste de todas las multas a pagar
-            foreach(FineModel fine in removedFines)
+            foreach (FineModel fine in removedFines)
             {
                 amount += fine.amount;
                 finesProcessed++;
@@ -137,7 +137,7 @@ namespace WiredPlayers.TownHall
                 Database.LogPayment(player.Name, "Ayuntamiento", "Pago de multas", amount);
 
                 // Miramos si se han pagado todas las multas
-                if(finesProcessed == fineList.Count)
+                if (finesProcessed == fineList.Count)
                 {
                     // Volvemos a la página anterior
                     NAPI.ClientEvent.TriggerClientEvent(player, "backTownHallIndex");
