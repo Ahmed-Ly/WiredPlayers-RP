@@ -146,12 +146,6 @@ namespace WiredPlayers.globals
             NAPI.Data.SetEntityData(lspdRoomLockersRectangle, EntityData.SHAPE_CAPTION, "lockerslspd");
             eventAreaList.Add(lspdRoomLockersRectangle);
 
-            for (int i = 0; i < NAPI.Server.GetMaxPlayers(); i++)
-            {
-                ScoreModel scoreModel = new ScoreModel(i, String.Empty, 0);
-                scoreList.Add(scoreModel);
-            }
-
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
             {
                 if (interior.blipId > 0)
