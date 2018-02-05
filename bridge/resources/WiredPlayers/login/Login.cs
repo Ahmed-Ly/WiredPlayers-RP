@@ -29,9 +29,11 @@ namespace WiredPlayers.login
             switch (account.status)
             {
                 case -1:
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_DISABLED);
                     NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_DISABLED);
                     break;
                 case 0:
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_NEW);
                     NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_NEW);
                     break;
                 default:
