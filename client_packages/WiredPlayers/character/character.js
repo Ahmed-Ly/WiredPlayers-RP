@@ -33,7 +33,7 @@ mp.events.add('showCharacterCreationMenu', () => {
 	
 	// Inicializamos las variables del personaje
 	mp.events.callRemote('setCharacterIntoCreator');
-	initializeCharacterCreation();
+	initializeCharacterCreation(mp.players.local);
 	
 	// Ponemos la cámara enfocando al personaje
 	camera = mp.cameras.new('default', new mp.Vector3(152.6008, -1003.25, -98), new mp.Vector3(-20.0, 0.0, 0.0), 90);
@@ -51,7 +51,7 @@ mp.events.add('showCharacterCreationMenu', () => {
 
 mp.events.add('updatePlayerSex', (sex) => {
 	// Cambiamos el sexo del personaje
-	initializeCharacterCreation();
+	initializeCharacterCreation(mp.players.local);
 	mp.events.callRemote('changeCharacterSex', sex);
 });
 
@@ -62,7 +62,7 @@ mp.events.add('updatePlayerCreation', (partName, value, isPercentage) => {
 	}
 	
 	// Actualizamos la apariencia del personaje
-	faceModel[' + partName + '] = value;
+	faceModel['${partName}'] = value;
 	updatePlayerFace(mp.players.local, faceModel);
 });
 

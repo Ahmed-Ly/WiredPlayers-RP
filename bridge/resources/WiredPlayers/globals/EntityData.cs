@@ -100,6 +100,7 @@ namespace WiredPlayers.globals
         public const String PLAYER_REPAINT_SECOND_COLOR = "PLAYER_REPAINT_SECOND_COLOR";
         public const String PLAYER_REPAINT_PEARLESCENT = "PLAYER_REPAINT_PEARLESCENT";
         public const String PLAYER_JOB_POINTS = "PLAYER_JOB_POINTS";
+        public const String PLAYER_ROLE_POINTS = "PLAYER_ROLE_POINTS";
         public const String PLAYER_FISHABLE = "PLAYER_FISHABLE";
         public const String PLAYER_FISHING = "PLAYER_FISHING";
         public const String PLAYER_DRUNK_LEVEL = "PLAYER_DRUNK_LEVEL";

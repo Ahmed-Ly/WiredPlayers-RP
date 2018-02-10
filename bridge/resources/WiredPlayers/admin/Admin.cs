@@ -1537,6 +1537,7 @@ namespace WiredPlayers.admin
                         character.jobCooldown = NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB_COOLDOWN);
                         character.jobDeliver = NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB_DELIVER);
                         character.jobPoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB_POINTS);
+                        character.rolePoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ROLE_POINTS);
                         character.played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED);
                         character.jailed = NAPI.Data.GetEntityData(target, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(target, EntityData.PLAYER_JAILED);
 
@@ -1747,6 +1748,7 @@ namespace WiredPlayers.admin
 
                 if (target != null)
                 {
+                    int rolePoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ROLE_POINTS);
                     String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
                     String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";
                     String age = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_AGE) + " años";
@@ -1848,11 +1850,87 @@ namespace WiredPlayers.admin
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + played);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + played + "; Puntos de rol: " + rolePoints);
                 }
                 else
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+                }
+            }
+        }
+
+        [Command("puntos", Messages.GEN_POINTS_COMMAND, GreedyArg = true)]
+        public void PuntosCommand(Client player, String arguments)
+        {
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
+            {
+                String[] args = arguments.Trim().Split(' ');
+                if (args.Length == 3 || args.Length == 4)
+                {
+                    int rolePoints = 0;
+                    Client target = null;
+
+                    if(Int32.TryParse(args[1], out int targetId) == true)
+                    {
+                        target = Globals.GetPlayerById(targetId);
+                        rolePoints = Int32.Parse(args[2]);
+                    }
+                    else
+                    {
+                        target = NAPI.Player.GetPlayerFromName(args[1] + " " + args[2]);
+                        rolePoints = Int32.Parse(args[3]);
+                    }
+
+                    if(target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
+                    {
+                        // Obtenemos los puntos del jugador
+                        String playerMessage = String.Empty;
+                        String targetMessage = String.Empty;
+                        int targetRolePoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ROLE_POINTS);
+
+                        switch(args[0].ToLower())
+                        {
+                            case "dar":
+                                // Damos los puntos de rol
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, targetRolePoints + rolePoints);
+
+                                playerMessage = String.Format(Messages.ADM_ROLE_POINTS_GIVEN, target.Name, rolePoints);
+                                targetMessage = String.Format(Messages.ADM_ROLE_POINTS_RECEIVED, player.SocialClubName, rolePoints);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
+                                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + targetMessage);
+
+                                break;
+                            case "quitar":
+                                // Quitamos los puntos de rol
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, targetRolePoints - rolePoints);
+
+                                playerMessage = String.Format(Messages.ADM_ROLE_POINTS_REMOVED, target.Name, rolePoints);
+                                targetMessage = String.Format(Messages.ADM_ROLE_POINTS_LOST, player.SocialClubName, rolePoints);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
+                                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + targetMessage);
+                                break;
+                            case "establecer":
+                                // Establecemos los puntos de rol
+                                NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, rolePoints);
+
+                                playerMessage = String.Format(Messages.ADM_ROLE_POINTS_SET, target.Name, rolePoints);
+                                targetMessage = String.Format(Messages.ADM_ROLE_POINTS_ESTABLISHED, player.SocialClubName, rolePoints);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
+                                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + targetMessage);
+                                break;
+                            default:
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_POINTS_COMMAND);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FOUND);
+                    }
+                }
+                else
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_POINTS_COMMAND);
                 }
             }
         }

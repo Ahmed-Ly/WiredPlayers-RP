@@ -148,6 +148,7 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS, "0,0,0,0,0");
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, "0,0,0,0,0,0,0");
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, "-1,-1,-1");
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ROLE_POINTS, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, 0);
@@ -262,6 +263,7 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, character.jobCooldown);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, character.jobDeliver);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, character.jobPoints);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_ROLE_POINTS, character.rolePoints);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, character.played);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_STATUS, character.status);
         }
@@ -415,6 +417,7 @@ namespace WiredPlayers.login
             if (playerId > 0)
             {
                 InitializePlayerData(player);
+                NAPI.Entity.SetEntityTransparency(player, 255);
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, playerId);
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, playerName);
                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, playerAge);
@@ -440,6 +443,7 @@ namespace WiredPlayers.login
             NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
 
             // Establecemos su posición
+            NAPI.Entity.SetEntityTransparency(player, 255);
             NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 180.0f));
             NAPI.Entity.SetEntityPosition(player, new Vector3(152.3787f, -1000.644f, -99f));
         }
@@ -464,10 +468,6 @@ namespace WiredPlayers.login
 
             // Generación de la ropa del personaje
             Globals.PopulateCharacterClothes(player);
-
-            // Añadimos la vida y chaleco
-            NAPI.Player.SetPlayerHealth(player, playerModel.health);
-            NAPI.Player.SetPlayerArmor(player, playerModel.armor);
 
             Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
         }

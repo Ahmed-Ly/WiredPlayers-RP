@@ -333,6 +333,7 @@ namespace WiredPlayers.globals
                 character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
                 character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
                 character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+                character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
                 character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                 character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
 
@@ -527,6 +528,7 @@ namespace WiredPlayers.globals
                         character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
                         character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
                         character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+                        character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
                         character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                         character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
 
@@ -1315,7 +1317,7 @@ namespace WiredPlayers.globals
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
                     }
                 }
-                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_CREATOR_AREA) == true)
+                else if(player.Position.DistanceTo(new Vector3(152.2911f, -1001.088f, -99f)) < 1.5f)
                 {
                     // Mostramos el menú de personajes
                     List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);

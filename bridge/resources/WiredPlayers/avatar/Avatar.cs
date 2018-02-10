@@ -12,6 +12,7 @@ namespace WiredPlayers.avatar
         [Command("jugador")]
         public void JugadorCommand(Client player)
         {
+            int rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
             String sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
             String age = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_AGE) + " años";
             String money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY) + "$";
@@ -113,7 +114,7 @@ namespace WiredPlayers.avatar
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + (int)played.TotalHours + "h " + played.Minutes + "m");
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + (int)played.TotalHours + "h " + played.Minutes + "m; Puntos de rol: " + rolePoints);
         }
     }
 }

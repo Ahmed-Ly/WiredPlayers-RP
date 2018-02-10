@@ -39,5 +39,6 @@ namespace WiredPlayers.model
         public int jobCooldown { get; set; }
         public int jobDeliver { get; set; }
         public String jobPoints { get; set; }
+        public int rolePoints { get; set; }
     }
 }

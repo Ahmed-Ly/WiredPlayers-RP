@@ -454,6 +454,7 @@ namespace WiredPlayers.database
                             character.jobCooldown = reader.GetInt32("jobCooldown");
                             character.jobDeliver = reader.GetInt32("jobDeliver");
                             character.jobPoints = reader.GetString("jobPoints");
+                            character.rolePoints = reader.GetInt32("rolePoints");
                             character.status = reader.GetInt32("status");
                             character.played = reader.GetInt32("played");
                         }
@@ -523,6 +524,7 @@ namespace WiredPlayers.database
                             character.jobCooldown = reader.GetInt32("jobCooldown");
                             character.jobDeliver = reader.GetInt32("jobDeliver");
                             character.jobPoints = reader.GetString("jobPoints");
+                            character.rolePoints = reader.GetInt32("rolePoints");
                             character.status = reader.GetInt32("status");
                             character.played = reader.GetInt32("played");
                         }
@@ -549,7 +551,7 @@ namespace WiredPlayers.database
                     command.CommandText += "radio = @radio, killed = @killed, jailed = @jailed, faction = @faction, job = @job, rank = @rank, duty = @duty, phone = @phone, carKeys = @carKeys, ";
                     command.CommandText += "documentation = @documentation, licenses = @licenses, insurance = @insurance, weaponLicense = @weaponLicense, houseRent = @houseRent, ";
                     command.CommandText += "houseEntered = @houseEntered, businessEntered = @businessEntered, employeeCooldown = @employeeCooldown, jobCooldown = @jobCooldown, ";
-                    command.CommandText += "jobDeliver = @jobDeliver, jobPoints = @jobPoints, played = @played WHERE id = @playerId LIMIT 1";
+                    command.CommandText += "jobDeliver = @jobDeliver, jobPoints = @jobPoints, rolePoints = @rolePoints, played = @played WHERE id = @playerId LIMIT 1";
                     command.Parameters.AddWithValue("@posX", player.position.X);
                     command.Parameters.AddWithValue("@posY", player.position.Y);
                     command.Parameters.AddWithValue("@posZ", player.position.Z);
@@ -578,6 +580,7 @@ namespace WiredPlayers.database
                     command.Parameters.AddWithValue("@jobCooldown", player.jobCooldown);
                     command.Parameters.AddWithValue("@jobDeliver", player.jobDeliver);
                     command.Parameters.AddWithValue("@jobPoints", player.jobPoints);
+                    command.Parameters.AddWithValue("@rolePoints", player.rolePoints);
                     command.Parameters.AddWithValue("@played", player.played);
                     command.Parameters.AddWithValue("@playerId", player.id);
 

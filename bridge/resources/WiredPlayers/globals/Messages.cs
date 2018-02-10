@@ -147,6 +147,7 @@ namespace WiredPlayers.globals
         public const String GEN_SKIN_COMMAND = "USO: /skin [Nombre del ped]";
         public const String GEN_ALCOHOLIMETER_COMMAND = "USO: /alcoholimetro [Id. jugador/Nombre jugador]";
         public const String GEN_GIVE_COMMAND = "USO: /ceder [Id. jugador/Nombre jugador]";
+        public const String GEN_POINTS_COMMAND = "USO: /puntos [Dar|Quitar|Establecer] [Id. jugador/Nombre jugador] [Cantidad]";
 
         // Mensajes de administración
         public const String ADM_GOD_MODE_ON = "Has activado el modo dios.";
@@ -193,6 +194,12 @@ namespace WiredPlayers.globals
         public const String ADM_PLAYER_JAILED = "{0} ha sido encarcelado {1} minutos. Razón: {2}";
         public const String ADM_KICKED_ALL = "Se han expulsado todos los jugadores del servidor.";
         public const String ADM_WEAPON_EVENT_STARTED = "Se ha iniciado el evento de armas.";
+        public const String ADM_ROLE_POINTS_GIVEN = "Has dado {0} puntos de rol a {1}.";
+        public const String ADM_ROLE_POINTS_RECEIVED = "{0} te ha dado {1} puntos de rol.";
+        public const String ADM_ROLE_POINTS_REMOVED = "Has quitado {0} puntos de rol a {1}.";
+        public const String ADM_ROLE_POINTS_LOST = "{0} te ha quitado {1} puntos de rol.";
+        public const String ADM_ROLE_POINTS_SET = "Has establecido a {0} los puntos de rol de {1}.";
+        public const String ADM_ROLE_POINTS_ESTABLISHED = "{0} te ha establecido a {1} los puntos de rol.";
 
         // Mensajes de información
         public const String INF_LICENSE_VEHICLE_EXIT = "Vuelve al vehículo en {0} segundos o suspenderás el examen.";
