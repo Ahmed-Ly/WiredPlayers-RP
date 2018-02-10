@@ -150,6 +150,7 @@ namespace WiredPlayers.emergency
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.StackTrace);
             }
         }
 

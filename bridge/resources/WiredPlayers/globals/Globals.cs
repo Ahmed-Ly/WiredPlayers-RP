@@ -398,6 +398,7 @@ namespace WiredPlayers.globals
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.StackTrace);
             }
         }
 
@@ -540,7 +541,7 @@ namespace WiredPlayers.globals
                 }
 
                 // Generación de nuevos pedidos en los trabajos
-                if (orderGenerationTime <= totalSeconds)
+                if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
                 {
                     Random rnd = new Random();
                     int generatedOrders = rnd.Next(7, 20);
@@ -607,6 +608,7 @@ namespace WiredPlayers.globals
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.StackTrace);
             }
         }
 

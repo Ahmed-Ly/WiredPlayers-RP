@@ -357,6 +357,7 @@ namespace WiredPlayers.login
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerUpdateTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerUpdateTimer] " + ex.StackTrace);
             }
         }
 
