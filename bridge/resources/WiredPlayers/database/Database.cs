@@ -115,6 +115,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetAccount] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAccount] " + ex.StackTrace);
                 }
             }
 
@@ -143,6 +144,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoginAccount] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoginAccount] " + ex.StackTrace);
                 }
             }
 
@@ -173,6 +175,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.StackTrace);
                 }
             }
 
@@ -204,6 +207,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.StackTrace);
                 }
             }
 
@@ -289,6 +293,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION CreateCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION CreateCharacter] " + ex.StackTrace);
                     NAPI.ClientEvent.TriggerClientEvent(player, "characterNameDuplicated", playerModel.realName);
                 }
             }
@@ -366,6 +371,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetCharacterSkin] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetCharacterSkin] " + ex.StackTrace);
                 }
             }
 
@@ -395,6 +401,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateCharacterHair] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateCharacterHair] " + ex.StackTrace);
                 }
             }
         }
@@ -463,6 +470,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationById] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationById] " + ex.StackTrace);
                 }
             }
 
@@ -533,6 +541,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationByName] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationByName] " + ex.StackTrace);
                 }
             }
 
@@ -589,6 +598,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION SaveCharacterInformation] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveCharacterInformation] " + ex.StackTrace);
                 }
             }
         }
@@ -609,6 +619,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateLastCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateLastCharacter] " + ex.StackTrace);
                 }
             }
         }
@@ -634,6 +645,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION FindCharacter] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION FindCharacter] " + ex.StackTrace);
                 }
             }
 
@@ -674,6 +686,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetBankOperations] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetBankOperations] " + ex.StackTrace);
                 }
             }
 
@@ -729,6 +742,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllVehicles] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllVehicles] " + ex.StackTrace);
                 }
             }
 
@@ -766,6 +780,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddNewVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewVehicle] " + ex.StackTrace);
                 }
             }
 
@@ -794,6 +809,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleColor] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleColor] " + ex.StackTrace);
                 }
             }
         }
@@ -819,6 +835,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehiclePosition] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehiclePosition] " + ex.StackTrace);
                 }
             }
         }
@@ -841,6 +858,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleValue] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleValue] " + ex.StackTrace);
                 }
             }
         }
@@ -863,6 +881,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleString] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateVehicleSingleString] " + ex.StackTrace);
                 }
             }
         }
@@ -906,6 +925,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION SaveVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveVehicle] " + ex.StackTrace);
                 }
             }
         }
@@ -960,6 +980,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION SaveAllVehicles] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SaveAllVehicles] " + ex.StackTrace);
                 }
             }
         }
@@ -981,6 +1002,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RemoveVehicle] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveVehicle] " + ex.StackTrace);
                 }
             }
         }
@@ -1015,6 +1037,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTunning] " + ex.StackTrace);
                 }
             }
 
@@ -1043,6 +1066,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddTunning] " + ex.StackTrace);
                 }
             }
 
@@ -1066,6 +1090,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RemoveTunning] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveTunning] " + ex.StackTrace);
                 }
             }
         }
@@ -1088,6 +1113,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION TransferMoneyToPlayer] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION TransferMoneyToPlayer] " + ex.StackTrace);
                 }
             }
         }
@@ -1112,6 +1138,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LogPayment] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LogPayment] " + ex.StackTrace);
                 }
             }
         }
@@ -1137,6 +1164,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LogHotwire] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LogHotwire] " + ex.StackTrace);
                 }
             }
         }
@@ -1177,6 +1205,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllItems] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllItems] " + ex.StackTrace);
                 }
             }
 
@@ -1206,6 +1235,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddNewItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewItem] " + ex.StackTrace);
                 }
             }
 
@@ -1237,6 +1267,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateItem] " + ex.StackTrace);
                 }
             }
         }
@@ -1258,6 +1289,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RemoveItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveItem] " + ex.StackTrace);
                 }
             }
         }
@@ -1300,6 +1332,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBusiness] " + ex.StackTrace);
                 }
             }
 
@@ -1336,6 +1369,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateBusiness] " + ex.StackTrace);
                 }
             }
         }
@@ -1381,6 +1415,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateAllBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateAllBusiness] " + ex.StackTrace);
                 }
             }
         }
@@ -1410,6 +1445,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.StackTrace);
                 }
             }
 
@@ -1433,6 +1469,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewBusiness] " + ex.StackTrace);
                 }
             }
         }
@@ -1477,6 +1514,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllHouses] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllHouses] " + ex.StackTrace);
                 }
             }
 
@@ -1507,6 +1545,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddHouse] " + ex.StackTrace);
                 }
             }
 
@@ -1543,6 +1582,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateHouse] " + ex.StackTrace);
                 }
             }
         }
@@ -1564,6 +1604,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DeleteHouse] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteHouse] " + ex.StackTrace);
                 }
             }
         }
@@ -1585,6 +1626,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION KickTenantsOut] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION KickTenantsOut] " + ex.StackTrace);
                 }
             }
         }
@@ -1624,6 +1666,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllFurniture] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllFurniture] " + ex.StackTrace);
                 }
             }
 
@@ -1665,6 +1708,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPoliceControls] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPoliceControls] " + ex.StackTrace);
                 }
             }
 
@@ -1705,6 +1749,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllParkings] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllParkings] " + ex.StackTrace);
                 }
             }
 
@@ -1734,6 +1779,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddParking] " + ex.StackTrace);
                 }
             }
 
@@ -1763,6 +1809,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateParking] " + ex.StackTrace);
                 }
             }
         }
@@ -1784,6 +1831,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DeleteParking] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteParking] " + ex.StackTrace);
                 }
             }
         }
@@ -1806,6 +1854,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RenamePoliceControl] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RenamePoliceControl] " + ex.StackTrace);
                 }
             }
         }
@@ -1827,6 +1876,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControl] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControl] " + ex.StackTrace);
                 }
             }
         }
@@ -1856,6 +1906,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddPoliceControlItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddPoliceControlItem] " + ex.StackTrace);
                 }
             }
 
@@ -1879,6 +1930,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControlItem] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeletePoliceControlItem] " + ex.StackTrace);
                 }
             }
         }
@@ -1914,6 +1966,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadPlayerFines] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadPlayerFines] " + ex.StackTrace);
                 }
             }
 
@@ -1940,6 +1993,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION InsertFine] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION InsertFine] " + ex.StackTrace);
                 }
             }
         }
@@ -1978,6 +2032,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RemoveFines] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveFines] " + ex.StackTrace);
                 }
             }
         }
@@ -2010,6 +2065,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllChannels] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllChannels] " + ex.StackTrace);
                 }
             }
 
@@ -2037,6 +2093,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddChannel] " + ex.StackTrace);
                 }
             }
 
@@ -2061,6 +2118,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateChannel] " + ex.StackTrace);
                 }
             }
         }
@@ -2082,6 +2140,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION RemoveChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION RemoveChannel] " + ex.StackTrace);
                 }
             }
         }
@@ -2103,6 +2162,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DisconnectFromChannel] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DisconnectFromChannel] " + ex.StackTrace);
                 }
             }
         }
@@ -2136,6 +2196,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBlood] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBlood] " + ex.StackTrace);
                 }
             }
 
@@ -2173,6 +2234,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllAnnoucements] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllAnnoucements] " + ex.StackTrace);
                 }
             }
 
@@ -2202,6 +2264,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddBloodTransaction] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddBloodTransaction] " + ex.StackTrace);
                 }
             }
 
@@ -2231,6 +2294,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION SendAnnoucement] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION SendAnnoucement] " + ex.StackTrace);
                 }
             }
 
@@ -2261,6 +2325,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GivePrize] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GivePrize] " + ex.StackTrace);
                 }
             }
 
@@ -2298,6 +2363,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllClothes] " + ex.StackTrace);
                 }
             }
 
@@ -2328,6 +2394,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddClothes] " + ex.StackTrace);
                 }
             }
 
@@ -2352,6 +2419,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION UpdateClothes] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION UpdateClothes] " + ex.StackTrace);
                 }
             }
         }
@@ -2385,6 +2453,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTattoos] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTattoos] " + ex.StackTrace);
                 }
             }
 
@@ -2414,6 +2483,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddTattoo] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddTattoo] " + ex.StackTrace);
                 }
             }
 
@@ -2449,6 +2519,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllContacts] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllContacts] " + ex.StackTrace);
                 }
             }
 
@@ -2477,6 +2548,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddNewContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddNewContact] " + ex.StackTrace);
                 }
             }
 
@@ -2502,6 +2574,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION ModifyContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION ModifyContact] " + ex.StackTrace);
                 }
             }
         }
@@ -2523,6 +2596,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION DeleteContact] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION DeleteContact] " + ex.StackTrace);
                 }
             }
         }
@@ -2546,6 +2620,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddCallLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddCallLog] " + ex.StackTrace);
                 }
             }
         }
@@ -2569,6 +2644,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddSMSLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddSMSLog] " + ex.StackTrace);
                 }
             }
         }
@@ -2602,6 +2678,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetRandomQuestions] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetRandomQuestions] " + ex.StackTrace);
                 }
             }
 
@@ -2637,6 +2714,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION GetQuestionAnswers] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION GetQuestionAnswers] " + ex.StackTrace);
                 }
             }
 
@@ -2668,6 +2746,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION CheckAnswerCorrect] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION CheckAnswerCorrect] " + ex.StackTrace);
                 }
             }
 
@@ -2695,6 +2774,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddAdminLog] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddAdminLog] " + ex.StackTrace);
                 }
             }
         }
@@ -2717,6 +2797,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION AddLicensedWeapon] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION AddLicensedWeapon] " + ex.StackTrace);
                 }
             }
         }
@@ -2749,6 +2830,7 @@ namespace WiredPlayers.database
                 catch (Exception ex)
                 {
                     NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPermissions] " + ex.Message);
+                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPermissions] " + ex.StackTrace);
                 }
             }
 

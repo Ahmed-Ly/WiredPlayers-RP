@@ -213,6 +213,7 @@ namespace WiredPlayers.fastfood
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnFastFoodTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnFastFoodTimer] " + ex.StackTrace);
             }
         }
 

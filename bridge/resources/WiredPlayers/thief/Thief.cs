@@ -95,6 +95,7 @@ namespace WiredPlayers.thief
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnLockpickTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnLockpickTimer] " + ex.StackTrace);
             }
         }
 
@@ -133,6 +134,7 @@ namespace WiredPlayers.thief
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnHotwireTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnHotwireTimer] " + ex.StackTrace);
             }
         }
 
@@ -203,6 +205,7 @@ namespace WiredPlayers.thief
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerRob] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerRob] " + ex.StackTrace);
             }
         }
 
