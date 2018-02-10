@@ -290,6 +290,7 @@ namespace WiredPlayers.drivingschool
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnDrivingTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnDrivingTimer] " + ex.StackTrace);
             }
         }
 

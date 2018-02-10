@@ -477,6 +477,7 @@ namespace WiredPlayers.vehicles
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleDeathTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleDeathTimer] " + ex.StackTrace);
             }
         }
 
@@ -505,6 +506,7 @@ namespace WiredPlayers.vehicles
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleRefueled] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleRefueled] " + ex.StackTrace);
             }
         }
 

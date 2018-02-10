@@ -398,6 +398,7 @@ namespace WiredPlayers.globals
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.StackTrace);
             }
         }
 
@@ -607,6 +608,7 @@ namespace WiredPlayers.globals
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.StackTrace);
             }
         }
 

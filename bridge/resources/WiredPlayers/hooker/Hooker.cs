@@ -53,6 +53,7 @@ namespace WiredPlayers.hooker
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnSexServiceTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnSexServiceTimer] " + ex.StackTrace);
             }
         }
 

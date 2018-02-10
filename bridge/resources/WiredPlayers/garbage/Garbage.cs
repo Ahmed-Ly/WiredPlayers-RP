@@ -202,6 +202,7 @@ namespace WiredPlayers.garbage
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageTimer] " + ex.StackTrace);
             }
         }
 
@@ -265,6 +266,7 @@ namespace WiredPlayers.garbage
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageCollectedTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageCollectedTimer] " + ex.StackTrace);
             }
         }
 

@@ -47,6 +47,7 @@ namespace WiredPlayers.fishing
             catch (Exception ex)
             {
                 NAPI.Util.ConsoleOutput("[EXCEPTION OnFishingPrewarnTimer] " + ex.Message);
+                NAPI.Util.ConsoleOutput("[EXCEPTION OnFishingPrewarnTimer] " + ex.StackTrace);
             }
         }
 
