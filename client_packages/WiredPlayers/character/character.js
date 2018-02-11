@@ -62,7 +62,7 @@ mp.events.add('updatePlayerCreation', (partName, value, isPercentage) => {
 	}
 	
 	// Actualizamos la apariencia del personaje
-	faceModel['${partName}'] = value;
+	faceModel[`${partName}`] = value;
 	updatePlayerFace(mp.players.local, faceModel);
 });
 
