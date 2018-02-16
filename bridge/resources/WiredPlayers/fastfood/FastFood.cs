@@ -64,39 +64,31 @@ namespace WiredPlayers.fastfood
 
         private void OnFastFoodTimer(object playerObject)
         {
-            try
+            Client player = (Client)playerObject;
+            Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+
+            // Respawneamos el vehículo
+            RespawnFastfoodVehicle(vehicle);
+
+            // Cancelamos el pedido
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_WON);
+
+            // Quitamos los checkpoints
+            NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
+
+            // Borramos el timer de la lista
+            Timer fastFoodTimer = fastFoodTimerList[player.Value];
+            if (fastFoodTimer != null)
             {
-                Client player = (Client)playerObject;
-                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
-
-                // Respawneamos el vehículo
-                RespawnFastfoodVehicle(vehicle);
-
-                // Cancelamos el pedido
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_WON);
-
-                // Quitamos los checkpoints
-                NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
-
-                // Borramos el timer de la lista
-                Timer fastFoodTimer = fastFoodTimerList[player.Value];
-                if (fastFoodTimer != null)
-                {
-                    fastFoodTimer.Dispose();
-                    fastFoodTimerList.Remove(player.Value);
-                }
-
-                // Avisamos al jugador
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
+                fastFoodTimer.Dispose();
+                fastFoodTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnFastFoodTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnFastFoodTimer] " + ex.StackTrace);
-            }
+
+            // Avisamos al jugador
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
         }
 
         [ServerEvent(Event.PlayerEnterVehicle)]

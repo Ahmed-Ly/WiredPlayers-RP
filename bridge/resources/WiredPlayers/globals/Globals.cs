@@ -79,7 +79,7 @@ namespace WiredPlayers.globals
             }
             return position;
         }
-        
+
         /*
         private void OnChatCommandHandler(Client player, String command, CancelEventArgs e)
         {
@@ -119,234 +119,218 @@ namespace WiredPlayers.globals
 
         private void UpdatePlayerList(object unused)
         {
-            try
+            // Actualizamos la lista de jugadores
+            foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
-                // Actualizamos la lista de jugadores
-                foreach (Client player in NAPI.Pools.GetAllPlayers())
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
                 {
-                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
-                    {
-                        ScoreModel scoreModel = scoreList.First(score => score.playerId == player.Value);
-                        scoreModel.playerPing = NAPI.Player.GetPlayerPing(player);
-                    }
+                    ScoreModel scoreModel = scoreList.First(score => score.playerId == player.Value);
+                    scoreModel.playerPing = NAPI.Player.GetPlayerPing(player);
                 }
-            }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION UpdatePlayerList] " + ex.StackTrace);
             }
         }
 
         private void OnMinuteSpent(object unused)
         {
-            try
+            // Ajustamos la hora del servidor
+            TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
+            NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
+
+            int totalSeconds = GetTotalSeconds();
+            foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
-                // Ajustamos la hora del servidor
-                TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
-                NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
-
-                int totalSeconds = GetTotalSeconds();
-                foreach (Client player in NAPI.Pools.GetAllPlayers())
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
                 {
-                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+                    int played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
+                    if (played > 0 && played % 60 == 0)
                     {
-                        int played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
-                        if (played > 0 && played % 60 == 0)
+                        // Reducimos el tiempo entre empleos
+                        int employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
+                        if (employeeCooldown > 0)
                         {
-                            // Reducimos el tiempo entre empleos
-                            int employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
-                            if (employeeCooldown > 0)
-                            {
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
-                            }
-
-                            // Generamos la paga
-                            GeneratePlayerPayday(player);
-                        }
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, played + 1);
-
-                        // Miramos si está muerto y esperando a ir al hospital
-                        if (NAPI.Data.HasEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) == true)
-                        {
-                            if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
-                            {
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_CAN_DIE);
-                            }
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
                         }
 
-                        // Miramos si tiene tiempo de descanso de trabajo
-                        int jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
-                        if (jobCooldown > 0)
+                        // Generamos la paga
+                        GeneratePlayerPayday(player);
+                    }
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, played + 1);
+
+                    // Miramos si está muerto y esperando a ir al hospital
+                    if (NAPI.Data.HasEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) == true)
+                    {
+                        if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
                         {
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_CAN_DIE);
                         }
+                    }
 
-                        // Miramos si está encarcelado
-                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAILED) == true)
+                    // Miramos si tiene tiempo de descanso de trabajo
+                    int jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
+                    if (jobCooldown > 0)
+                    {
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
+                    }
+
+                    // Miramos si está encarcelado
+                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAILED) == true)
+                    {
+                        int jailTime = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
+                        if (jailTime == 1)
                         {
-                            int jailTime = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-                            if (jailTime == 1)
+                            // Miramos dónde spawnear
+                            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC)
                             {
-                                // Miramos dónde spawnear
-                                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC)
-                                {
-                                    NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[3]);
-                                }
-                                else
-                                {
-                                    NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[4]);
-                                }
-
-                                // Eliminamos la cárcel para el jugador
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, 0);
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, 0);
-
-                                // Mandamos el mensaje al jugador
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_UNJAILED);
-                            }
-                            else if (jailTime > 0)
-                            {
-                                jailTime--;
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, jailTime);
-                            }
-                        }
-
-                        // Bajamos el nivel de alcohol
-                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) == true)
-                        {
-                            // Calculamos el nivel de alcohol
-                            float drunkLevel = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
-
-                            if (drunkLevel <= 0.0f)
-                            {
-                                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL);
+                                NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[3]);
                             }
                             else
                             {
-                                // Miramos si ha bajado del límite de alcohol
-                                if (drunkLevel < Constants.WASTED_LEVEL)
-                                {
-                                    NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE);
-                                    NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
-                                }
-
-                                // Cambiamos el nivel de alcohol
-                                NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL, drunkLevel);
+                                NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[4]);
                             }
+
+                            // Eliminamos la cárcel para el jugador
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, 0);
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, 0);
+
+                            // Mandamos el mensaje al jugador
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_UNJAILED);
                         }
-
-                        // Guardamos el personaje
-                        PlayerModel character = new PlayerModel();
-
-                        // Lista de datos no sincronizados
-                        character.position = NAPI.Entity.GetEntityPosition(player);
-                        character.rotation = NAPI.Entity.GetEntityRotation(player);
-                        character.health = NAPI.Player.GetPlayerHealth(player);
-                        character.armor = NAPI.Player.GetPlayerArmor(player);
-                        character.id = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                        character.phone = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
-                        character.radio = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RADIO);
-                        character.killed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
-                        character.faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
-                        character.job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
-                        character.rank = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK);
-                        character.duty = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY);
-                        character.carKeys = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
-                        character.documentation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DOCUMENTATION);
-                        character.licenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
-                        character.insurance = NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE);
-                        character.weaponLicense = NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE);
-                        character.houseRent = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE);
-                        character.houseEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                        character.businessEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                        character.employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
-                        character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
-                        character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
-                        character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
-                        character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
-                        character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
-                        character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-
-                        // Lista de datos sincronizados
-                        character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-                        character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
-
-                        // Guardado del personaje en base de datos
-                        Database.SaveCharacterInformation(character);
+                        else if (jailTime > 0)
+                        {
+                            jailTime--;
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, jailTime);
+                        }
                     }
-                }
 
-                // Generación de nuevos pedidos en los trabajos
-                if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
-                {
-                    Random rnd = new Random();
-                    int generatedOrders = rnd.Next(7, 20);
-                    for (int i = 0; i < generatedOrders; i++)
+                    // Bajamos el nivel de alcohol
+                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) == true)
                     {
-                        FastFoodOrderModel order = new FastFoodOrderModel();
-                        order.id = fastFoodId;
-                        order.pizzas = rnd.Next(0, 4);
-                        order.hamburgers = rnd.Next(0, 4);
-                        order.sandwitches = rnd.Next(0, 4);
-                        order.position = GetPlayerFastFoodDeliveryDestination();
-                        order.limit = totalSeconds + 300;
-                        order.taken = false;
-                        fastFoodOrderList.Add(order);
-                        fastFoodId++;
+                        // Calculamos el nivel de alcohol
+                        float drunkLevel = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
+
+                        if (drunkLevel <= 0.0f)
+                        {
+                            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL);
+                        }
+                        else
+                        {
+                            // Miramos si ha bajado del límite de alcohol
+                            if (drunkLevel < Constants.WASTED_LEVEL)
+                            {
+                                NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE);
+                                NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
+                            }
+
+                            // Cambiamos el nivel de alcohol
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL, drunkLevel);
+                        }
                     }
 
-                    // Actualizamos la hora de generación de un nuevo pedido
-                    orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
+                    // Guardamos el personaje
+                    PlayerModel character = new PlayerModel();
+
+                    // Lista de datos no sincronizados
+                    character.position = NAPI.Entity.GetEntityPosition(player);
+                    character.rotation = NAPI.Entity.GetEntityRotation(player);
+                    character.health = NAPI.Player.GetPlayerHealth(player);
+                    character.armor = NAPI.Player.GetPlayerArmor(player);
+                    character.id = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                    character.phone = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
+                    character.radio = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RADIO);
+                    character.killed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
+                    character.faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
+                    character.job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
+                    character.rank = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK);
+                    character.duty = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY);
+                    character.carKeys = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
+                    character.documentation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DOCUMENTATION);
+                    character.licenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
+                    character.insurance = NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE);
+                    character.weaponLicense = NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE);
+                    character.houseRent = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE);
+                    character.houseEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
+                    character.businessEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
+                    character.employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
+                    character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
+                    character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
+                    character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+                    character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
+                    character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
+                    character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
+
+                    // Lista de datos sincronizados
+                    character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
+                    character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
+
+                    // Guardado del personaje en base de datos
+                    Database.SaveCharacterInformation(character);
                 }
-
-                // Borrados de pedidos de comida rápida caducados
-                fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
-
-                // Guardamos los vehículos
-                List<VehicleModel> vehicleList = new List<VehicleModel>();
-
-                foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
-                {
-                    if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == 0)
-                    {
-                        // Obtenemos los colores del vehículo
-                        Color primaryColor = NAPI.Vehicle.GetVehicleCustomPrimaryColor(vehicle);
-                        Color secondaryColor = NAPI.Vehicle.GetVehicleCustomSecondaryColor(vehicle);
-
-                        // Obtenemos los valores necesarios para recrear el vehículo
-                        VehicleModel vehicleModel = new VehicleModel();
-                        vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                        vehicleModel.model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
-                        vehicleModel.position = NAPI.Entity.GetEntityPosition(vehicle);
-                        vehicleModel.rotation = NAPI.Entity.GetEntityRotation(vehicle);
-                        vehicleModel.dimension = NAPI.Entity.GetEntityDimension(vehicle);
-                        vehicleModel.colorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
-                        vehicleModel.firstColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
-                        vehicleModel.secondColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
-                        vehicleModel.pearlescent = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
-                        vehicleModel.faction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
-                        vehicleModel.plate = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PLATE);
-                        vehicleModel.owner = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER);
-                        vehicleModel.price = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PRICE);
-                        vehicleModel.parking = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKING);
-                        vehicleModel.parked = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKED);
-                        vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
-                        vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
-
-                        // Añadimos el vehículo a la lista
-                        vehicleList.Add(vehicleModel);
-                    }
-                }
-
-                // Guardamos la lista de vehículos
-                Database.SaveAllVehicles(vehicleList);
             }
-            catch (Exception ex)
+
+            // Generación de nuevos pedidos en los trabajos
+            if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnMinuteSpent] " + ex.StackTrace);
+                Random rnd = new Random();
+                int generatedOrders = rnd.Next(7, 20);
+                for (int i = 0; i < generatedOrders; i++)
+                {
+                    FastFoodOrderModel order = new FastFoodOrderModel();
+                    order.id = fastFoodId;
+                    order.pizzas = rnd.Next(0, 4);
+                    order.hamburgers = rnd.Next(0, 4);
+                    order.sandwitches = rnd.Next(0, 4);
+                    order.position = GetPlayerFastFoodDeliveryDestination();
+                    order.limit = totalSeconds + 300;
+                    order.taken = false;
+                    fastFoodOrderList.Add(order);
+                    fastFoodId++;
+                }
+
+                // Actualizamos la hora de generación de un nuevo pedido
+                orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
             }
+
+            // Borrados de pedidos de comida rápida caducados
+            fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
+
+            // Guardamos los vehículos
+            List<VehicleModel> vehicleList = new List<VehicleModel>();
+
+            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
+            {
+                if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == 0)
+                {
+                    // Obtenemos los colores del vehículo
+                    Color primaryColor = NAPI.Vehicle.GetVehicleCustomPrimaryColor(vehicle);
+                    Color secondaryColor = NAPI.Vehicle.GetVehicleCustomSecondaryColor(vehicle);
+
+                    // Obtenemos los valores necesarios para recrear el vehículo
+                    VehicleModel vehicleModel = new VehicleModel();
+                    vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                    vehicleModel.model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
+                    vehicleModel.position = NAPI.Entity.GetEntityPosition(vehicle);
+                    vehicleModel.rotation = NAPI.Entity.GetEntityRotation(vehicle);
+                    vehicleModel.dimension = NAPI.Entity.GetEntityDimension(vehicle);
+                    vehicleModel.colorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
+                    vehicleModel.firstColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
+                    vehicleModel.secondColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
+                    vehicleModel.pearlescent = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
+                    vehicleModel.faction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
+                    vehicleModel.plate = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PLATE);
+                    vehicleModel.owner = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER);
+                    vehicleModel.price = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PRICE);
+                    vehicleModel.parking = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKING);
+                    vehicleModel.parked = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKED);
+                    vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
+                    vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
+
+                    // Añadimos el vehículo a la lista
+                    vehicleList.Add(vehicleModel);
+                }
+            }
+
+            // Guardamos la lista de vehículos
+            Database.SaveAllVehicles(vehicleList);
         }
 
         private void GeneratePlayerPayday(Client player)
@@ -731,7 +715,7 @@ namespace WiredPlayers.globals
             float playedHours = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED) / 100;
             return (int)Math.Round(Math.Log(playedHours) * Constants.LEVEL_MULTIPLIER);
         }
-        
+
         [ServerEvent(Event.PlayerEnterVehicle)]
         public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
@@ -1324,7 +1308,7 @@ namespace WiredPlayers.globals
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
                     }
                 }
-                else if(player.Position.DistanceTo(new Vector3(152.2911f, -1001.088f, -99f)) < 1.5f)
+                else if (player.Position.DistanceTo(new Vector3(152.2911f, -1001.088f, -99f)) < 1.5f)
                 {
                     // Mostramos el menú de personajes
                     List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);

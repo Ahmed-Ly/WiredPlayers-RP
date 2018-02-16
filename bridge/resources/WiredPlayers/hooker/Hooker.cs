@@ -21,40 +21,32 @@ namespace WiredPlayers.hooker
 
         public static void OnSexServiceTimer(object playerObject)
         {
-            try
+            Client player = (Client)playerObject;
+            Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
+
+            // Paramos las animaciones
+            NAPI.Player.StopPlayerAnimation(player);
+            NAPI.Player.StopPlayerAnimation(target);
+
+            // Restablecemos la salud del cliente
+            NAPI.Player.SetPlayerHealth(player, 100);
+
+            // Reseteamos las variables
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
+            NAPI.Data.ResetEntityData(player, EntityData.HOOKER_TYPE_SERVICE);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
+            NAPI.Data.ResetEntityData(target, EntityData.PLAYER_ALREADY_FUCKING);
+
+            // Borramos el timer de la lista
+            if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
             {
-                Client player = (Client)playerObject;
-                Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
-
-                // Paramos las animaciones
-                NAPI.Player.StopPlayerAnimation(player);
-                NAPI.Player.StopPlayerAnimation(target);
-
-                // Restablecemos la salud del cliente
-                NAPI.Player.SetPlayerHealth(player, 100);
-
-                // Reseteamos las variables
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
-                NAPI.Data.ResetEntityData(player, EntityData.HOOKER_TYPE_SERVICE);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
-                NAPI.Data.ResetEntityData(target, EntityData.PLAYER_ALREADY_FUCKING);
-
-                // Borramos el timer de la lista
-                if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
-                {
-                    sexTimer.Dispose();
-                    sexTimerList.Remove(player.Value);
-                }
-
-                // Enviamos el mensaje
-                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_CLIENT_SATISFIED);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_SERVICE_FINISHED);
+                sexTimer.Dispose();
+                sexTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnSexServiceTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnSexServiceTimer] " + ex.StackTrace);
-            }
+
+            // Enviamos el mensaje
+            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_CLIENT_SATISFIED);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_SERVICE_FINISHED);
         }
 
         [Command("servicio", Messages.GEN_HOOKER_SERVICE_COMMAND)]

@@ -22,10 +22,10 @@ namespace WiredPlayers.database
 {
     public class Database : Script
     {
-        private const String host = "";
-        private const String user = "";
-        private const String pass = "";
-        private const String database = "";
+        private const String host = "127.0.0.1";
+        private const String user = "gta";
+        private const String pass = "gta5server-WP";
+        private const String database = "gtav";
         private static String connectionString = "SERVER=" + host + "; DATABASE=" + database + "; UID=" + user + "; PASSWORD=" + pass + ";";
 
         [ServerEvent(Event.ResourceStart)]
@@ -90,28 +90,20 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT forumName, status, lastCharacter FROM accounts WHERE socialName = @socialName LIMIT 1";
-                    command.Parameters.AddWithValue("@socialName", socialName);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT forumName, status, lastCharacter FROM accounts WHERE socialName = @socialName LIMIT 1";
+                command.Parameters.AddWithValue("@socialName", socialName);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            account.forumName = reader.GetString("forumName");
-                            account.status = reader.GetInt16("status");
-                            account.lastCharacter = reader.GetInt16("lastCharacter");
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAccount] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetAccount] " + ex.StackTrace);
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        account.forumName = reader.GetString("forumName");
+                        account.status = reader.GetInt16("status");
+                        account.lastCharacter = reader.GetInt16("lastCharacter");
+                    }
                 }
             }
 
@@ -124,23 +116,15 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT status FROM accounts WHERE socialName = @socialName AND password = md5(@password) LIMIT 1";
-                    command.Parameters.AddWithValue("@socialName", socialName);
-                    command.Parameters.AddWithValue("@password", password);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT status FROM accounts WHERE socialName = @socialName AND password = md5(@password) LIMIT 1";
+                command.Parameters.AddWithValue("@socialName", socialName);
+                command.Parameters.AddWithValue("@password", password);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        login = reader.HasRows;
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoginAccount] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoginAccount] " + ex.StackTrace);
+                    login = reader.HasRows;
                 }
             }
 
@@ -153,25 +137,17 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT status FROM users WHERE name = @name LIMIT 1";
-                    command.Parameters.AddWithValue("@name", name);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT status FROM users WHERE name = @name LIMIT 1";
+                command.Parameters.AddWithValue("@name", name);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            status = reader.GetInt16("status");
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.StackTrace);
+                    if (reader.HasRows)
+                    {
+                        status = reader.GetInt16("status");
+                    }
                 }
             }
 
@@ -184,26 +160,18 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT name FROM users WHERE socialName = @account";
-                    command.Parameters.AddWithValue("@account", account);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT name FROM users WHERE socialName = @account";
+                command.Parameters.AddWithValue("@account", account);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            String name = reader.GetString("name");
-                            characters.Add(name);
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetPlayerStatus] " + ex.StackTrace);
+                    while (reader.Read())
+                    {
+                        String name = reader.GetString("name");
+                        characters.Add(name);
+                    }
                 }
             }
 
@@ -303,71 +271,63 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM skins WHERE characterId = @characterId LIMIT 1";
-                    command.Parameters.AddWithValue("@characterId", characterId);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM skins WHERE characterId = @characterId LIMIT 1";
+                command.Parameters.AddWithValue("@characterId", characterId);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            skin.firstHeadShape = reader.GetInt32("firstHeadShape");
-                            skin.secondHeadShape = reader.GetInt32("secondHeadShape");
-                            skin.firstSkinTone = reader.GetInt32("firstSkinTone");
-                            skin.secondSkinTone = reader.GetInt32("secondSkinTone");
-                            skin.headMix = reader.GetFloat("headMix");
-                            skin.skinMix = reader.GetFloat("skinMix");
-                            skin.hairModel = reader.GetInt32("hairModel");
-                            skin.firstHairColor = reader.GetInt32("firstHairColor");
-                            skin.secondHairColor = reader.GetInt32("secondHairColor");
-                            skin.beardModel = reader.GetInt32("beardModel");
-                            skin.beardColor = reader.GetInt32("beardColor");
-                            skin.chestModel = reader.GetInt32("chestModel");
-                            skin.chestColor = reader.GetInt32("chestColor");
-                            skin.blemishesModel = reader.GetInt32("blemishesModel");
-                            skin.ageingModel = reader.GetInt32("ageingModel");
-                            skin.complexionModel = reader.GetInt32("complexionModel");
-                            skin.sundamageModel = reader.GetInt32("sundamageModel");
-                            skin.frecklesModel = reader.GetInt32("frecklesModel");
-                            skin.noseWidth = reader.GetFloat("noseWidth");
-                            skin.noseHeight = reader.GetFloat("noseHeight");
-                            skin.noseLength = reader.GetFloat("noseLength");
-                            skin.noseBridge = reader.GetFloat("noseBridge");
-                            skin.noseTip = reader.GetFloat("noseTip");
-                            skin.noseShift = reader.GetFloat("noseShift");
-                            skin.browHeight = reader.GetFloat("browHeight");
-                            skin.browWidth = reader.GetFloat("browWidth");
-                            skin.cheekboneHeight = reader.GetFloat("cheekboneHeight");
-                            skin.cheekboneWidth = reader.GetFloat("cheekboneWidth");
-                            skin.cheeksWidth = reader.GetFloat("cheeksWidth");
-                            skin.eyes = reader.GetFloat("eyes");
-                            skin.lips = reader.GetFloat("lips");
-                            skin.jawWidth = reader.GetFloat("jawWidth");
-                            skin.jawHeight = reader.GetFloat("jawHeight");
-                            skin.chinLength = reader.GetFloat("chinLength");
-                            skin.chinPosition = reader.GetFloat("chinPosition");
-                            skin.chinWidth = reader.GetFloat("chinWidth");
-                            skin.chinShape = reader.GetFloat("chinShape");
-                            skin.neckWidth = reader.GetFloat("neckWidth");
-                            skin.eyesColor = reader.GetInt32("eyesColor");
-                            skin.eyebrowsModel = reader.GetInt32("eyebrowsModel");
-                            skin.eyebrowsColor = reader.GetInt32("eyebrowsColor");
-                            skin.makeupModel = reader.GetInt32("makeupModel");
-                            skin.blushModel = reader.GetInt32("blushModel");
-                            skin.blushColor = reader.GetInt32("blushColor");
-                            skin.lipstickModel = reader.GetInt32("lipstickModel");
-                            skin.lipstickColor = reader.GetInt32("lipstickColor");
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetCharacterSkin] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetCharacterSkin] " + ex.StackTrace);
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        skin.firstHeadShape = reader.GetInt32("firstHeadShape");
+                        skin.secondHeadShape = reader.GetInt32("secondHeadShape");
+                        skin.firstSkinTone = reader.GetInt32("firstSkinTone");
+                        skin.secondSkinTone = reader.GetInt32("secondSkinTone");
+                        skin.headMix = reader.GetFloat("headMix");
+                        skin.skinMix = reader.GetFloat("skinMix");
+                        skin.hairModel = reader.GetInt32("hairModel");
+                        skin.firstHairColor = reader.GetInt32("firstHairColor");
+                        skin.secondHairColor = reader.GetInt32("secondHairColor");
+                        skin.beardModel = reader.GetInt32("beardModel");
+                        skin.beardColor = reader.GetInt32("beardColor");
+                        skin.chestModel = reader.GetInt32("chestModel");
+                        skin.chestColor = reader.GetInt32("chestColor");
+                        skin.blemishesModel = reader.GetInt32("blemishesModel");
+                        skin.ageingModel = reader.GetInt32("ageingModel");
+                        skin.complexionModel = reader.GetInt32("complexionModel");
+                        skin.sundamageModel = reader.GetInt32("sundamageModel");
+                        skin.frecklesModel = reader.GetInt32("frecklesModel");
+                        skin.noseWidth = reader.GetFloat("noseWidth");
+                        skin.noseHeight = reader.GetFloat("noseHeight");
+                        skin.noseLength = reader.GetFloat("noseLength");
+                        skin.noseBridge = reader.GetFloat("noseBridge");
+                        skin.noseTip = reader.GetFloat("noseTip");
+                        skin.noseShift = reader.GetFloat("noseShift");
+                        skin.browHeight = reader.GetFloat("browHeight");
+                        skin.browWidth = reader.GetFloat("browWidth");
+                        skin.cheekboneHeight = reader.GetFloat("cheekboneHeight");
+                        skin.cheekboneWidth = reader.GetFloat("cheekboneWidth");
+                        skin.cheeksWidth = reader.GetFloat("cheeksWidth");
+                        skin.eyes = reader.GetFloat("eyes");
+                        skin.lips = reader.GetFloat("lips");
+                        skin.jawWidth = reader.GetFloat("jawWidth");
+                        skin.jawHeight = reader.GetFloat("jawHeight");
+                        skin.chinLength = reader.GetFloat("chinLength");
+                        skin.chinPosition = reader.GetFloat("chinPosition");
+                        skin.chinWidth = reader.GetFloat("chinWidth");
+                        skin.chinShape = reader.GetFloat("chinShape");
+                        skin.neckWidth = reader.GetFloat("neckWidth");
+                        skin.eyesColor = reader.GetInt32("eyesColor");
+                        skin.eyebrowsModel = reader.GetInt32("eyebrowsModel");
+                        skin.eyebrowsColor = reader.GetInt32("eyebrowsColor");
+                        skin.makeupModel = reader.GetInt32("makeupModel");
+                        skin.blushModel = reader.GetInt32("blushModel");
+                        skin.blushColor = reader.GetInt32("blushColor");
+                        skin.lipstickModel = reader.GetInt32("lipstickModel");
+                        skin.lipstickColor = reader.GetInt32("lipstickColor");
+                    }
                 }
             }
 
@@ -408,65 +368,57 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM users WHERE id = @characterId LIMIT 1";
-                    command.Parameters.AddWithValue("@characterId", characterId);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM users WHERE id = @characterId LIMIT 1";
+                command.Parameters.AddWithValue("@characterId", characterId);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
                     {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
-                            float rot = reader.GetFloat("rotation");
+                        reader.Read();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
+                        float rot = reader.GetFloat("rotation");
 
-                            character.id = reader.GetInt32("id");
-                            character.realName = reader.GetString("name");
-                            character.adminRank = reader.GetInt32("adminRank");
-                            character.adminName = reader.GetString("adminName");
-                            character.position = new Vector3(posX, posY, posZ);
-                            character.rotation = new Vector3(0.0, 0.0, rot);
-                            character.money = reader.GetInt32("money");
-                            character.bank = reader.GetInt32("bank");
-                            character.health = reader.GetInt32("health");
-                            character.armor = reader.GetInt32("armor");
-                            character.age = reader.GetInt32("age");
-                            character.sex = reader.GetInt32("sex");
-                            character.faction = reader.GetInt32("faction");
-                            character.job = reader.GetInt32("job");
-                            character.rank = reader.GetInt32("rank");
-                            character.duty = reader.GetInt32("duty");
-                            character.phone = reader.GetInt32("phone");
-                            character.radio = reader.GetInt32("radio");
-                            character.killed = reader.GetInt32("killed");
-                            character.jailed = reader.GetString("jailed");
-                            character.carKeys = reader.GetString("carKeys");
-                            character.documentation = reader.GetInt32("documentation");
-                            character.licenses = reader.GetString("licenses");
-                            character.insurance = reader.GetInt32("insurance");
-                            character.weaponLicense = reader.GetInt32("weaponLicense");
-                            character.houseRent = reader.GetInt32("houseRent");
-                            character.houseEntered = reader.GetInt32("houseEntered");
-                            character.businessEntered = reader.GetInt32("businessEntered");
-                            character.employeeCooldown = reader.GetInt32("employeeCooldown");
-                            character.jobCooldown = reader.GetInt32("jobCooldown");
-                            character.jobDeliver = reader.GetInt32("jobDeliver");
-                            character.jobPoints = reader.GetString("jobPoints");
-                            character.rolePoints = reader.GetInt32("rolePoints");
-                            character.status = reader.GetInt32("status");
-                            character.played = reader.GetInt32("played");
-                        }
+                        character.id = reader.GetInt32("id");
+                        character.realName = reader.GetString("name");
+                        character.adminRank = reader.GetInt32("adminRank");
+                        character.adminName = reader.GetString("adminName");
+                        character.position = new Vector3(posX, posY, posZ);
+                        character.rotation = new Vector3(0.0, 0.0, rot);
+                        character.money = reader.GetInt32("money");
+                        character.bank = reader.GetInt32("bank");
+                        character.health = reader.GetInt32("health");
+                        character.armor = reader.GetInt32("armor");
+                        character.age = reader.GetInt32("age");
+                        character.sex = reader.GetInt32("sex");
+                        character.faction = reader.GetInt32("faction");
+                        character.job = reader.GetInt32("job");
+                        character.rank = reader.GetInt32("rank");
+                        character.duty = reader.GetInt32("duty");
+                        character.phone = reader.GetInt32("phone");
+                        character.radio = reader.GetInt32("radio");
+                        character.killed = reader.GetInt32("killed");
+                        character.jailed = reader.GetString("jailed");
+                        character.carKeys = reader.GetString("carKeys");
+                        character.documentation = reader.GetInt32("documentation");
+                        character.licenses = reader.GetString("licenses");
+                        character.insurance = reader.GetInt32("insurance");
+                        character.weaponLicense = reader.GetInt32("weaponLicense");
+                        character.houseRent = reader.GetInt32("houseRent");
+                        character.houseEntered = reader.GetInt32("houseEntered");
+                        character.businessEntered = reader.GetInt32("businessEntered");
+                        character.employeeCooldown = reader.GetInt32("employeeCooldown");
+                        character.jobCooldown = reader.GetInt32("jobCooldown");
+                        character.jobDeliver = reader.GetInt32("jobDeliver");
+                        character.jobPoints = reader.GetString("jobPoints");
+                        character.rolePoints = reader.GetInt32("rolePoints");
+                        character.status = reader.GetInt32("status");
+                        character.played = reader.GetInt32("played");
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationById] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationById] " + ex.StackTrace);
                 }
             }
 
@@ -479,65 +431,57 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM users WHERE name = @characterName LIMIT 1 ";
-                    command.Parameters.AddWithValue("@characterName", characterName);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM users WHERE name = @characterName LIMIT 1 ";
+                command.Parameters.AddWithValue("@characterName", characterName);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
                     {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
-                            float rot = reader.GetFloat("rotation");
+                        reader.Read();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
+                        float rot = reader.GetFloat("rotation");
 
-                            character.id = reader.GetInt32("id");
-                            character.realName = reader.GetString("name");
-                            character.adminRank = reader.GetInt32("adminRank");
-                            character.adminName = reader.GetString("adminName");
-                            character.position = new Vector3(posX, posY, posZ);
-                            character.rotation = new Vector3(0.0, 0.0, rot);
-                            character.money = reader.GetInt32("money");
-                            character.bank = reader.GetInt32("bank");
-                            character.health = reader.GetInt32("health");
-                            character.armor = reader.GetInt32("armor");
-                            character.age = reader.GetInt32("age");
-                            character.sex = reader.GetInt32("sex");
-                            character.faction = reader.GetInt32("faction");
-                            character.job = reader.GetInt32("job");
-                            character.rank = reader.GetInt32("rank");
-                            character.duty = reader.GetInt32("duty");
-                            character.phone = reader.GetInt32("phone");
-                            character.radio = reader.GetInt32("radio");
-                            character.killed = reader.GetInt32("killed");
-                            character.jailed = reader.GetString("jailed");
-                            character.carKeys = reader.GetString("carKeys");
-                            character.documentation = reader.GetInt32("documentation");
-                            character.licenses = reader.GetString("licenses");
-                            character.insurance = reader.GetInt32("insurance");
-                            character.weaponLicense = reader.GetInt32("weaponLicense");
-                            character.houseRent = reader.GetInt32("houseRent");
-                            character.houseEntered = reader.GetInt32("houseEntered");
-                            character.businessEntered = reader.GetInt32("businessEntered");
-                            character.employeeCooldown = reader.GetInt32("employeeCooldown");
-                            character.jobCooldown = reader.GetInt32("jobCooldown");
-                            character.jobDeliver = reader.GetInt32("jobDeliver");
-                            character.jobPoints = reader.GetString("jobPoints");
-                            character.rolePoints = reader.GetInt32("rolePoints");
-                            character.status = reader.GetInt32("status");
-                            character.played = reader.GetInt32("played");
-                        }
+                        character.id = reader.GetInt32("id");
+                        character.realName = reader.GetString("name");
+                        character.adminRank = reader.GetInt32("adminRank");
+                        character.adminName = reader.GetString("adminName");
+                        character.position = new Vector3(posX, posY, posZ);
+                        character.rotation = new Vector3(0.0, 0.0, rot);
+                        character.money = reader.GetInt32("money");
+                        character.bank = reader.GetInt32("bank");
+                        character.health = reader.GetInt32("health");
+                        character.armor = reader.GetInt32("armor");
+                        character.age = reader.GetInt32("age");
+                        character.sex = reader.GetInt32("sex");
+                        character.faction = reader.GetInt32("faction");
+                        character.job = reader.GetInt32("job");
+                        character.rank = reader.GetInt32("rank");
+                        character.duty = reader.GetInt32("duty");
+                        character.phone = reader.GetInt32("phone");
+                        character.radio = reader.GetInt32("radio");
+                        character.killed = reader.GetInt32("killed");
+                        character.jailed = reader.GetString("jailed");
+                        character.carKeys = reader.GetString("carKeys");
+                        character.documentation = reader.GetInt32("documentation");
+                        character.licenses = reader.GetString("licenses");
+                        character.insurance = reader.GetInt32("insurance");
+                        character.weaponLicense = reader.GetInt32("weaponLicense");
+                        character.houseRent = reader.GetInt32("houseRent");
+                        character.houseEntered = reader.GetInt32("houseEntered");
+                        character.businessEntered = reader.GetInt32("businessEntered");
+                        character.employeeCooldown = reader.GetInt32("employeeCooldown");
+                        character.jobCooldown = reader.GetInt32("jobCooldown");
+                        character.jobDeliver = reader.GetInt32("jobDeliver");
+                        character.jobPoints = reader.GetString("jobPoints");
+                        character.rolePoints = reader.GetInt32("rolePoints");
+                        character.status = reader.GetInt32("status");
+                        character.played = reader.GetInt32("played");
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationByName] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadCharacterInformationByName] " + ex.StackTrace);
                 }
             }
 
@@ -626,22 +570,14 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT id FROM users WHERE name = @name LIMIT 1";
-                    command.Parameters.AddWithValue("@name", name);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT id FROM users WHERE name = @name LIMIT 1";
+                command.Parameters.AddWithValue("@name", name);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        found = reader.HasRows;
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION FindCharacter] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION FindCharacter] " + ex.StackTrace);
+                    found = reader.HasRows;
                 }
             }
 
@@ -654,35 +590,27 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM money WHERE (source = @playerName OR receiver = @playerName) AND (type = 'Transferencia' ";
-                    command.CommandText += "OR type = 'Depósito' OR type = 'Retiro') ORDER BY date DESC, hour DESC LIMIT @start, @count";
-                    command.Parameters.AddWithValue("@playerName", playerName);
-                    command.Parameters.AddWithValue("@start", start);
-                    command.Parameters.AddWithValue("@count", count);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM money WHERE (source = @playerName OR receiver = @playerName) AND (type = 'Transferencia' ";
+                command.CommandText += "OR type = 'Depósito' OR type = 'Retiro') ORDER BY date DESC, hour DESC LIMIT @start, @count";
+                command.Parameters.AddWithValue("@playerName", playerName);
+                command.Parameters.AddWithValue("@start", start);
+                command.Parameters.AddWithValue("@count", count);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            BankOperationModel bankOperation = new BankOperationModel();
-                            bankOperation.source = reader.GetString("source");
-                            bankOperation.receiver = reader.GetString("receiver");
-                            bankOperation.type = reader.GetString("type");
-                            bankOperation.amount = reader.GetInt32("amount");
-                            bankOperation.day = reader.GetString("date").Split(' ')[0];
-                            bankOperation.time = reader.GetString("hour");
-                            operations.Add(bankOperation);
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetBankOperations] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetBankOperations] " + ex.StackTrace);
+                    while (reader.Read())
+                    {
+                        BankOperationModel bankOperation = new BankOperationModel();
+                        bankOperation.source = reader.GetString("source");
+                        bankOperation.receiver = reader.GetString("receiver");
+                        bankOperation.type = reader.GetString("type");
+                        bankOperation.amount = reader.GetInt32("amount");
+                        bankOperation.day = reader.GetString("date").Split(' ')[0];
+                        bankOperation.time = reader.GetString("hour");
+                        operations.Add(bankOperation);
+                    }
                 }
             }
 
@@ -695,50 +623,42 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM vehicles";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM vehicles";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            VehicleModel vehicle = new VehicleModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
-                            float rotation = reader.GetFloat("rotation");
+                        VehicleModel vehicle = new VehicleModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
+                        float rotation = reader.GetFloat("rotation");
 
-                            vehicle.id = reader.GetInt32("id");
-                            vehicle.model = reader.GetString("model");
-                            vehicle.colorType = reader.GetInt32("colorType");
-                            vehicle.firstColor = reader.GetString("firstColor");
-                            vehicle.secondColor = reader.GetString("secondColor");
-                            vehicle.pearlescent = reader.GetInt32("pearlescent");
-                            vehicle.owner = reader.GetString("owner");
-                            vehicle.plate = reader.GetString("plate");
-                            vehicle.dimension = reader.GetUInt32("dimension");
-                            vehicle.faction = reader.GetInt32("faction");
-                            vehicle.engine = reader.GetInt32("engine");
-                            vehicle.locked = reader.GetInt32("locked");
-                            vehicle.price = reader.GetInt32("price");
-                            vehicle.parking = reader.GetInt32("parking");
-                            vehicle.parked = reader.GetInt32("parkedTime");
-                            vehicle.gas = reader.GetFloat("gas");
-                            vehicle.kms = reader.GetFloat("kms");
-                            vehicle.position = new Vector3(posX, posY, posZ);
-                            vehicle.rotation = new Vector3(0.0, 0.0, rotation);
+                        vehicle.id = reader.GetInt32("id");
+                        vehicle.model = reader.GetString("model");
+                        vehicle.colorType = reader.GetInt32("colorType");
+                        vehicle.firstColor = reader.GetString("firstColor");
+                        vehicle.secondColor = reader.GetString("secondColor");
+                        vehicle.pearlescent = reader.GetInt32("pearlescent");
+                        vehicle.owner = reader.GetString("owner");
+                        vehicle.plate = reader.GetString("plate");
+                        vehicle.dimension = reader.GetUInt32("dimension");
+                        vehicle.faction = reader.GetInt32("faction");
+                        vehicle.engine = reader.GetInt32("engine");
+                        vehicle.locked = reader.GetInt32("locked");
+                        vehicle.price = reader.GetInt32("price");
+                        vehicle.parking = reader.GetInt32("parking");
+                        vehicle.parked = reader.GetInt32("parkedTime");
+                        vehicle.gas = reader.GetFloat("gas");
+                        vehicle.kms = reader.GetFloat("kms");
+                        vehicle.position = new Vector3(posX, posY, posZ);
+                        vehicle.rotation = new Vector3(0.0, 0.0, rotation);
 
-                            vehicleList.Add(vehicle);
-                        }
+                        vehicleList.Add(vehicle);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllVehicles] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllVehicles] " + ex.StackTrace);
                 }
             }
 
@@ -1009,31 +929,23 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM tunning";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM tunning";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            TunningModel tunning = new TunningModel();
+                        TunningModel tunning = new TunningModel();
 
-                            tunning.id = reader.GetInt32("id");
-                            tunning.vehicle = reader.GetInt32("vehicle");
-                            tunning.slot = reader.GetInt32("slot");
-                            tunning.component = reader.GetInt32("component");
+                        tunning.id = reader.GetInt32("id");
+                        tunning.vehicle = reader.GetInt32("vehicle");
+                        tunning.slot = reader.GetInt32("slot");
+                        tunning.component = reader.GetInt32("component");
 
-                            tunningList.Add(tunning);
-                        }
+                        tunningList.Add(tunning);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTunning] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTunning] " + ex.StackTrace);
                 }
             }
 
@@ -1171,37 +1083,29 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM items";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM items";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            ItemModel item = new ItemModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
+                        ItemModel item = new ItemModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
 
-                            item.id = reader.GetInt32("id");
-                            item.hash = reader.GetString("hash");
-                            item.ownerEntity = reader.GetString("ownerEntity");
-                            item.ownerIdentifier = reader.GetInt32("ownerIdentifier");
-                            item.amount = reader.GetInt32("amount");
-                            item.position = new Vector3(posX, posY, posZ);
-                            item.dimension = reader.GetUInt32("dimension");
+                        item.id = reader.GetInt32("id");
+                        item.hash = reader.GetString("hash");
+                        item.ownerEntity = reader.GetString("ownerEntity");
+                        item.ownerIdentifier = reader.GetInt32("ownerIdentifier");
+                        item.amount = reader.GetInt32("amount");
+                        item.position = new Vector3(posX, posY, posZ);
+                        item.dimension = reader.GetUInt32("dimension");
 
-                            itemList.Add(item);
-                        }
+                        itemList.Add(item);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllItems] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllItems] " + ex.StackTrace);
                 }
             }
 
@@ -1296,39 +1200,31 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM business";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM business";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            BusinessModel business = new BusinessModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
+                        BusinessModel business = new BusinessModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
 
-                            business.id = reader.GetInt32("id");
-                            business.type = reader.GetInt32("type");
-                            business.ipl = reader.GetString("ipl");
-                            business.name = reader.GetString("name");
-                            business.position = new Vector3(posX, posY, posZ);
-                            business.dimension = reader.GetUInt32("dimension");
-                            business.owner = reader.GetString("owner");
-                            business.multiplier = reader.GetFloat("multiplier");
-                            business.locked = reader.GetBoolean("locked");
+                        business.id = reader.GetInt32("id");
+                        business.type = reader.GetInt32("type");
+                        business.ipl = reader.GetString("ipl");
+                        business.name = reader.GetString("name");
+                        business.position = new Vector3(posX, posY, posZ);
+                        business.dimension = reader.GetUInt32("dimension");
+                        business.owner = reader.GetString("owner");
+                        business.multiplier = reader.GetFloat("multiplier");
+                        business.locked = reader.GetBoolean("locked");
 
-                            businessList.Add(business);
-                        }
+                        businessList.Add(business);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBusiness] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBusiness] " + ex.StackTrace);
                 }
             }
 
@@ -1476,41 +1372,33 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM houses";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM houses";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            HouseModel house = new HouseModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
+                        HouseModel house = new HouseModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
 
-                            house.id = reader.GetInt32("id");
-                            house.ipl = reader.GetString("ipl");
-                            house.name = reader.GetString("name");
-                            house.position = new Vector3(posX, posY, posZ);
-                            house.dimension = reader.GetUInt32("dimension");
-                            house.price = reader.GetInt32("price");
-                            house.owner = reader.GetString("owner");
-                            house.status = reader.GetInt32("status");
-                            house.tenants = reader.GetInt32("tenants");
-                            house.rental = reader.GetInt32("rental");
-                            house.locked = reader.GetBoolean("locked");
+                        house.id = reader.GetInt32("id");
+                        house.ipl = reader.GetString("ipl");
+                        house.name = reader.GetString("name");
+                        house.position = new Vector3(posX, posY, posZ);
+                        house.dimension = reader.GetUInt32("dimension");
+                        house.price = reader.GetInt32("price");
+                        house.owner = reader.GetString("owner");
+                        house.status = reader.GetInt32("status");
+                        house.tenants = reader.GetInt32("tenants");
+                        house.rental = reader.GetInt32("rental");
+                        house.locked = reader.GetBoolean("locked");
 
-                            houseList.Add(house);
-                        }
+                        houseList.Add(house);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllHouses] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllHouses] " + ex.StackTrace);
                 }
             }
 
@@ -1633,36 +1521,28 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM furniture";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM furniture";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            FurnitureModel furniture = new FurnitureModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
-                            float rot = reader.GetFloat("rotation");
+                        FurnitureModel furniture = new FurnitureModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
+                        float rot = reader.GetFloat("rotation");
 
-                            furniture.id = reader.GetInt32("id");
-                            furniture.hash = reader.GetUInt32("hash");
-                            furniture.house = reader.GetUInt32("house");
-                            furniture.position = new Vector3(posX, posY, posZ);
-                            furniture.rotation = new Vector3(0.0f, 0.0f, rot);
+                        furniture.id = reader.GetInt32("id");
+                        furniture.hash = reader.GetUInt32("hash");
+                        furniture.house = reader.GetUInt32("house");
+                        furniture.position = new Vector3(posX, posY, posZ);
+                        furniture.rotation = new Vector3(0.0f, 0.0f, rot);
 
-                            furnitureList.Add(furniture);
-                        }
+                        furnitureList.Add(furniture);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllFurniture] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllFurniture] " + ex.StackTrace);
                 }
             }
 
@@ -1675,36 +1555,28 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM controls";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM controls";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            PoliceControlModel policeControl = new PoliceControlModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
-                            float rot = reader.GetFloat("rotation");
+                        PoliceControlModel policeControl = new PoliceControlModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
+                        float rot = reader.GetFloat("rotation");
 
-                            policeControl.id = reader.GetInt32("id");
-                            policeControl.name = reader.GetString("name");
-                            policeControl.item = reader.GetInt32("item");
-                            policeControl.position = new Vector3(posX, posY, posZ);
-                            policeControl.rotation = new Vector3(0.0f, 0.0f, rot);
+                        policeControl.id = reader.GetInt32("id");
+                        policeControl.name = reader.GetString("name");
+                        policeControl.item = reader.GetInt32("item");
+                        policeControl.position = new Vector3(posX, posY, posZ);
+                        policeControl.rotation = new Vector3(0.0f, 0.0f, rot);
 
-                            policeControlList.Add(policeControl);
-                        }
+                        policeControlList.Add(policeControl);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPoliceControls] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPoliceControls] " + ex.StackTrace);
                 }
             }
 
@@ -1717,35 +1589,27 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM parkings";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM parkings";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            ParkingModel parking = new ParkingModel();
-                            float posX = reader.GetFloat("posX");
-                            float posY = reader.GetFloat("posY");
-                            float posZ = reader.GetFloat("posZ");
+                        ParkingModel parking = new ParkingModel();
+                        float posX = reader.GetFloat("posX");
+                        float posY = reader.GetFloat("posY");
+                        float posZ = reader.GetFloat("posZ");
 
-                            parking.id = reader.GetInt32("id");
-                            parking.type = reader.GetInt32("type");
-                            parking.houseId = reader.GetInt32("house");
-                            parking.capacity = reader.GetInt32("capacity");
-                            parking.position = new Vector3(posX, posY, posZ);
+                        parking.id = reader.GetInt32("id");
+                        parking.type = reader.GetInt32("type");
+                        parking.houseId = reader.GetInt32("house");
+                        parking.capacity = reader.GetInt32("capacity");
+                        parking.position = new Vector3(posX, posY, posZ);
 
-                            parkingList.Add(parking);
-                        }
+                        parkingList.Add(parking);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllParkings] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllParkings] " + ex.StackTrace);
                 }
             }
 
@@ -1937,32 +1801,24 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM fines WHERE target = @target";
-                    command.Parameters.AddWithValue("@target", name);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM fines WHERE target = @target";
+                command.Parameters.AddWithValue("@target", name);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            FineModel fine = new FineModel();
-                            fine.officer = reader.GetString("officer");
-                            fine.target = reader.GetString("target");
-                            fine.amount = reader.GetInt32("amount");
-                            fine.reason = reader.GetString("reason");
-                            fine.date = reader.GetString("date");
+                        FineModel fine = new FineModel();
+                        fine.officer = reader.GetString("officer");
+                        fine.target = reader.GetString("target");
+                        fine.amount = reader.GetInt32("amount");
+                        fine.reason = reader.GetString("reason");
+                        fine.date = reader.GetString("date");
 
-                            fineList.Add(fine);
-                        }
+                        fineList.Add(fine);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadPlayerFines] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadPlayerFines] " + ex.StackTrace);
                 }
             }
 
@@ -2039,29 +1895,21 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM channels";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM channels";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            ChannelModel channel = new ChannelModel();
-                            channel.id = reader.GetInt32("id");
-                            channel.owner = reader.GetInt32("owner");
-                            channel.password = reader.GetString("password");
+                        ChannelModel channel = new ChannelModel();
+                        channel.id = reader.GetInt32("id");
+                        channel.owner = reader.GetInt32("owner");
+                        channel.password = reader.GetString("password");
 
-                            channelList.Add(channel);
-                        }
+                        channelList.Add(channel);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllChannels] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllChannels] " + ex.StackTrace);
                 }
             }
 
@@ -2169,30 +2017,22 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM blood";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM blood";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            BloodModel blood = new BloodModel();
-                            blood.id = reader.GetInt32("id");
-                            blood.doctor = reader.GetInt32("doctor");
-                            blood.patient = reader.GetInt32("patient");
-                            blood.used = reader.GetBoolean("used");
+                        BloodModel blood = new BloodModel();
+                        blood.id = reader.GetInt32("id");
+                        blood.doctor = reader.GetInt32("doctor");
+                        blood.patient = reader.GetInt32("patient");
+                        blood.used = reader.GetBoolean("used");
 
-                            bloodList.Add(blood);
-                        }
+                        bloodList.Add(blood);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBlood] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllBlood] " + ex.StackTrace);
                 }
             }
 
@@ -2205,32 +2045,24 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM news";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM news";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            AnnoucementModel announcementModel = new AnnoucementModel();
-                            announcementModel.id = reader.GetInt32("id");
-                            announcementModel.winner = reader.GetInt32("journalist");
-                            announcementModel.amount = reader.GetInt32("amount");
-                            announcementModel.annoucement = reader.GetString("annoucement");
-                            announcementModel.journalist = reader.GetInt32("winner");
-                            announcementModel.given = reader.GetBoolean("given");
+                        AnnoucementModel announcementModel = new AnnoucementModel();
+                        announcementModel.id = reader.GetInt32("id");
+                        announcementModel.winner = reader.GetInt32("journalist");
+                        announcementModel.amount = reader.GetInt32("amount");
+                        announcementModel.annoucement = reader.GetString("annoucement");
+                        announcementModel.journalist = reader.GetInt32("winner");
+                        announcementModel.given = reader.GetBoolean("given");
 
-                            annoucementList.Add(announcementModel);
-                        }
+                        annoucementList.Add(announcementModel);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllAnnoucements] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllAnnoucements] " + ex.StackTrace);
                 }
             }
 
@@ -2334,32 +2166,24 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM clothes";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM clothes";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            ClothesModel clothes = new ClothesModel();
-                            clothes.id = reader.GetInt32("id");
-                            clothes.player = reader.GetInt32("player");
-                            clothes.type = reader.GetInt32("type");
-                            clothes.slot = reader.GetInt32("slot");
-                            clothes.drawable = reader.GetInt32("drawable");
-                            clothes.dressed = reader.GetBoolean("dressed");
+                        ClothesModel clothes = new ClothesModel();
+                        clothes.id = reader.GetInt32("id");
+                        clothes.player = reader.GetInt32("player");
+                        clothes.type = reader.GetInt32("type");
+                        clothes.slot = reader.GetInt32("slot");
+                        clothes.drawable = reader.GetInt32("drawable");
+                        clothes.dressed = reader.GetBoolean("dressed");
 
-                            clothesList.Add(clothes);
-                        }
+                        clothesList.Add(clothes);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllClothes] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllClothes] " + ex.StackTrace);
                 }
             }
 
@@ -2426,30 +2250,22 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM tattoos";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM tattoos";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            TattooModel tattoo = new TattooModel();
-                            tattoo.player = reader.GetInt32("player");
-                            tattoo.slot = reader.GetInt32("zone");
-                            tattoo.library = reader.GetString("library");
-                            tattoo.hash = reader.GetString("hash");
+                        TattooModel tattoo = new TattooModel();
+                        tattoo.player = reader.GetInt32("player");
+                        tattoo.slot = reader.GetInt32("zone");
+                        tattoo.library = reader.GetString("library");
+                        tattoo.hash = reader.GetString("hash");
 
-                            tattooList.Add(tattoo);
-                        }
+                        tattooList.Add(tattoo);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTattoos] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllTattoos] " + ex.StackTrace);
                 }
             }
 
@@ -2492,30 +2308,22 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM contacts";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM contacts";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            ContactModel contact = new ContactModel();
-                            contact.id = reader.GetInt32("id");
-                            contact.owner = reader.GetInt32("owner");
-                            contact.contactNumber = reader.GetInt32("contactNumber");
-                            contact.contactName = reader.GetString("contactName");
+                        ContactModel contact = new ContactModel();
+                        contact.id = reader.GetInt32("id");
+                        contact.owner = reader.GetInt32("owner");
+                        contact.contactNumber = reader.GetInt32("contactNumber");
+                        contact.contactName = reader.GetString("contactName");
 
-                            contactList.Add(contact);
-                        }
+                        contactList.Add(contact);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllContacts] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllContacts] " + ex.StackTrace);
                 }
             }
 
@@ -2651,30 +2459,22 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT DISTINCT(id) AS id, question FROM questions WHERE license = @license ORDER BY RAND() LIMIT @questions";
-                    command.Parameters.AddWithValue("@license", license);
-                    command.Parameters.AddWithValue("@questions", Constants.MAX_LICENSE_QUESTIONS);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT DISTINCT(id) AS id, question FROM questions WHERE license = @license ORDER BY RAND() LIMIT @questions";
+                command.Parameters.AddWithValue("@license", license);
+                command.Parameters.AddWithValue("@questions", Constants.MAX_LICENSE_QUESTIONS);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            TestModel test = new TestModel();
-                            test.id = reader.GetInt32("id");
-                            test.text = reader.GetString("question");
+                        TestModel test = new TestModel();
+                        test.id = reader.GetInt32("id");
+                        test.text = reader.GetString("question");
 
-                            testList.Add(test);
-                        }
+                        testList.Add(test);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetRandomQuestions] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetRandomQuestions] " + ex.StackTrace);
                 }
             }
 
@@ -2687,30 +2487,22 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT id, answer FROM answers WHERE question = @question";
-                    command.Parameters.AddWithValue("@question", question);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT id, answer FROM answers WHERE question = @question";
+                command.Parameters.AddWithValue("@question", question);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            TestModel test = new TestModel();
-                            test.id = reader.GetInt32("id");
-                            test.text = reader.GetString("answer");
-                            test.question = question;
+                        TestModel test = new TestModel();
+                        test.id = reader.GetInt32("id");
+                        test.text = reader.GetString("answer");
+                        test.question = question;
 
-                            testList.Add(test);
-                        }
+                        testList.Add(test);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetQuestionAnswers] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION GetQuestionAnswers] " + ex.StackTrace);
                 }
             }
 
@@ -2723,26 +2515,18 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT correct FROM answers WHERE id = @id LIMIT 1";
-                    command.Parameters.AddWithValue("@id", answer);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT correct FROM answers WHERE id = @id LIMIT 1";
+                command.Parameters.AddWithValue("@id", answer);
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            correct = reader.GetBoolean("correct");
-                        }
-                    }
-                }
-                catch (Exception ex)
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION CheckAnswerCorrect] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION CheckAnswerCorrect] " + ex.StackTrace);
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        correct = reader.GetBoolean("correct");
+                    }
                 }
             }
 
@@ -2804,29 +2588,21 @@ namespace WiredPlayers.database
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                try
-                {
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT * FROM permissions";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM permissions";
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            PermissionModel permission = new PermissionModel();
-                            permission.playerId = reader.GetInt32("playerId");
-                            permission.command = reader.GetString("command");
-                            permission.option = reader.GetString("option");
+                        PermissionModel permission = new PermissionModel();
+                        permission.playerId = reader.GetInt32("playerId");
+                        permission.command = reader.GetString("command");
+                        permission.option = reader.GetString("option");
 
-                            permissionList.Add(permission);
-                        }
+                        permissionList.Add(permission);
                     }
-                }
-                catch (Exception ex)
-                {
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPermissions] " + ex.Message);
-                    NAPI.Util.ConsoleOutput("[EXCEPTION LoadAllPermissions] " + ex.StackTrace);
                 }
             }
 

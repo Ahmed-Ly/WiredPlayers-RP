@@ -224,32 +224,24 @@ namespace WiredPlayers.admin
                                     String[] secondColorArray = arguments[3].Split(',');
                                     if (firstColorArray.Length == Constants.TOTAL_COLOR_ELEMENTS && secondColorArray.Length == Constants.TOTAL_COLOR_ELEMENTS)
                                     {
-                                        try
-                                        {
-                                            // Rellenamos los datos básicos del vehículo para su creación
-                                            vehicle.model = arguments[1];
-                                            vehicle.faction = Constants.FACTION_ADMIN;
-                                            vehicle.position = NAPI.Entity.GetEntityPosition(player);
-                                            vehicle.rotation = NAPI.Entity.GetEntityRotation(player);
-                                            vehicle.dimension = NAPI.Entity.GetEntityDimension(player);
-                                            vehicle.colorType = Constants.VEHICLE_COLOR_TYPE_CUSTOM;
-                                            vehicle.firstColor = "0,0,0";
-                                            vehicle.secondColor = "0,0,0";
-                                            vehicle.pearlescent = 0;
-                                            vehicle.owner = String.Empty;
-                                            vehicle.plate = String.Empty;
-                                            vehicle.price = 0;
-                                            vehicle.parking = 0;
-                                            vehicle.parked = 0;
-                                            vehicle.gas = 50.0f;
-                                            vehicle.kms = 0.0f;
-                                            Vehicles.CreateVehicle(player, vehicle, true);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            NAPI.Util.ConsoleOutput("[EXCEPTION vehiculo crear] " + ex.Message);
-                                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_VEHICLE_CREATE_COMMAND);
-                                        }
+                                        // Rellenamos los datos básicos del vehículo para su creación
+                                        vehicle.model = arguments[1];
+                                        vehicle.faction = Constants.FACTION_ADMIN;
+                                        vehicle.position = NAPI.Entity.GetEntityPosition(player);
+                                        vehicle.rotation = NAPI.Entity.GetEntityRotation(player);
+                                        vehicle.dimension = NAPI.Entity.GetEntityDimension(player);
+                                        vehicle.colorType = Constants.VEHICLE_COLOR_TYPE_CUSTOM;
+                                        vehicle.firstColor = "0,0,0";
+                                        vehicle.secondColor = "0,0,0";
+                                        vehicle.pearlescent = 0;
+                                        vehicle.owner = String.Empty;
+                                        vehicle.plate = String.Empty;
+                                        vehicle.price = 0;
+                                        vehicle.parking = 0;
+                                        vehicle.parked = 0;
+                                        vehicle.gas = 50.0f;
+                                        vehicle.kms = 0.0f;
+                                        Vehicles.CreateVehicle(player, vehicle, true);
                                     }
                                     else
                                     {
@@ -1870,7 +1862,7 @@ namespace WiredPlayers.admin
                     int rolePoints = 0;
                     Client target = null;
 
-                    if(Int32.TryParse(args[1], out int targetId) == true)
+                    if (Int32.TryParse(args[1], out int targetId) == true)
                     {
                         target = Globals.GetPlayerById(targetId);
                         rolePoints = Int32.Parse(args[2]);
@@ -1881,14 +1873,14 @@ namespace WiredPlayers.admin
                         rolePoints = Int32.Parse(args[3]);
                     }
 
-                    if(target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
+                    if (target != null && NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                     {
                         // Obtenemos los puntos del jugador
                         String playerMessage = String.Empty;
                         String targetMessage = String.Empty;
                         int targetRolePoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ROLE_POINTS);
 
-                        switch(args[0].ToLower())
+                        switch (args[0].ToLower())
                         {
                             case "dar":
                                 // Damos los puntos de rol

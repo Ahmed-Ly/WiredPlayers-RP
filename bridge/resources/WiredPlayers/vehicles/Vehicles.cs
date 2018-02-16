@@ -253,145 +253,129 @@ namespace WiredPlayers.vehicles
 
         private void OnVehicleDeathTimer(object vehicleObject)
         {
-            try
+            Vehicle vehicle = (Vehicle)vehicleObject;
+
+            // Obtenemos los valores necesarios para recrear el vehículo
+            VehicleModel vehicleModel = new VehicleModel();
+            vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+            vehicleModel.model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
+            vehicleModel.position = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
+            vehicleModel.rotation = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ROTATION);
+            vehicleModel.dimension = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_DIMENSION);
+            vehicleModel.colorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
+            vehicleModel.firstColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
+            vehicleModel.secondColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
+            vehicleModel.pearlescent = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
+            vehicleModel.faction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
+            vehicleModel.plate = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PLATE);
+            vehicleModel.owner = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER);
+            vehicleModel.price = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PRICE);
+            vehicleModel.parking = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKING);
+            vehicleModel.parked = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKED);
+            vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
+            vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
+
+            NAPI.Task.Run(() =>
             {
-                Vehicle vehicle = (Vehicle)vehicleObject;
+                // Borramos el vehículo destruído del servidor
+                NAPI.Entity.DeleteEntity(vehicle);
+            });
 
-                // Obtenemos los valores necesarios para recrear el vehículo
-                VehicleModel vehicleModel = new VehicleModel();
-                vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                vehicleModel.model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
-                vehicleModel.position = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
-                vehicleModel.rotation = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ROTATION);
-                vehicleModel.dimension = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_DIMENSION);
-                vehicleModel.colorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
-                vehicleModel.firstColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
-                vehicleModel.secondColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
-                vehicleModel.pearlescent = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR);
-                vehicleModel.faction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
-                vehicleModel.plate = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PLATE);
-                vehicleModel.owner = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER);
-                vehicleModel.price = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PRICE);
-                vehicleModel.parking = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKING);
-                vehicleModel.parked = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_PARKED);
-                vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
-                vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
+            if (vehicleModel.faction == Constants.FACTION_NONE && NAPI.Vehicle.GetVehicleOccupants(vehicle).Count > 0)
+            {
+                // Buscamos el desguace
+                ParkingModel scrapyard = Parking.parkingList.Where(p => p.type == Constants.PARKING_TYPE_SCRAPYARD).FirstOrDefault();
+                if (scrapyard != null)
+                {
+                    // Añadimos el vehículo al desguace
+                    ParkedCarModel parkedCar = new ParkedCarModel();
+                    parkedCar.parkingId = scrapyard.id;
+                    parkedCar.vehicle = vehicleModel;
+                    Parking.parkedCars.Add(parkedCar);
+                    vehicleModel.parking = scrapyard.id;
+                }
 
+                // Guardamos el vehículo
+                Database.SaveVehicle(vehicleModel);
+            }
+            else
+            {
                 NAPI.Task.Run(() =>
                 {
-                    // Borramos el vehículo destruído del servidor
-                    NAPI.Entity.DeleteEntity(vehicle);
+                    // Recreamos el vehículo
+                    vehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicleModel.model), vehicleModel.position, vehicleModel.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
                 });
 
-                if (vehicleModel.faction == Constants.FACTION_NONE && NAPI.Vehicle.GetVehicleOccupants(vehicle).Count > 0)
-                {
-                    // Buscamos el desguace
-                    ParkingModel scrapyard = Parking.parkingList.Where(p => p.type == Constants.PARKING_TYPE_SCRAPYARD).FirstOrDefault();
-                    if (scrapyard != null)
-                    {
-                        // Añadimos el vehículo al desguace
-                        ParkedCarModel parkedCar = new ParkedCarModel();
-                        parkedCar.parkingId = scrapyard.id;
-                        parkedCar.vehicle = vehicleModel;
-                        Parking.parkedCars.Add(parkedCar);
-                        vehicleModel.parking = scrapyard.id;
-                    }
+                NAPI.Vehicle.SetVehicleNumberPlate(vehicle, vehicleModel.plate == String.Empty ? "LS " + (1000 + vehicleModel.id) : vehicleModel.plate);
+                NAPI.Entity.SetEntityDimension(vehicle, Convert.ToUInt32(vehicleModel.dimension));
+                NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
+                NAPI.Vehicle.SetVehicleLocked(vehicle, false);
 
-                    // Guardamos el vehículo
-                    Database.SaveVehicle(vehicleModel);
+                // Añadimos el color
+                if (vehicleModel.colorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
+                {
+                    NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(vehicleModel.firstColor));
+                    NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(vehicleModel.secondColor));
+                    NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, vehicleModel.pearlescent);
                 }
                 else
                 {
-                    NAPI.Task.Run(() =>
-                    {
-                        // Recreamos el vehículo
-                        vehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicleModel.model), vehicleModel.position, vehicleModel.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
-                    });
-
-                    NAPI.Vehicle.SetVehicleNumberPlate(vehicle, vehicleModel.plate == String.Empty ? "LS " + (1000 + vehicleModel.id) : vehicleModel.plate);
-                    NAPI.Entity.SetEntityDimension(vehicle, Convert.ToUInt32(vehicleModel.dimension));
-                    NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
-                    NAPI.Vehicle.SetVehicleLocked(vehicle, false);
-
-                    // Añadimos el color
-                    if (vehicleModel.colorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
-                    {
-                        NAPI.Vehicle.SetVehiclePrimaryColor(vehicle, Int32.Parse(vehicleModel.firstColor));
-                        NAPI.Vehicle.SetVehicleSecondaryColor(vehicle, Int32.Parse(vehicleModel.secondColor));
-                        NAPI.Vehicle.SetVehiclePearlescentColor(vehicle, vehicleModel.pearlescent);
-                    }
-                    else
-                    {
-                        String[] firstColor = vehicleModel.firstColor.Split(',');
-                        String[] secondColor = vehicleModel.secondColor.Split(',');
-                        NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(firstColor[0]), Int32.Parse(firstColor[1]), Int32.Parse(firstColor[2]));
-                        NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondColor[0]), Int32.Parse(secondColor[1]), Int32.Parse(secondColor[2]));
-                    }
-
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_ID, vehicleModel.id);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_MODEL, vehicleModel.model);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_POSITION, vehicleModel.position);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_ROTATION, vehicleModel.rotation);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_DIMENSION, vehicleModel.dimension);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE, vehicleModel.colorType);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR, vehicleModel.firstColor);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR, vehicleModel.secondColor);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR, vehicleModel.pearlescent);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_FACTION, vehicleModel.faction);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PLATE, vehicleModel.plate);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_OWNER, vehicleModel.owner);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PRICE, vehicleModel.price);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PARKING, vehicleModel.parking);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PARKED, vehicleModel.parked);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, vehicleModel.gas);
-                    NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_KMS, vehicleModel.kms);
-
-                    // Añadimos el tunning
-                    Mechanic.AddTunningToVehicle(vehicle);
+                    String[] firstColor = vehicleModel.firstColor.Split(',');
+                    String[] secondColor = vehicleModel.secondColor.Split(',');
+                    NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(firstColor[0]), Int32.Parse(firstColor[1]), Int32.Parse(firstColor[2]));
+                    NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondColor[0]), Int32.Parse(secondColor[1]), Int32.Parse(secondColor[2]));
                 }
 
-                // Borramos el timer de la lista
-                Timer vehicleRespawnTimer = vehicleRespawnTimerList[vehicleModel.id];
-                if (vehicleRespawnTimer != null)
-                {
-                    vehicleRespawnTimer.Dispose();
-                    vehicleRespawnTimerList.Remove(vehicleModel.id);
-                }
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_ID, vehicleModel.id);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_MODEL, vehicleModel.model);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_POSITION, vehicleModel.position);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_ROTATION, vehicleModel.rotation);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_DIMENSION, vehicleModel.dimension);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE, vehicleModel.colorType);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR, vehicleModel.firstColor);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR, vehicleModel.secondColor);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR, vehicleModel.pearlescent);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_FACTION, vehicleModel.faction);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PLATE, vehicleModel.plate);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_OWNER, vehicleModel.owner);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PRICE, vehicleModel.price);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PARKING, vehicleModel.parking);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PARKED, vehicleModel.parked);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, vehicleModel.gas);
+                NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_KMS, vehicleModel.kms);
+
+                // Añadimos el tunning
+                Mechanic.AddTunningToVehicle(vehicle);
             }
-            catch (Exception ex)
+
+            // Borramos el timer de la lista
+            Timer vehicleRespawnTimer = vehicleRespawnTimerList[vehicleModel.id];
+            if (vehicleRespawnTimer != null)
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleDeathTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleDeathTimer] " + ex.StackTrace);
+                vehicleRespawnTimer.Dispose();
+                vehicleRespawnTimerList.Remove(vehicleModel.id);
             }
         }
 
         private void OnVehicleRefueled(object vehicleObject)
         {
-            try
+            Vehicle vehicle = (Vehicle)vehicleObject;
+            Client player = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
+
+            // Reseteamos las variables
+            NAPI.Data.ResetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REFUELING);
+
+            // Borramos el timer de la lista
+            if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
             {
-                Vehicle vehicle = (Vehicle)vehicleObject;
-                Client player = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
-
-                // Reseteamos las variables
-                NAPI.Data.ResetEntityData(vehicle, EntityData.VEHICLE_REFUELING);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REFUELING);
-
-                // Borramos el timer de la lista
-                if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
-                {
-                    // Eliminamos el timer
-                    gasTimer.Dispose();
-                    gasTimerList.Remove(player.Value);
-                }
-
-                // Avisamos al jugador
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_REFUELED);
+                // Eliminamos el timer
+                gasTimer.Dispose();
+                gasTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleRefueled] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnVehicleRefueled] " + ex.StackTrace);
-            }
+
+            // Avisamos al jugador
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_VEHICLE_REFUELED);
         }
 
         [ServerEvent(Event.PlayerEnterCheckpoint)]

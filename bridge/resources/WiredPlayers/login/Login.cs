@@ -12,7 +12,7 @@ namespace WiredPlayers.login
     public class Login : Script
     {
         private static Dictionary<String, Timer> spawnTimerList = new Dictionary<String, Timer>();
-        
+
         public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (spawnTimerList.TryGetValue(player.SocialClubName, out Timer spawnTimer) == true)
@@ -258,28 +258,20 @@ namespace WiredPlayers.login
 
         public void OnPlayerUpdateTimer(object playerObject)
         {
-            try
-            {
-                Client player = (Client)playerObject;
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                List<TattooModel> playerTattooList = Globals.GetPlayerTattoos(playerId);
+            Client player = (Client)playerObject;
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+            List<TattooModel> playerTattooList = Globals.GetPlayerTattoos(playerId);
 
-                // Borramos el timer de la lista
-                Timer spawnTimer = spawnTimerList[player.SocialClubName];
-                if (spawnTimer != null)
-                {
-                    spawnTimer.Dispose();
-                    spawnTimerList.Remove(player.SocialClubName);
-                }
-
-                // Llamamos al evento del cliente
-                NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", player, NAPI.Util.ToJson(playerTattooList));
-            }
-            catch (Exception ex)
+            // Borramos el timer de la lista
+            Timer spawnTimer = spawnTimerList[player.SocialClubName];
+            if (spawnTimer != null)
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerUpdateTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnPlayerUpdateTimer] " + ex.StackTrace);
+                spawnTimer.Dispose();
+                spawnTimerList.Remove(player.SocialClubName);
             }
+
+            // Llamamos al evento del cliente
+            NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", player, NAPI.Util.ToJson(playerTattooList));
         }
 
         [ServerEvent(Event.PlayerConnected)]

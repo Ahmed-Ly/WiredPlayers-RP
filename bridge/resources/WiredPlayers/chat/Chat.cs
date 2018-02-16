@@ -204,56 +204,49 @@ namespace WiredPlayers.chat
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client player, string message)
         {
-            try
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
             {
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
-                {
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_CANT_CHAT);
-                }
-                else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
-                {
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
-                }
-                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ON_AIR) == true)
-                {
-                    WeazelNews.SendNewsMessage(player, message);
-                }
-                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PHONE_TALKING) == true)
-                {
-                    // Obtenemos el jugador destinatario
-                    Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE_TALKING);
-
-                    // Comprobación de la longitud del mensaje
-                    String secondMessage = String.Empty;
-
-                    if (message.Length > Constants.CHAT_LENGTH)
-                    {
-                        // El mensaje tiene una longitud de dos líneas
-                        secondMessage = message.Substring(Constants.CHAT_LENGTH, message.Length - Constants.CHAT_LENGTH);
-                        message = message.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
-                    }
-
-                    // Mandamos el mensaje al jugador y al objetivo
-                    NAPI.Chat.SendChatMessageToPlayer(player, secondMessage.Length > 0 ? Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message + "..." : Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message);
-                    NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message + "..." : Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message);
-                    if (secondMessage.Length > 0)
-                    {
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_CHAT_PHONE + secondMessage);
-                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_PHONE + secondMessage);
-                    }
-
-                    // Mandamos el mensaje a los jugadores cercanos
-                    SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
-                }
-                else
-                {
-                    SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
-                    NAPI.Util.ConsoleOutput("[ID:" + player.Value + "]" + player.Name + " dice: " + message);
-                }
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_CANT_CHAT);
             }
-            catch (Exception ex)
+            else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION Chat.OnChatMessageHandler] " + ex.Message);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
+            }
+            else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ON_AIR) == true)
+            {
+                WeazelNews.SendNewsMessage(player, message);
+            }
+            else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PHONE_TALKING) == true)
+            {
+                // Obtenemos el jugador destinatario
+                Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE_TALKING);
+
+                // Comprobación de la longitud del mensaje
+                String secondMessage = String.Empty;
+
+                if (message.Length > Constants.CHAT_LENGTH)
+                {
+                    // El mensaje tiene una longitud de dos líneas
+                    secondMessage = message.Substring(Constants.CHAT_LENGTH, message.Length - Constants.CHAT_LENGTH);
+                    message = message.Remove(Constants.CHAT_LENGTH, secondMessage.Length);
+                }
+
+                // Mandamos el mensaje al jugador y al objetivo
+                NAPI.Chat.SendChatMessageToPlayer(player, secondMessage.Length > 0 ? Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message + "..." : Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message);
+                NAPI.Chat.SendChatMessageToPlayer(target, secondMessage.Length > 0 ? Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message + "..." : Constants.COLOR_CHAT_PHONE + "[Teléfono] " + player.Name + " dice: " + message);
+                if (secondMessage.Length > 0)
+                {
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_CHAT_PHONE + secondMessage);
+                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_PHONE + secondMessage);
+                }
+
+                // Mandamos el mensaje a los jugadores cercanos
+                SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_PHONE, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f, true);
+            }
+            else
+            {
+                SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 10.0f);
+                NAPI.Util.ConsoleOutput("[ID:" + player.Value + "]" + player.Name + " dice: " + message);
             }
         }
 

@@ -25,30 +25,22 @@ namespace WiredPlayers.fishing
 
         private void OnFishingPrewarnTimer(object playerObject)
         {
-            try
+            Client player = (Client)playerObject;
+
+            // Mandamos el mensaje y aplicamos la animación
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SOMETHING_BAITED);
+            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
+
+            // Borramos el timer de la lista
+            if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
-                Client player = (Client)playerObject;
-
-                // Mandamos el mensaje y aplicamos la animación
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SOMETHING_BAITED);
-                NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
-
-                // Borramos el timer de la lista
-                if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
-                {
-                    // Eliminamos el timer
-                    fishingTimer.Dispose();
-                    fishingTimerList.Remove(player.Value);
-                }
-
-                // Empezamos el minijuego
-                NAPI.ClientEvent.TriggerClientEvent(player, "fishingBaitTaken");
+                // Eliminamos el timer
+                fishingTimer.Dispose();
+                fishingTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnFishingPrewarnTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnFishingPrewarnTimer] " + ex.StackTrace);
-            }
+
+            // Empezamos el minijuego
+            NAPI.ClientEvent.TriggerClientEvent(player, "fishingBaitTaken");
         }
 
         private int GetPlayerFishingLevel(Client player)

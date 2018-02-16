@@ -31,101 +31,85 @@ namespace WiredPlayers.garbage
 
         private void OnGarbageTimer(object playerObject)
         {
-            try
+            Client player = (Client)playerObject;
+            Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
+            Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+
+            // Respawneamos el vehículo
+            RespawnGarbageVehicle(vehicle);
+
+            // Cancelamos la ruta
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
+            NAPI.Data.ResetEntityData(target, EntityData.PLAYER_JOB_CHECKPOINT);
+
+            // Borramos el timer de la lista
+            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
             {
-                Client player = (Client)playerObject;
-                Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
-                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
-
-                // Respawneamos el vehículo
-                RespawnGarbageVehicle(vehicle);
-
-                // Cancelamos la ruta
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
-                NAPI.Data.ResetEntityData(target, EntityData.PLAYER_JOB_CHECKPOINT);
-
-                // Borramos el timer de la lista
-                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
-                {
-                    // Eliminamos el timer
-                    garbageTimer.Dispose();
-                    garbageTimerList.Remove(player.Value);
-                }
-
-                // Avisamos a los jugadores
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
-                NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
+                // Eliminamos el timer
+                garbageTimer.Dispose();
+                garbageTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageTimer] " + ex.StackTrace);
-            }
+
+            // Avisamos a los jugadores
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
+            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
         }
 
         private void OnGarbageCollectedTimer(object playerObject)
         {
-            try
+            Client player = (Client)playerObject;
+            Client driver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
+
+            // Recogemos la bolsa de basura
+            GTANetworkAPI.Object trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
+            NAPI.Player.StopPlayerAnimation(player);
+            NAPI.Entity.DeleteEntity(trashBag);
+
+            // Obtenemos el total de checkpoints
+            int route = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_ROUTE);
+            int checkPoint = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT) + 1;
+            int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
+
+            // Obtenemos el checkpoint actual
+            Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
+
+            if (checkPoint < totalCheckPoints)
             {
-                Client player = (Client)playerObject;
-                Client driver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
+                Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint);
+                Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint + 1);
 
-                // Recogemos la bolsa de basura
-                GTANetworkAPI.Object trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
-                NAPI.Player.StopPlayerAnimation(player);
-                NAPI.Entity.DeleteEntity(trashBag);
+                // Avanzamos al siguiente checkpoint
+                NAPI.Entity.SetEntityPosition(garbageCheckpoint, currentGarbagePosition);
+                NAPI.Checkpoint.SetCheckpointDirection(garbageCheckpoint, nextGarbagePosition);
+                NAPI.Data.SetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
+                NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", currentGarbagePosition);
+                NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
 
-                // Obtenemos el total de checkpoints
-                int route = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_ROUTE);
-                int checkPoint = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT) + 1;
-                int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
-
-                // Obtenemos el checkpoint actual
-                Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
-
-                if (checkPoint < totalCheckPoints)
-                {
-                    Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint);
-                    Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint + 1);
-
-                    // Avanzamos al siguiente checkpoint
-                    NAPI.Entity.SetEntityPosition(garbageCheckpoint, currentGarbagePosition);
-                    NAPI.Checkpoint.SetCheckpointDirection(garbageCheckpoint, nextGarbagePosition);
-                    NAPI.Data.SetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
-                    NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", currentGarbagePosition);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
-
-                    // Añadimos el objeto basura
-                    trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, trashBag);
-                }
-                else
-                {
-                    Vector3 garbagePosition = new Vector3(-339.0206f, -1560.117f, 25.23038f);
-                    NAPI.Entity.SetEntityModel(garbageCheckpoint, 4);
-                    NAPI.Entity.SetEntityPosition(garbageCheckpoint, garbagePosition);
-                    NAPI.Chat.SendChatMessageToPlayer(driver, Constants.COLOR_INFO + Messages.INF_ROUTE_FINISHED);
-                    NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", garbagePosition);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
-                }
-
-                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
-                {
-                    // Eliminamos el timer
-                    garbageTimer.Dispose();
-                    garbageTimerList.Remove(player.Value);
-                }
-
-                // Mandamos el mensaje de que se ha recogido la bolsa de basura
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_GARBAGE_COLLECTED);
+                // Añadimos el objeto basura
+                trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, trashBag);
             }
-            catch (Exception ex)
+            else
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageCollectedTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnGarbageCollectedTimer] " + ex.StackTrace);
+                Vector3 garbagePosition = new Vector3(-339.0206f, -1560.117f, 25.23038f);
+                NAPI.Entity.SetEntityModel(garbageCheckpoint, 4);
+                NAPI.Entity.SetEntityPosition(garbageCheckpoint, garbagePosition);
+                NAPI.Chat.SendChatMessageToPlayer(driver, Constants.COLOR_INFO + Messages.INF_ROUTE_FINISHED);
+                NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", garbagePosition);
+                NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
             }
+
+            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
+            {
+                // Eliminamos el timer
+                garbageTimer.Dispose();
+                garbageTimerList.Remove(player.Value);
+            }
+
+            // Mandamos el mensaje de que se ha recogido la bolsa de basura
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_GARBAGE_COLLECTED);
         }
 
         private Vector3 GetGarbageCheckPointPosition(int route, int checkPoint)

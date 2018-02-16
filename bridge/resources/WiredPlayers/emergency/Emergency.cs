@@ -24,47 +24,39 @@ namespace WiredPlayers.emergency
 
         public void OnDeathTimer(object death)
         {
-            try
+            Client player = ((DeathModel)death).player;
+            Client killer = ((DeathModel)death).killer;
+            uint weapon = ((DeathModel)death).weapon;
+            int totalSeconds = Globals.GetTotalSeconds();
+
+            if (killer.Value == Constants.ENVIRONMENT_KILL)
             {
-                Client player = ((DeathModel)death).player;
-                Client killer = ((DeathModel)death).killer;
-                uint weapon = ((DeathModel)death).weapon;
-                int totalSeconds = Globals.GetTotalSeconds();
+                // Miramos si estaba muerto
+                int databaseKiller = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
 
-                if (killer.Value == Constants.ENVIRONMENT_KILL)
+                if (databaseKiller == 0)
                 {
-                    // Miramos si estaba muerto
-                    int databaseKiller = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
-
-                    if (databaseKiller == 0)
-                    {
-                        // Ponemos al entorno como causante real
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
-                    }
-                }
-                else
-                {
-                    int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_SQL_ID);
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
-                }
-
-                NAPI.Entity.SetEntityInvincible(player, true);
-                NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
-
-                // Borramos el timer de la lista
-                Timer deathTimer = deathTimerList[player.Value];
-                if (deathTimer != null)
-                {
-                    deathTimer.Dispose();
-                    deathTimerList.Remove(player.Value);
+                    // Ponemos al entorno como causante real
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnDeathTimer] " + ex.StackTrace);
+                int killerId = NAPI.Data.GetEntityData(killer, EntityData.PLAYER_SQL_ID);
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
             }
+
+            // Borramos el timer de la lista
+            Timer deathTimer = deathTimerList[player.Value];
+            if (deathTimer != null)
+            {
+                deathTimer.Dispose();
+                deathTimerList.Remove(player.Value);
+            }
+
+            NAPI.Entity.SetEntityInvincible(player, true);
+            NAPI.Data.SetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN, totalSeconds + 240);
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
         }
 
         private int GetRemainingBlood()

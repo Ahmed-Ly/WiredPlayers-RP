@@ -11,7 +11,7 @@ namespace WiredPlayers.drivingschool
     public class DrivingSchool : Script
     {
         private static Dictionary<int, Timer> drivingSchoolTimerList = new Dictionary<int, Timer>();
-        
+
 
         public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
@@ -25,30 +25,22 @@ namespace WiredPlayers.drivingschool
 
         private void OnDrivingTimer(object playerObject)
         {
-            try
+            // Obtenemos el jugador y su vehículo
+            Client player = (Client)playerObject;
+            Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
+
+            // Finalizamos el examen
+            FinishDrivingExam(player, vehicle);
+
+            // Borramos el timer de la lista
+            if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
             {
-                // Obtenemos el jugador y su vehículo
-                Client player = (Client)playerObject;
-                Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
-
-                // Finalizamos el examen
-                FinishDrivingExam(player, vehicle);
-
-                // Borramos el timer de la lista
-                if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
-                {
-                    drivingSchoolTimer.Dispose();
-                    drivingSchoolTimerList.Remove(player.Value);
-                }
-
-                // Enviamos un mensaje al jugador
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_FAILED_NOT_IN_VEHICLE);
+                drivingSchoolTimer.Dispose();
+                drivingSchoolTimerList.Remove(player.Value);
             }
-            catch (Exception ex)
-            {
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnDrivingTimer] " + ex.Message);
-                NAPI.Util.ConsoleOutput("[EXCEPTION OnDrivingTimer] " + ex.StackTrace);
-            }
+
+            // Enviamos un mensaje al jugador
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_FAILED_NOT_IN_VEHICLE);
         }
 
         private void FinishDrivingExam(Client player, Vehicle vehicle)
