@@ -17,12 +17,23 @@ namespace WiredPlayers.faction
             new JobPickModel(Constants.JOB_THIEF, new Vector3(-198.225f, -1699.521f, 33.46679f), Messages.DESC_JOB_THIEF)
         };
 
-        public Job()
+        public static int GetJobPoints(Client player, int job)
         {
-            Event.OnResourceStart += OnResourceStart;
+            String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+            return Int32.Parse(jobPointsString.Split(',')[job]);
         }
 
-        private void OnResourceStart()
+        public static void SetJobPoints(Client player, int job, int points)
+        {
+            String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+            String[] jobPointsArray = jobPointsString.Split(',');
+            jobPointsArray[job] = points.ToString();
+            jobPointsString = String.Join(",", jobPointsArray);
+            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, jobPointsString);
+        }
+
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
         {
             Blip trashBlip = NAPI.Blip.CreateBlip(new Vector3(-322.088f, -1546.014f, 31.01991f));
             NAPI.Blip.SetBlipName(trashBlip, "Trabajo de basurero");
@@ -44,21 +55,6 @@ namespace WiredPlayers.faction
                 NAPI.TextLabel.CreateTextLabel("/empleo", job.position, 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
                 NAPI.TextLabel.CreateTextLabel("Escribe el comando para obtener más información del empleo", new Vector3(job.position.X, job.position.Y, job.position.Z - 0.1f), 10.0f, 0.5f, 4, new Color(0, 0, 0), false, 0);
             }
-        }
-
-        public static int GetJobPoints(Client player, int job)
-        {
-            String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
-            return Int32.Parse(jobPointsString.Split(',')[job]);
-        }
-
-        public static void SetJobPoints(Client player, int job, int points)
-        {
-            String jobPointsString = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
-            String[] jobPointsArray = jobPointsString.Split(',');
-            jobPointsArray[job] = points.ToString();
-            jobPointsString = String.Join(",", jobPointsArray);
-            NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_POINTS, jobPointsString);
         }
 
         [Command("empleo", Messages.GEN_JOB_COMMAND)]

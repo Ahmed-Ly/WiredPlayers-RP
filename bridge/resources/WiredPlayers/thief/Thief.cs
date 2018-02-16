@@ -16,50 +16,7 @@ namespace WiredPlayers.thief
     {
         private static Dictionary<int, Timer> robberyTimerList = new Dictionary<int, Timer>();
 
-        public Thief()
-        {
-            Event.OnResourceStart += OnResourceStart;
-            Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-        }
-
-        private void OnResourceStart()
-        {
-            foreach (Vector3 pawnShop in Constants.PAWN_SHOP)
-            {
-                // Creación de la tienda de empeños
-                NAPI.TextLabel.CreateTextLabel("Tienda de empeños", pawnShop, 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
-            }
-        }
-
-        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
-        {
-            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_THIEF)
-            {
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HOTWIRING) == true)
-                {
-                    // Reseteamos la animación y el puente
-                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_HOTWIRING);
-                    NAPI.Player.StopPlayerAnimation(player);
-
-                    // Borramos el timer de la lista
-                    if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
-                    {
-                        // Eliminamos el timer
-                        robberyTimer.Dispose();
-                        robberyTimerList.Remove(player.Value);
-                    }
-
-                    // Mandamos el mensaje al jugador
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_STOPPED_HOTWIRE);
-                }
-                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ROBBERY_START) == true)
-                {
-                    OnPlayerRob(player);
-                }
-            }
-        }
-
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
             {
@@ -253,6 +210,45 @@ namespace WiredPlayers.thief
             }
         }
 
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
+        {
+            foreach (Vector3 pawnShop in Constants.PAWN_SHOP)
+            {
+                // Creación de la tienda de empeños
+                NAPI.TextLabel.CreateTextLabel("Tienda de empeños", pawnShop, 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
+            }
+        }
+
+        [ServerEvent(Event.PlayerExitVehicle)]
+        public void OnPlayerExitVehicle(Client player, Vehicle vehicle)
+        {
+            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_THIEF)
+            {
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HOTWIRING) == true)
+                {
+                    // Reseteamos la animación y el puente
+                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_HOTWIRING);
+                    NAPI.Player.StopPlayerAnimation(player);
+
+                    // Borramos el timer de la lista
+                    if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
+                    {
+                        // Eliminamos el timer
+                        robberyTimer.Dispose();
+                        robberyTimerList.Remove(player.Value);
+                    }
+
+                    // Mandamos el mensaje al jugador
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_STOPPED_HOTWIRE);
+                }
+                else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ROBBERY_START) == true)
+                {
+                    OnPlayerRob(player);
+                }
+            }
+        }
+
         [Command("forzar")]
         public void ForzarCommand(Client player)
         {
@@ -355,9 +351,9 @@ namespace WiredPlayers.thief
                         robberyTimerList.Add(player.Value, robberyTimer);
                     }
                 }
-                else if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+                else if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
                 {
-                    Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+                    Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
                     if (Vehicles.HasPlayerVehicleKeys(player, vehicle) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_CANT_ROB_OWN_VEHICLE);
@@ -410,8 +406,8 @@ namespace WiredPlayers.thief
             }
             else
             {
-                Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
-                if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+                Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
                 }

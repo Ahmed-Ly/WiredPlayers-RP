@@ -10,7 +10,7 @@ namespace WiredPlayers.hooker
     {
         public static Dictionary<int, Timer> sexTimerList = new Dictionary<int, Timer>();
 
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
             {
@@ -69,7 +69,7 @@ namespace WiredPlayers.hooker
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ALREADY_FUCKING);
             }
-            else if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_PASSENGER)
+            else if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.RightFront)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_PASSENGER);
             }
@@ -77,7 +77,7 @@ namespace WiredPlayers.hooker
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if (NAPI.Player.GetPlayerVehicleSeat(target) != Constants.VEHICLE_SEAT_DRIVER)
+                if (NAPI.Player.GetPlayerVehicleSeat(target) != (int)VehicleSeat.Driver)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CLIENT_NOT_VEHICLE_DRIVING);
                 }

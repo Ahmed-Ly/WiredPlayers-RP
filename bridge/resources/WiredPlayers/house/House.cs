@@ -115,12 +115,9 @@ namespace WiredPlayers.house
         }
 
         [RemoteEvent("wardrobeClothesItemSelected")]
-        public void WardrobeClothesItemSelectedEvent(Client player, params object[] arguments)
+        public void WardrobeClothesItemSelectedEvent(Client player, int clothesId, int type, int slot)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-            int clothesId = Int32.Parse(arguments[0].ToString());
-            int type = Int32.Parse(arguments[1].ToString());
-            int slot = Int32.Parse(arguments[2].ToString());
 
             // Quitamos la ropa que tenía puesta y ponemos la nueva
             foreach (ClothesModel clothes in Globals.clothesList)

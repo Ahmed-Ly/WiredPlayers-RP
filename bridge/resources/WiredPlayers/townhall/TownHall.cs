@@ -13,21 +13,16 @@ namespace WiredPlayers.TownHall
     {
         private TextLabel townHallTextLabel;
 
-        public TownHall()
-        {
-            Event.OnResourceStart += OnResourceStartHandler;
-        }
-
-        private void OnResourceStartHandler()
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
         {
             townHallTextLabel = NAPI.TextLabel.CreateTextLabel("/ayuntamiento", new Vector3(-139.2177f, -631.8386f, 168.86f), 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
             NAPI.TextLabel.CreateTextLabel("Escribe el comando para ver los trámites disponibles", new Vector3(-139.2177f, -631.8386f, 168.76f), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
         }
 
         [RemoteEvent("documentOptionSelected")]
-        public void DocumentOptionSelectedEvent(Client player, params object[] arguments)
+        public void DocumentOptionSelectedEvent(Client player, int tramitation)
         {
-            int tramitation = Convert.ToInt32(arguments[0]);
             int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
 
             switch (tramitation)
@@ -104,10 +99,10 @@ namespace WiredPlayers.TownHall
         }
 
         [RemoteEvent("payPlayerFines")]
-        public void PayPlayerFinesEvent(Client player, params object[] arguments)
+        public void PayPlayerFinesEvent(Client player, String finesJson)
         {
             List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
-            List<FineModel> removedFines = JsonConvert.DeserializeObject<List<FineModel>>(arguments[0].ToString());
+            List<FineModel> removedFines = JsonConvert.DeserializeObject<List<FineModel>>(finesJson);
             int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             int finesProcessed = 0;
             int amount = 0;

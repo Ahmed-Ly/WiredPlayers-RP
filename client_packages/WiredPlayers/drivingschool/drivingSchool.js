@@ -1,5 +1,4 @@
-﻿let licenseBrowser = null;
-let licenseBlip = null;
+﻿let licenseBlip = null;
 let questionsArray = [];
 let answersArray = [];
 
@@ -8,10 +7,12 @@ mp.events.add('startLicenseExam', (questionsJson, answersJson) => {
 	questionsArray = JSON.parse(questionsJson);
 	answersArray = JSON.parse(answersJson);
 
-	// Mostramos la ventana del examen
-	licenseBrowser = mp.browsers.new('package://WiredPlayers/statics/html/licenseExam.html');
-	mp.gui.cursor.visible = true;
+	// Desactivamos el chat
 	mp.gui.chat.activate(false);
+	mp.gui.chat.show(false);
+	
+	// Mostramos la ventana del examen
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/licenseExam.html']);
 });
 
 mp.events.add('getNextTestQuestion', () => {
@@ -32,7 +33,7 @@ mp.events.add('getNextTestQuestion', () => {
 
 	// Rellenamos los datos en el navegador
 	let answersJson = JSON.stringify(answers);
-    licenseBrowser.execute(`populateQuestionAnswers('${questionText}', '${answersJson}');`);
+	mp.events.call('executeFunction', ['populateQuestionAnswers', questionText, answersJson]);
 });
 
 mp.events.add('submitAnswer', (answerId) => {
@@ -42,10 +43,11 @@ mp.events.add('submitAnswer', (answerId) => {
 
 mp.events.add('finishLicenseExam', () => {
 	// Borramos la pantalla de examen
-	licenseBrowser.destroy();
-	mp.gui.cursor.visible = false;
+	mp.events.call('destroyBrowser');
+	
+	// Reactivamos el chat
 	mp.gui.chat.activate(true);
-	licenseBrowser = null;
+	mp.gui.chat.show(true);
 });
 
 mp.events.add('showLicenseCheckpoint', (position) => {

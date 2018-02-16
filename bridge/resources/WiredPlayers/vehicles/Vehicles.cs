@@ -19,14 +19,6 @@ namespace WiredPlayers.vehicles
         private static Dictionary<int, Timer> gasTimerList = new Dictionary<int, Timer>();
         private static Dictionary<int, Timer> vehicleRespawnTimerList = new Dictionary<int, Timer>();
 
-        public Vehicles()
-        {
-            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
-            Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
-            Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-            Event.OnVehicleDeath += OnVehicleDeath;
-        }
-
         public void LoadDatabaseVehicles()
         {
             List<VehicleModel> vehicleList = Database.LoadAllVehicles();
@@ -249,7 +241,7 @@ namespace WiredPlayers.vehicles
             return trunkUsed;
         }
 
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
             {
@@ -257,114 +249,6 @@ namespace WiredPlayers.vehicles
                 gasTimer.Dispose();
                 gasTimerList.Remove(player.Value);
             }
-        }
-
-        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PARKED_VEHICLE) == true)
-            {
-                // Obtenemos el checkpoint con el localizador
-                Checkpoint vehicleCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PARKED_VEHICLE);
-
-                if (vehicleCheckpoint == checkpoint)
-                {
-                    // Borramos el checkpoint
-                    NAPI.Entity.DeleteEntity(vehicleCheckpoint);
-
-                    // Borramos las marcas
-                    NAPI.ClientEvent.TriggerClientEvent(player, "deleteVehicleLocation");
-
-                    // Reseteamos la variable de localización
-                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PARKED_VEHICLE);
-                }
-            }
-        }
-
-        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
-        {
-            // Quitamos el cinturón si lo lleva puesto
-            if (NAPI.Player.GetPlayerSeatbelt(player) == true)
-            {
-                NAPI.Player.SetPlayerSeatbelt(player, false);
-                Chat.SendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
-            }
-
-            // Guardamos los valores del velocímetro
-            NAPI.ClientEvent.TriggerClientEvent(player, "resetSpeedometer", vehicle);
-        }
-
-        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
-        {
-            if (Convert.ToInt32(seat) == Constants.VEHICLE_SEAT_DRIVER)
-            {
-                if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) == true)
-                {
-                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_TESTING_VEHICLE) == true)
-                    {
-                        Vehicle testingVehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_TESTING_VEHICLE);
-                        if (vehicle != testingVehicle)
-                        {
-                            NAPI.Player.WarpPlayerOutOfVehicle(player);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_TESTING_VEHICLE);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        NAPI.Player.WarpPlayerOutOfVehicle(player);
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_TESTING_VEHICLE);
-                        return;
-                    }
-                }
-                else
-                {
-                    // Obtenemos la facción del vehículo
-                    int vehFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
-
-                    if (vehFaction > 0)
-                    {
-                        // Obtenemos el trabajo y facción del jugador
-                        int playerFaction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
-                        int playerJob = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) + Constants.MAX_FACTION_VEHICLES;
-
-                        if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && vehFaction == Constants.FACTION_ADMIN)
-                        {
-                            NAPI.Player.WarpPlayerOutOfVehicle(player);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ADMIN_VEHICLE);
-                            return;
-                        }
-                        else if (vehFaction > 0 && vehFaction < Constants.MAX_FACTION_VEHICLES && playerFaction != vehFaction && vehFaction != Constants.FACTION_DRIVING_SCHOOL && vehFaction != Constants.FACTION_ADMIN)
-                        {
-                            NAPI.Player.WarpPlayerOutOfVehicle(player);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_IN_VEHICLE_FACTION);
-                            return;
-                        }
-                        else if (vehFaction > Constants.MAX_FACTION_VEHICLES && playerJob != vehFaction)
-                        {
-                            NAPI.Player.WarpPlayerOutOfVehicle(player);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_IN_VEHICLE_JOB);
-                            return;
-                        }
-                    }
-                }
-
-                // Avisamos al conductor de cómo encender el motor
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOW_TO_START_ENGINE);
-
-                // Inicializamos el velocímetro
-                float kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
-                float gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
-                NAPI.ClientEvent.TriggerClientEvent(player, "initializeSpeedometer", vehicle, kms, gas);
-            }
-        }
-
-        private void OnVehicleDeath(Vehicle vehicle)
-        {
-            // Respawneamos el vehículo al de unos segundos
-            int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-            Timer vehicleRespawnTimer = new Timer(OnVehicleDeathTimer, vehicle, 7500, Timeout.Infinite);
-            vehicleRespawnTimerList.Add(vehicleId, vehicleRespawnTimer);
         }
 
         private void OnVehicleDeathTimer(object vehicleObject)
@@ -510,19 +394,131 @@ namespace WiredPlayers.vehicles
             }
         }
 
+        [ServerEvent(Event.PlayerEnterCheckpoint)]
+        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
+        {
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PARKED_VEHICLE) == true)
+            {
+                // Obtenemos el checkpoint con el localizador
+                Checkpoint vehicleCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PARKED_VEHICLE);
+
+                if (vehicleCheckpoint == checkpoint)
+                {
+                    // Borramos el checkpoint
+                    NAPI.Entity.DeleteEntity(vehicleCheckpoint);
+
+                    // Borramos las marcas
+                    NAPI.ClientEvent.TriggerClientEvent(player, "deleteVehicleLocation");
+
+                    // Reseteamos la variable de localización
+                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PARKED_VEHICLE);
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerEnterVehicle)]
+        public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
+        {
+            if (Convert.ToInt32(seat) == (int)VehicleSeat.Driver)
+            {
+                if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) == true)
+                {
+                    if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_TESTING_VEHICLE) == true)
+                    {
+                        Vehicle testingVehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_TESTING_VEHICLE);
+                        if (vehicle != testingVehicle)
+                        {
+                            NAPI.Player.WarpPlayerOutOfVehicle(player);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_TESTING_VEHICLE);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        NAPI.Player.WarpPlayerOutOfVehicle(player);
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_TESTING_VEHICLE);
+                        return;
+                    }
+                }
+                else
+                {
+                    // Obtenemos la facción del vehículo
+                    int vehFaction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION);
+
+                    if (vehFaction > 0)
+                    {
+                        // Obtenemos el trabajo y facción del jugador
+                        int playerFaction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
+                        int playerJob = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) + Constants.MAX_FACTION_VEHICLES;
+
+                        if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && vehFaction == Constants.FACTION_ADMIN)
+                        {
+                            NAPI.Player.WarpPlayerOutOfVehicle(player);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ADMIN_VEHICLE);
+                            return;
+                        }
+                        else if (vehFaction > 0 && vehFaction < Constants.MAX_FACTION_VEHICLES && playerFaction != vehFaction && vehFaction != Constants.FACTION_DRIVING_SCHOOL && vehFaction != Constants.FACTION_ADMIN)
+                        {
+                            NAPI.Player.WarpPlayerOutOfVehicle(player);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_IN_VEHICLE_FACTION);
+                            return;
+                        }
+                        else if (vehFaction > Constants.MAX_FACTION_VEHICLES && playerJob != vehFaction)
+                        {
+                            NAPI.Player.WarpPlayerOutOfVehicle(player);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_IN_VEHICLE_JOB);
+                            return;
+                        }
+                    }
+                }
+
+                // Avisamos al conductor de cómo encender el motor
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOW_TO_START_ENGINE);
+
+                // Inicializamos el velocímetro
+                float kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
+                float gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
+                NAPI.ClientEvent.TriggerClientEvent(player, "initializeSpeedometer", vehicle, kms, gas);
+            }
+        }
+
+        [ServerEvent(Event.PlayerExitVehicle)]
+        public void OnPlayerExitVehicle(Client player, Vehicle vehicle)
+        {
+            // Quitamos el cinturón si lo lleva puesto
+            if (NAPI.Player.GetPlayerSeatbelt(player) == true)
+            {
+                NAPI.Player.SetPlayerSeatbelt(player, false);
+                Chat.SendMessageToNearbyPlayers(player, Messages.INF_SEATBELT_UNFASTEN, Constants.MESSAGE_ME, 20.0f);
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
+            }
+
+            // Guardamos los valores del velocímetro
+            NAPI.ClientEvent.TriggerClientEvent(player, "resetSpeedometer", vehicle);
+        }
+
+        [ServerEvent(Event.VehicleDeath)]
+        public void OnVehicleDeath(Vehicle vehicle)
+        {
+            // Respawneamos el vehículo al de unos segundos
+            int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+            Timer vehicleRespawnTimer = new Timer(OnVehicleDeathTimer, vehicle, 7500, Timeout.Infinite);
+            vehicleRespawnTimerList.Add(vehicleId, vehicleRespawnTimer);
+        }
+
         [RemoteEvent("stopPlayerCar")]
-        public void StopPlayerCarEvent(Client player, params object[] arguments)
+        public void StopPlayerCarEvent(Client player)
         {
             // Paramos el motor del vehículo
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
             NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
         }
 
         [RemoteEvent("engineOnEventKey")]
-        public void EngineOnEventKeyEvent(Client player, params object[] arguments)
+        public void EngineOnEventKeyEvent(Client player)
         {
             // Obtenemos los datos del vehículo
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
 
             if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) == false)
             {
@@ -574,12 +570,11 @@ namespace WiredPlayers.vehicles
         }
 
         [RemoteEvent("saveVehicleConsumes")]
-        public void SaveVehicleConsumesEvent(Client player, params object[] arguments)
+        public void SaveVehicleConsumesEvent(Client player, Vehicle vehicle, float kms, float gas)
         {
             // Actualizamos los kilómetros y gasolina
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>((NetHandle)arguments[0]);
-            NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_KMS, float.Parse(arguments[1].ToString()));
-            NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, float.Parse(arguments[2].ToString()));
+            NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_KMS, kms);
+            NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, gas);
         }
 
         [Command("cinturon")]
@@ -768,7 +763,7 @@ namespace WiredPlayers.vehicles
                                         // Miramos si el vehículo tiene conductor
                                         foreach (Client target in NAPI.Vehicle.GetVehicleOccupants(vehicle))
                                         {
-                                            if (NAPI.Player.GetPlayerVehicleSeat(target) == Constants.VEHICLE_SEAT_DRIVER)
+                                            if (NAPI.Player.GetPlayerVehicleSeat(target) == (int)VehicleSeat.Driver)
                                             {
                                                 Vector3 weaponPosition = new Vector3(-2085.543f, 2600.857f, -0.4712417f);
                                                 Checkpoint weaponCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, weaponPosition, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
@@ -1197,7 +1192,7 @@ namespace WiredPlayers.vehicles
         [Command("desguazar")]
         public void DesguazarCommand(Client player)
         {
-            if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+            if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
             {
                 ParkingModel parking = Parking.GetClosestParking(player, 3.5f);
                 if (parking != null && parking.type == Constants.PARKING_TYPE_SCRAPYARD)

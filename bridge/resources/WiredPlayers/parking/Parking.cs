@@ -149,7 +149,7 @@ namespace WiredPlayers.parking
         [Command("aparcar")]
         public void AparcarCommand(Client player)
         {
-            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
             }
@@ -159,7 +159,7 @@ namespace WiredPlayers.parking
             }
             else
             {
-                Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+                Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
                 if (Vehicles.HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_POLICE)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);

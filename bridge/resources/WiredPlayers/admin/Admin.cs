@@ -388,7 +388,7 @@ namespace WiredPlayers.admin
                                         {
                                             if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
                                             {
-                                                veh = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+                                                veh = NAPI.Player.GetPlayerVehicle(player);
                                                 vehicle.position = NAPI.Entity.GetEntityPosition(veh);
                                                 vehicle.rotation = NAPI.Entity.GetEntityRotation(veh);
                                                 vehicle.id = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
@@ -487,9 +487,9 @@ namespace WiredPlayers.admin
                         case "arrancar":
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
-                                if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+                                if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
                                 {
-                                    veh = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+                                    veh = NAPI.Player.GetPlayerVehicle(player);
                                     NAPI.Vehicle.SetVehicleEngineStatus(veh, true);
                                 }
                                 else

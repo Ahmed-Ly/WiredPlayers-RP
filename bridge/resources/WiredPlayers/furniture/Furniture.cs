@@ -49,14 +49,9 @@ namespace WiredPlayers.furniture
         }
 
         [RemoteEvent("moveFurniture")]
-        public void MoveFurnitureEvent(Client player, params object[] arguments)
+        public void MoveFurnitureEvent(Client player, int furnitureId, Vector3 position)
         {
-            int furnitureId = Int32.Parse((String)arguments[0]);
-            float posX = float.Parse(((String)arguments[1]).Replace(",", "."));
-            float posY = float.Parse(((String)arguments[2]).Replace(",", "."));
-            float posZ = float.Parse(((String)arguments[3]).Replace(",", "."));
             FurnitureModel furniture = GetFurnitureById(furnitureId);
-            Vector3 position = new Vector3(posX, posY, posZ);
             NAPI.Entity.SetEntityPosition(furniture.handle, position);
         }
 

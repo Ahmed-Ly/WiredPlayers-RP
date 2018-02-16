@@ -64,16 +64,11 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("repaintVehicle")]
-        public void RepaintVehicleEvent(Client player, params object[] arguments)
+        public void RepaintVehicleEvent(Client player, int colorType, String firstColor, String secondColor, int pearlescentColor, int vehiclePaid)
         {
-            int colorType = Int32.Parse(arguments[0].ToString());
-            String firstColor = arguments[1].ToString();
-            String secondColor = arguments[2].ToString();
-            int pearlescentColor = Int32.Parse(arguments[3].ToString());
-            int vehiclePaid = Int32.Parse(arguments[4].ToString());
+            // Obtenemos el vehículo
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
-
-            // Miramos el tipo de color
+            
             switch (colorType)
             {
                 case 0:
@@ -147,7 +142,7 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("cancelVehicleRepaint")]
-        public void CancelVehicleRepaintEvent(Client player, params object[] arguments)
+        public void CancelVehicleRepaintEvent(Client player)
         {
             // Obtenemos el vehículo
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
@@ -174,13 +169,13 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("calculateTunningCost")]
-        public void CalculateTunningCostEvent(Client player, params object[] arguments)
+        public void CalculateTunningCostEvent(Client player)
         {
             // Inicializamos productos
             int totalProducts = 0;
 
             // Obtenemos el vehículo
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
 
             for (int i = 0; i < 49; i++)
@@ -204,11 +199,10 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("modifyVehicle")]
-        public void ModifyVehicleEvent(Client player, params object[] arguments)
+        public void ModifyVehicleEvent(Client player, int slot, int component)
         {
-            int slot = Int32.Parse(arguments[0].ToString());
-            int component = Int32.Parse(arguments[1].ToString());
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            // Obtenemos el vehículo
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
 
             if (component > 0)
             {
@@ -221,10 +215,10 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("cancelVehicleModification")]
-        public void CancelVehicleModificationEvent(Client player, params object[] arguments)
+        public void CancelVehicleModificationEvent(Client player)
         {
             // Obtenemos el vehículo
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
 
             // Obtenemos el gasto
@@ -246,13 +240,13 @@ namespace WiredPlayers.mechanic
         }
 
         [RemoteEvent("confirmVehicleModification")]
-        public void ConfirmVehicleModificationEvent(Client player, params object[] arguments)
+        public void ConfirmVehicleModificationEvent(Client player)
         {
             // Inicializamos productos
             int totalProducts = 0;
 
             // Obtenemos el vehículo
-            Vehicle vehicle = NAPI.Entity.GetEntityFromHandle<Vehicle>(NAPI.Player.GetPlayerVehicle(player));
+            Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
 
             // Obtenemos los productos del jugador

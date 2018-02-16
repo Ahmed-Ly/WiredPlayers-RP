@@ -17,18 +17,7 @@ namespace WiredPlayers.police
         private static Timer reinforcesTimer;
         public static List<PoliceControlModel> policeControlList;
 
-        public Police()
-        {
-            Event.OnResourceStart += OnResourceStart;
-        }
-
-        private void OnResourceStart()
-        {
-            // Inicializamos el timer que mira si se han pedido refuerzos
-            reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
-        }
-
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HANDCUFFED) == true)
             {
@@ -94,12 +83,19 @@ namespace WiredPlayers.police
             }
         }
 
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
+        {
+            // Inicializamos el timer que mira si se han pedido refuerzos
+            reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
+        }
+
         [RemoteEvent("applyCrimesToPlayer")]
-        public void ApplyCrimesToPlayerEvent(Client player, params object[] arguments)
+        public void ApplyCrimesToPlayerEvent(Client player, String crimeJson)
         {
             int fine = 0, jail = 0;
             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_INCRIMINATED_TARGET);
-            List<CrimeModel> crimeList = JsonConvert.DeserializeObject<List<CrimeModel>>(arguments[0].ToString());
+            List<CrimeModel> crimeList = JsonConvert.DeserializeObject<List<CrimeModel>>(crimeJson);
 
             // Calculamos la multa y tiempo de cárcel
             foreach (CrimeModel crime in crimeList)
@@ -121,9 +117,8 @@ namespace WiredPlayers.police
         }
 
         [RemoteEvent("policeControlSelected")]
-        public void PoliceControlSelectedEvent(Client player, params object[] arguments)
+        public void PoliceControlSelectedEvent(Client player, String policeControl)
         {
-            String policeControl = arguments[0].ToString();
             if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_LOAD)
             {
                 foreach (PoliceControlModel policeControlModel in policeControlList)
@@ -179,10 +174,8 @@ namespace WiredPlayers.police
         }
 
         [RemoteEvent("updatePoliceControlName")]
-        public void UpdatePoliceControlNameEvent(Client player, params object[] arguments)
+        public void UpdatePoliceControlNameEvent(Client player, String policeControlSource, String policeControlTarget)
         {
-            String policeControlSource = arguments[0].ToString();
-            String policeControlTarget = arguments[1].ToString();
             if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_POLICE_CONTROL) == Constants.ACTION_SAVE)
             {
                 List<PoliceControlModel> copiedPoliceControlModels = new List<PoliceControlModel>();

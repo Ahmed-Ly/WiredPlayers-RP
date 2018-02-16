@@ -1,10 +1,10 @@
 ﻿mp.events.add('showATM', () => {
-	// Creamos la ventana del banco
-	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/bankMenu.html']);
-	
 	// Desactivamos el chat
 	mp.gui.chat.activate(false);
 	mp.gui.chat.show(false);
+	
+	// Creamos la ventana del banco
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/bankMenu.html']);
 });
 
 mp.events.add('updateBankAccountMoney', () => {
@@ -17,15 +17,15 @@ mp.events.add('updateBankAccountMoney', () => {
 
 mp.events.add('executeBankOperation', (operation, amount, target) => {
 	// Ejecutamos una operación bancaria
-	mp.events.callRemote('loadPlayerBankBalance', operation, amount, target);
+	mp.events.callRemote('executeBankOperation', operation, amount, target);
 });
 
-mp.events.add('bankOperationResponse', (action) => {
+mp.events.add('bankOperationResponse', (response) => {
 	// Miramos la acción del cajero
-	if (action == '') {
+	if (response == '') {
 		mp.events.call('executeFunction', ['bankBack']);
 	} else {
-		mp.events.call('executeFunction', ['bankBack', action]);
+		mp.events.call('executeFunction', ['showOperationError', response]);
 	}
 });
 

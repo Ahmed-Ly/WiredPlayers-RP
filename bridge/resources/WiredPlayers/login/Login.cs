@@ -12,89 +12,8 @@ namespace WiredPlayers.login
     public class Login : Script
     {
         private static Dictionary<String, Timer> spawnTimerList = new Dictionary<String, Timer>();
-
-        public Login()
-        {
-            Event.OnPlayerConnected += OnPlayerConnected;
-        }
-
-        private void OnPlayerConnected(Client player, CancelEventArgs cancel)
-        {
-            // Inicializamos el jugador
-            InitializePlayerData(player);
-            InitializePlayerSkin(player);
-
-            AccountModel account = Database.GetAccount(player.SocialClubName);
-
-            switch (account.status)
-            {
-                case -1:
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_DISABLED);
-                    NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_DISABLED);
-                    break;
-                case 0:
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_NEW);
-                    NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_NEW);
-                    break;
-                default:
-                    // Mandamos los mensajes de bienvenida
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Bienvenido a WiredPlayers, " + player.SocialClubName);
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.");
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.");
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/duda ~w~para solicitar ayuda de algún miembro del staff.");
-
-                    // Miramos si tiene seleccionado algún personaje
-                    if (account.lastCharacter > 0)
-                    {
-                        PlayerModel character = Database.LoadCharacterInformationById(account.lastCharacter);
-                        SkinModel skin = Database.GetCharacterSkin(account.lastCharacter);
-
-                        // Carga de skin hombre/mujer
-                        String pedModel = character.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
-                        PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
-                        NAPI.Player.SetPlayerName(player, character.realName);
-                        NAPI.Player.SetPlayerSkin(player, pedHash);
-
-                        // Cargamos los datos básicos del personaje
-                        LoadCharacterData(player, character);
-
-                        // Generación del modelo del personaje
-                        PopulateCharacterSkin(player, skin);
-
-                        // Generación de la ropa del personaje
-                        Globals.PopulateCharacterClothes(player);
-                    }
-                    else
-                    {
-                        PedHash pedHash = NAPI.Util.PedNameToModel(Constants.DEFAULT_PED_MODEL);
-                        NAPI.Player.SetPlayerSkin(player, pedHash);
-                    }
-
-                    // Cerramos las puertas de comisaría
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 320433149, 434.7479f, -983.2151f, 30.83926f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1215222675, 434.7479f, -980.6184f, 30.83926f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 469.9679f, -1014.452f, 26.53623f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 467.3716f, -1014.452f, 26.53623f, true, 0f, false);
-
-                    // Cerramos las celdas de comisaria
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -994.4086f, 25.06443f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -997.6583f, 25.06443f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -1001.302f, 25.06443f, true, 0f, false);
-
-                    // Hacemos al personaje visible
-                    NAPI.Entity.SetEntityTransparency(player, 255);
-
-                    // Mostramos el login y actualizamos el tiempo
-                    TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm", currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
-                    break;
-            }
-
-            // Cancelamos el spawn automático
-            cancel.Spawn = false;
-        }
-
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (spawnTimerList.TryGetValue(player.SocialClubName, out Timer spawnTimer) == true)
             {
@@ -363,26 +282,90 @@ namespace WiredPlayers.login
             }
         }
 
-        [RemoteEvent("registerAccount")]
-        public void RegisterAccountEvent(Client player, params object[] arguments)
+        [ServerEvent(Event.PlayerConnected)]
+        public void OnPlayerConnected(Client player)
         {
-            String forumName = (String)arguments[0];
-            String password = (String)arguments[1];
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_ACCOUNT_REGISTER);
+            // Inicializamos el jugador
+            InitializePlayerData(player);
+            InitializePlayerSkin(player);
+
+            AccountModel account = Database.GetAccount(player.SocialClubName);
+
+            switch (account.status)
+            {
+                case -1:
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_DISABLED);
+                    NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_DISABLED);
+                    break;
+                case 0:
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ACCOUNT_NEW);
+                    NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_NEW);
+                    break;
+                default:
+                    // Mandamos los mensajes de bienvenida
+                    NAPI.Chat.SendChatMessageToPlayer(player, "Bienvenido a WiredPlayers, " + player.SocialClubName);
+                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.");
+                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.");
+                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/duda ~w~para solicitar ayuda de algún miembro del staff.");
+
+                    // Miramos si tiene seleccionado algún personaje
+                    if (account.lastCharacter > 0)
+                    {
+                        PlayerModel character = Database.LoadCharacterInformationById(account.lastCharacter);
+                        SkinModel skin = Database.GetCharacterSkin(account.lastCharacter);
+
+                        // Carga de skin hombre/mujer
+                        String pedModel = character.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
+                        PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
+                        NAPI.Player.SetPlayerName(player, character.realName);
+                        NAPI.Player.SetPlayerSkin(player, pedHash);
+
+                        // Cargamos los datos básicos del personaje
+                        LoadCharacterData(player, character);
+
+                        // Generación del modelo del personaje
+                        PopulateCharacterSkin(player, skin);
+
+                        // Generación de la ropa del personaje
+                        Globals.PopulateCharacterClothes(player);
+                    }
+                    else
+                    {
+                        PedHash pedHash = NAPI.Util.PedNameToModel(Constants.DEFAULT_PED_MODEL);
+                        NAPI.Player.SetPlayerSkin(player, pedHash);
+                    }
+
+                    // Cerramos las puertas de comisaría
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 320433149, 434.7479f, -983.2151f, 30.83926f, true, 0f, false);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1215222675, 434.7479f, -980.6184f, 30.83926f, true, 0f, false);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 469.9679f, -1014.452f, 26.53623f, true, 0f, false);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 467.3716f, -1014.452f, 26.53623f, true, 0f, false);
+
+                    // Cerramos las celdas de comisaria
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -994.4086f, 25.06443f, true, 0f, false);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -997.6583f, 25.06443f, true, 0f, false);
+                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -1001.302f, 25.06443f, true, 0f, false);
+
+                    // Hacemos al personaje visible
+                    NAPI.Entity.SetEntityTransparency(player, 255);
+
+                    // Mostramos el login y actualizamos el tiempo
+                    TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm", currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
+                    break;
+            }
         }
 
         [RemoteEvent("loginAccount")]
-        public void LoginAccountEvent(Client player, params object[] arguments)
+        public void LoginAccountEvent(Client player, String password)
         {
-            String password = (String)arguments[0];
             bool login = Database.LoginAccount(player.SocialClubName, password);
             NAPI.ClientEvent.TriggerClientEvent(player, login ? "clearLoginWindow" : "showLoginError");
         }
 
         [RemoteEvent("changeCharacterSex")]
-        public void ChangeCharacterSexEvent(Client player, params object[] arguments)
+        public void ChangeCharacterSexEvent(Client player, int sex)
         {
-            int sex = Int32.Parse(arguments[0].ToString());
             String pedModel = sex == 1 ? Constants.FEMALE_PED_MODEL : Constants.MALE_PED_MODEL;
             PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
             NAPI.Player.SetPlayerSkin(player, pedHash);
@@ -397,14 +380,10 @@ namespace WiredPlayers.login
         }
 
         [RemoteEvent("createCharacter")]
-        public void CreateCharacterEvent(Client player, params object[] arguments)
+        public void CreateCharacterEvent(Client player, String playerName, int playerAge, String skinJson)
         {
-            // Recuperamos el nombre y edad
-            String playerName = arguments[0].ToString();
-            int playerAge = Int32.Parse(arguments[1].ToString());
-
             PlayerModel playerModel = new PlayerModel();
-            SkinModel skinModel = JsonConvert.DeserializeObject<SkinModel>(arguments[2].ToString());
+            SkinModel skinModel = JsonConvert.DeserializeObject<SkinModel>(skinJson);
 
             // Generación del modelo del personaje
             playerModel.realName = playerName;
@@ -430,7 +409,7 @@ namespace WiredPlayers.login
         }
 
         [RemoteEvent("setCharacterIntoCreator")]
-        public void SetCharacterIntoCreatorEvent(Client player, params object[] arguments)
+        public void SetCharacterIntoCreatorEvent(Client player)
         {
             // Cambiamos el skin del personaje al por defecto
             NAPI.Player.SetPlayerSkin(player, PedHash.FreemodeMale01);
@@ -450,9 +429,9 @@ namespace WiredPlayers.login
         }
 
         [RemoteEvent("loadCharacter")]
-        public void LoadCharacterEvent(Client player, params object[] arguments)
+        public void LoadCharacterEvent(Client player, String name)
         {
-            PlayerModel playerModel = Database.LoadCharacterInformationByName(arguments[0].ToString());
+            PlayerModel playerModel = Database.LoadCharacterInformationByName(name);
             SkinModel skinModel = Database.GetCharacterSkin(playerModel.id);
 
             // Carga de skin hombre/mujer
@@ -474,10 +453,8 @@ namespace WiredPlayers.login
         }
 
         [RemoteEvent("getPlayerCustomSkin")]
-        public void GetPlayerCustomSkinEvent(Client player, params object[] arguments)
+        public void GetPlayerCustomSkinEvent(Client player, Client target)
         {
-            Client target = NAPI.Entity.GetEntityFromHandle<Client>((NetHandle)arguments[0]);
-
             int targetId = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
             List<TattooModel> targetTattooList = Globals.GetPlayerTattoos(targetId);
 

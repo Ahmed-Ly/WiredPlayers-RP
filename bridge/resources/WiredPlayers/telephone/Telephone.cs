@@ -67,12 +67,8 @@ namespace WiredPlayers.telephone
         }
 
         [RemoteEvent("addNewContact")]
-        public void AddNewContactEvent(Client player, params object[] arguments)
+        public void AddNewContactEvent(Client player, int contactNumber, String contactName)
         {
-            // Obtenemos el número y nombre
-            int contactNumber = Int32.Parse(arguments[0].ToString());
-            String contactName = arguments[1].ToString();
-
             // Creamos el nuevo modelo
             ContactModel contact = new ContactModel();
             contact.owner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
@@ -89,13 +85,8 @@ namespace WiredPlayers.telephone
         }
 
         [RemoteEvent("modifyContact")]
-        public void ModifyContactEvent(Client player, params object[] arguments)
+        public void ModifyContactEvent(Client player, int contactNumber, String contactName, int contactIndex)
         {
-            // Obtenemos el número, nombre y el identificador
-            int contactNumber = Int32.Parse(arguments[0].ToString());
-            String contactName = arguments[1].ToString();
-            int contactIndex = Int32.Parse(arguments[2].ToString());
-
             // Modificamos los datos del contacto
             ContactModel contact = GetContactFromId(contactIndex);
             contact.contactNumber = contactNumber;
@@ -107,11 +98,8 @@ namespace WiredPlayers.telephone
         }
 
         [RemoteEvent("deleteContact")]
-        public void DeleteContactEvent(Client player, params object[] arguments)
+        public void DeleteContactEvent(Client player, int contactIndex)
         {
-            // Obtenemos el identificador del contacto
-            int contactIndex = Int32.Parse(arguments[0].ToString());
-
             // Obtenemos los datos del contacto
             ContactModel contact = GetContactFromId(contactIndex);
             String contactName = contact.contactName;
@@ -127,12 +115,8 @@ namespace WiredPlayers.telephone
         }
 
         [RemoteEvent("sendPhoneMessage")]
-        public void SendPhoneMessageEvent(Client player, params object[] arguments)
+        public void SendPhoneMessageEvent(Client player, int contactIndex, String textMessage)
         {
-            // Capturamos el contacto y el mensaje
-            int contactIndex = Int32.Parse(arguments[0].ToString());
-            String textMessage = arguments[1].ToString();
-
             // Obtenemos el contacto
             ContactModel contact = GetContactFromId(contactIndex);
 

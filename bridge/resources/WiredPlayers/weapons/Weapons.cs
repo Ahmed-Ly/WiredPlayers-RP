@@ -14,15 +14,6 @@ namespace WiredPlayers.weapons
         private static List<Timer> vehicleWeaponTimer;
         public static List<WeaponCrateModel> weaponCrateList;
 
-        public Weapons()
-        {
-            Event.OnResourceStart += OnResourceStart;
-            Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
-            Event.OnPlayerExitVehicle += OnPlayerExitVehicle;
-            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
-            Event.OnPlayerWeaponSwitch += OnPlayerWeaponSwitch;
-        }
-
         public static void GivePlayerWeaponItems(Client player)
         {
             int itemId = 0;
@@ -147,120 +138,7 @@ namespace WiredPlayers.weapons
             weaponTimer = new Timer(OnWeaponPrewarn, null, 600000, Timeout.Infinite);
         }
 
-        private void OnResourceStart()
-        {
-            vehicleWeaponTimer = new List<Timer>();
-            weaponCrateList = new List<WeaponCrateModel>();
-        }
-
-        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
-        {
-            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
-            {
-                int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING) && GetVehicleWeaponCrates(vehicleId) > 0)
-                {
-                    // Avisamos de la posición de entrega
-                    Vector3 weaponPosition = new Vector3(-2085.543f, 2600.857f, -0.4712417f);
-                    Checkpoint weaponCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, weaponPosition, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE, weaponCheckpoint);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WEAPON_POSITION_MARK);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showWeaponCheckpoint", weaponPosition);
-                }
-            }
-        }
-
-        private void OnPlayerExitVehicle(Client player, Vehicle vehicle)
-        {
-            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) == true)
-            {
-                int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && GetVehicleWeaponCrates(vehicleId) > 0)
-                {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
-                }
-            }
-        }
-
-        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) == true)
-            {
-                if (checkpoint == NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
-                {
-                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
-                    int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                    if (GetVehicleWeaponCrates(vehicleId) > 0)
-                    {
-                        // Borramos el checkpoint
-                        Checkpoint weaponCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
-                        NAPI.Entity.DeleteEntity(weaponCheckpoint);
-
-                        // Paramos el vehículo mientras descargan
-                        NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
-                        NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING, true);
-                        vehicleWeaponTimer.Add(new Timer(OnVehicleUnpackWeapons, vehicle, 60000, Timeout.Infinite));
-
-                        // Mandamos un aviso al jugador
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WAIT_FOR_WEAPONS);
-                    }
-                }
-            }
-        }
-
-        private void OnPlayerWeaponSwitch(Client player, WeaponHash oldWeapon, WeaponHash newWeapon)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
-            {
-                // Obtenemos el identificador del jugador
-                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
-                {
-                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                    ItemModel item = Globals.GetItemModelFromId(itemId);
-                    if (Int32.TryParse(item.hash, out int itemHash) == true)
-                    {
-                        ItemModel weaponItem = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
-                        NAPI.Player.GivePlayerWeapon(player, WeaponHash.Unarmed, 1);
-                        return;
-                    }
-                }
-
-                // Obtenemos los modelos de armas antiguo y nuevos
-                ItemModel oldWeaponModel = GetEquippedWeaponItemModelByHash(playerId, oldWeapon);
-                ItemModel currentWeaponModel = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
-
-                if (oldWeaponModel != null)
-                {
-                    // Desequipamos el arma antigua
-                    oldWeaponModel.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
-                    Database.UpdateItem(oldWeaponModel);
-                }
-
-                if (currentWeaponModel != null)
-                {
-                    // Equipamos el arma nueva
-                    currentWeaponModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
-                    Database.UpdateItem(currentWeaponModel);
-                }
-
-                // Miramos si es un arma o el puño
-                if (newWeapon == WeaponHash.Unarmed)
-                {
-                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                }
-                else
-                {
-                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, currentWeaponModel.id);
-                }
-            }
-        }
-
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             // Obtenemos el id del personaje
             WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(player.Value);
@@ -466,8 +344,126 @@ namespace WiredPlayers.weapons
             return crates;
         }
 
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
+        {
+            vehicleWeaponTimer = new List<Timer>();
+            weaponCrateList = new List<WeaponCrateModel>();
+        }
+
+        [ServerEvent(Event.PlayerEnterVehicle)]
+        public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
+        {
+            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) && NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
+            {
+                int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING) && GetVehicleWeaponCrates(vehicleId) > 0)
+                {
+                    // Avisamos de la posición de entrega
+                    Vector3 weaponPosition = new Vector3(-2085.543f, 2600.857f, -0.4712417f);
+                    Checkpoint weaponCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, weaponPosition, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE, weaponCheckpoint);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WEAPON_POSITION_MARK);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showWeaponCheckpoint", weaponPosition);
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerExitVehicle)]
+        public void OnPlayerExitVehicle(Client player, Vehicle vehicle)
+        {
+            if (NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_ID) == true)
+            {
+                int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && GetVehicleWeaponCrates(vehicleId) > 0)
+                {
+                    NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerEnterCheckpoint)]
+        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
+        {
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) == true)
+            {
+                if (checkpoint == NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
+                {
+                    NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
+                    int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                    if (GetVehicleWeaponCrates(vehicleId) > 0)
+                    {
+                        // Borramos el checkpoint
+                        Checkpoint weaponCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
+                        NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
+                        NAPI.Entity.DeleteEntity(weaponCheckpoint);
+
+                        // Paramos el vehículo mientras descargan
+                        NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
+                        NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING, true);
+                        vehicleWeaponTimer.Add(new Timer(OnVehicleUnpackWeapons, vehicle, 60000, Timeout.Infinite));
+
+                        // Mandamos un aviso al jugador
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WAIT_FOR_WEAPONS);
+                    }
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerWeaponSwitch)]
+        public void OnPlayerWeaponSwitch(Client player, WeaponHash oldWeapon, WeaponHash newWeapon)
+        {
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            {
+                // Obtenemos el identificador del jugador
+                int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+                {
+                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
+                    ItemModel item = Globals.GetItemModelFromId(itemId);
+                    if (Int32.TryParse(item.hash, out int itemHash) == true)
+                    {
+                        ItemModel weaponItem = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
+                        NAPI.Player.GivePlayerWeapon(player, WeaponHash.Unarmed, 1);
+                        return;
+                    }
+                }
+
+                // Obtenemos los modelos de armas antiguo y nuevos
+                ItemModel oldWeaponModel = GetEquippedWeaponItemModelByHash(playerId, oldWeapon);
+                ItemModel currentWeaponModel = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
+
+                if (oldWeaponModel != null)
+                {
+                    // Desequipamos el arma antigua
+                    oldWeaponModel.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
+                    Database.UpdateItem(oldWeaponModel);
+                }
+
+                if (currentWeaponModel != null)
+                {
+                    // Equipamos el arma nueva
+                    currentWeaponModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
+                    Database.UpdateItem(currentWeaponModel);
+                }
+
+                // Miramos si es un arma o el puño
+                if (newWeapon == WeaponHash.Unarmed)
+                {
+                    NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
+                }
+                else
+                {
+                    NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, currentWeaponModel.id);
+                }
+            }
+        }
+
         [RemoteEvent("reloadPlayerWeapon")]
-        public void ReloadPlayerWeaponEvent(Client player, params object[] arguments)
+        public void ReloadPlayerWeaponEvent(Client player)
         {
             WeaponHash weapon = NAPI.Player.GetPlayerCurrentWeapon(player);
             int maxCapacity = GetGunAmmunitionCapacity(weapon);

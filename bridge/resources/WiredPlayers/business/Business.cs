@@ -16,29 +16,6 @@ namespace WiredPlayers.business
 
         public static List<BusinessModel> businessList;
 
-        public Business()
-        {
-            Event.OnResourceStart += OnResourceStartHandler;
-        }
-
-        private void OnResourceStartHandler()
-        {
-            scrapYard = NAPI.Blip.CreateBlip(new Vector3(-441.6721f, -1696.798f, 18.94322f));
-            NAPI.Blip.SetBlipSprite(scrapYard, 566);
-            NAPI.Blip.SetBlipName(scrapYard, "Desguace");
-            NAPI.Blip.SetBlipShortRange(scrapYard, true);
-
-            hardwareBlip = NAPI.Blip.CreateBlip(new Vector3(-582.131f, -1000.79f, 22.3297f));
-            NAPI.Blip.SetBlipSprite(hardwareBlip, 402);
-            NAPI.Blip.SetBlipName(hardwareBlip, "Ferreteria Little Seoul");
-            NAPI.Blip.SetBlipShortRange(hardwareBlip, true);
-
-            hardwareBlip2 = NAPI.Blip.CreateBlip(new Vector3(342.944f, -1297.85f, 32.5098f));
-            NAPI.Blip.SetBlipSprite(hardwareBlip2, 402);
-            NAPI.Blip.SetBlipName(hardwareBlip2, "Herramientas Bert");
-            NAPI.Blip.SetBlipShortRange(hardwareBlip2, true);
-        }
-
         public void LoadDatabaseBusiness()
         {
             businessList = Database.LoadAllBusiness();
@@ -212,13 +189,31 @@ namespace WiredPlayers.business
             return tattooList;
         }
 
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStartHandler()
+        {
+            scrapYard = NAPI.Blip.CreateBlip(new Vector3(-441.6721f, -1696.798f, 18.94322f));
+            NAPI.Blip.SetBlipSprite(scrapYard, 566);
+            NAPI.Blip.SetBlipName(scrapYard, "Desguace");
+            NAPI.Blip.SetBlipShortRange(scrapYard, true);
+
+            hardwareBlip = NAPI.Blip.CreateBlip(new Vector3(-582.131f, -1000.79f, 22.3297f));
+            NAPI.Blip.SetBlipSprite(hardwareBlip, 402);
+            NAPI.Blip.SetBlipName(hardwareBlip, "Ferreteria Little Seoul");
+            NAPI.Blip.SetBlipShortRange(hardwareBlip, true);
+
+            hardwareBlip2 = NAPI.Blip.CreateBlip(new Vector3(342.944f, -1297.85f, 32.5098f));
+            NAPI.Blip.SetBlipSprite(hardwareBlip2, 402);
+            NAPI.Blip.SetBlipName(hardwareBlip2, "Herramientas Bert");
+            NAPI.Blip.SetBlipShortRange(hardwareBlip2, true);
+        }
+
         [RemoteEvent("businessPurchaseMade")]
-        public void BusinessPurchaseMadeEvent(Client player, params object[] arguments)
+        public void BusinessPurchaseMadeEvent(Client player, String itemName, int amount)
         {
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
             BusinessModel business = GetBusinessById(businessId);
-            BusinessItemModel businessItem = GetBusinessItemFromName((String)arguments[0]);
-            int amount = Int32.Parse(arguments[1].ToString());
+            BusinessItemModel businessItem = GetBusinessItemFromName(itemName);
 
             if (business.type == Constants.BUSINESS_TYPE_AMMUNATION && businessItem.type == Constants.ITEM_TYPE_WEAPON && NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE) < Globals.GetTotalSeconds())
             {
@@ -317,10 +312,8 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("clothesSlotSelected")]
-        public void ClothesSlotSelectedEvent(Client player, params object[] arguments)
+        public void ClothesSlotSelectedEvent(Client player, int type, int slot)
         {
-            int type = Int32.Parse(arguments[0].ToString());
-            int slot = Int32.Parse(arguments[1].ToString());
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             List<BusinessClothesModel> clothesList = GetBusinessClothesFromSlotType(sex, type, slot);
             if (clothesList.Count > 0)
@@ -335,10 +328,8 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("dressEquipedClothes")]
-        public void DressEquipedClothesEvent(Client player, params object[] arguments)
+        public void DressEquipedClothesEvent(Client player, int type, int slot)
         {
-            int type = Int32.Parse(arguments[0].ToString());
-            int slot = Int32.Parse(arguments[1].ToString());
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
             ClothesModel clothes = Globals.GetDressedClothesInSlot(playerId, type, slot);
 
@@ -368,13 +359,10 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("clothesItemSelected")]
-        public void ClothesItemSelectedEvent(Client player, params object[] arguments)
+        public void ClothesItemSelectedEvent(Client player, int clothesId, int type, int slot)
         {
             // Calculamos el precio de la ropa
-            int clothesId = Int32.Parse(arguments[0].ToString());
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-            int type = Int32.Parse(arguments[1].ToString());
-            int slot = Int32.Parse(arguments[2].ToString());
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             int products = GetClothesProductsPrice(clothesId, sex, type, slot);
             BusinessModel business = GetBusinessById(businessId);
@@ -425,7 +413,7 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("changeHairStyle")]
-        public void ChangeHairStyleEvent(Client player, params object[] arguments)
+        public void ChangeHairStyleEvent(Client player, String skinJson)
         {
             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
@@ -438,7 +426,7 @@ namespace WiredPlayers.business
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
                 // Obtenemos la nueva imagen
-                dynamic skinModel = NAPI.Util.FromJson(arguments[0].ToString());
+                dynamic skinModel = NAPI.Util.FromJson(skinJson);
 
                 // Creamos el modelo de datos
                 SkinModel skin = new SkinModel();
@@ -488,9 +476,8 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("loadZoneTattoos")]
-        public void LoadZoneTattoosEvent(Client player, params object[] arguments)
+        public void LoadZoneTattoosEvent(Client player, int zone)
         {
-            int zone = Int32.Parse(arguments[0].ToString());
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             List<BusinessTattooModel> tattooList = GetBusinessZoneTattoos(sex, zone);
 
@@ -499,12 +486,8 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("purchaseTattoo")]
-        public void PurchaseTattooEvent(Client player, params object[] arguments)
+        public void PurchaseTattooEvent(Client player, int tattooZone, int tattooIndex)
         {
-            // Obtenemos los datos del tatuaje
-            int tattooZone = Int32.Parse(arguments[0].ToString());
-            int tattooIndex = Int32.Parse(arguments[1].ToString());
-
             // Obtenemos los datos del negocio y sexo
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
@@ -563,7 +546,7 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("loadCharacterClothes")]
-        public void LoadCharacterClothesEvent(Client player, params object[] arguments)
+        public void LoadCharacterClothesEvent(Client player)
         {
             // Generación de la ropa del personaje
             Globals.PopulateCharacterClothes(player);

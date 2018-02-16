@@ -28,12 +28,8 @@ namespace WiredPlayers.database
         private const String database = "";
         private static String connectionString = "SERVER=" + host + "; DATABASE=" + database + "; UID=" + user + "; PASSWORD=" + pass + ";";
 
-        public Database()
-        {
-            Event.OnResourceStart += OnResourceStart;
-        }
-
-        private void OnResourceStart()
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
         {
             // Carga de negocios
             Business businessClass = new Business();

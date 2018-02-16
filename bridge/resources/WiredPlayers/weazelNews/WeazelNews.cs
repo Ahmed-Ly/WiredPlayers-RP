@@ -144,7 +144,7 @@ namespace WiredPlayers.weazelNews
             else
             {
                 Vehicle vehicle = Globals.GetClosestVehicle(player);
-                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_LEFT_REAR)
+                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.LeftRear)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_IN_NEWS_VAN);
                 }
@@ -292,7 +292,7 @@ namespace WiredPlayers.weazelNews
             else
             {
                 Vehicle vehicle = Globals.GetClosestVehicle(player);
-                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_LEFT_REAR)
+                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.LeftRear)
                 {
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_IN_NEWS_VAN);
                 }

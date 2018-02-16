@@ -862,7 +862,7 @@ namespace WiredPlayers.Animations
                     switch (action)
                     {
                         case 1:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
                             }
@@ -873,7 +873,7 @@ namespace WiredPlayers.Animations
                             }
                             break;
                         case 2:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
                             }
@@ -884,7 +884,7 @@ namespace WiredPlayers.Animations
                             }
                             break;
                         case 3:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_PASSENGER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.RightFront)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_PASSENGER);
                             }
@@ -895,7 +895,7 @@ namespace WiredPlayers.Animations
                             }
                             break;
                         case 4:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
                             }
@@ -906,7 +906,7 @@ namespace WiredPlayers.Animations
                             }
                             break;
                         case 5:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_PASSENGER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.RightFront)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_PASSENGER);
                             }
@@ -917,7 +917,7 @@ namespace WiredPlayers.Animations
                             }
                             break;
                         case 6:
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_PASSENGER)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.RightFront)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_PASSENGER);
                             }

@@ -234,27 +234,7 @@ namespace WiredPlayers.globals
         // Tipos de color del vehículo
         public const int VEHICLE_COLOR_TYPE_PREDEFINED = 0;
         public const int VEHICLE_COLOR_TYPE_CUSTOM = 1;
-
-        // Asientos de vehículo
-        public const int VEHICLE_SEAT_NONE = -3;
-        public const int VEHICLE_SEAT_ANY = -2;
-        public const int VEHICLE_SEAT_DRIVER = -1;
-        public const int VEHICLE_SEAT_PASSENGER = 0;
-        public const int VEHICLE_SEAT_LEFT_REAR = 1;
-        public const int VEHICLE_SEAT_RIGHT_REAR = 2;
-        public const int VEHICLE_SEAT_EXTRA_1 = 3;
-        public const int VEHICLE_SEAT_EXTRA_2 = 4;
-        public const int VEHICLE_SEAT_EXTRA_3 = 5;
-        public const int VEHICLE_SEAT_EXTRA_4 = 6;
-        public const int VEHICLE_SEAT_EXTRA_5 = 7;
-        public const int VEHICLE_SEAT_EXTRA_6 = 8;
-        public const int VEHICLE_SEAT_EXTRA_7 = 9;
-        public const int VEHICLE_SEAT_EXTRA_8 = 10;
-        public const int VEHICLE_SEAT_EXTRA_9 = 11;
-        public const int VEHICLE_SEAT_EXTRA_10 = 12;
-        public const int VEHICLE_SEAT_EXTRA_11 = 13;
-        public const int VEHICLE_SEAT_EXTRA_12 = 14;
-
+        
         // Tipos de vehículos
         public const int VEHICLE_CLASS_COMPACTS = 0;
         public const int VEHICLE_CLASS_SEDANS = 1;

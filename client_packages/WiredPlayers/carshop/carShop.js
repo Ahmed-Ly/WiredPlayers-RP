@@ -1,7 +1,5 @@
-﻿let carShopBrowser = null;
-let carShopVehicles = null;
+﻿let carShopVehicles = null;
 let carShopTestBlip = null;
-let previewBrowser = null;
 let previewVehicle = null;
 let previewCamera = null;
 let dealership = null;
@@ -11,22 +9,21 @@ mp.events.add('showVehicleCatalog', (vehicles, dealer) => {
 	carShopVehicles = vehicles;
 	dealership = dealer;
 
-	// Mostramos la ventana del catálogo
-	carShopBrowser = mp.browsers.new('package://WiredPlayers/statics/html/vehicleCatalog.html');
+	// Desactivamos el chat
 	mp.gui.chat.activate(false);
 	mp.gui.chat.show(false);
-});
 
-mp.events.add('getCarShopVehicleList', () => {
-	// Rellenamos la lista de vehículos
-	mp.gui.cursor.visible = true;
-    carShopBrowser.execute(`populateVehicleList('${dealership}', '${carShopVehicles}');`);
+	// Mostramos la ventana del catálogo
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/vehicleCatalog.html', 'populateVehicleList', dealership, carShopVehicles]);
 });
 
 mp.events.add('previewCarShopVehicle', (model) => {
 	if (previewVehicle != null) {
 		previewVehicle.destroy();
     }
+
+    // Eliminamos el catálogo
+	mp.events.call('destroyBrowser');
 	
 	// Colocamos el vehículo y la cámara en función del concesionario
 	switch(dealership) {
@@ -44,15 +41,11 @@ mp.events.add('previewCarShopVehicle', (model) => {
     previewCamera.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
 
-    // Eliminamos el catálogo
-    carShopBrowser.destroy();
-    carShopBrowser = null;
-
     // Deshabilitamos el HUD
 	mp.game.ui.displayHud(false);
 
 	// Creación del menú de previsualización
-	previewBrowser = mp.browsers.new('package://WiredPlayers/statics/html/vehiclePreview.html');
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/vehiclePreview.html']);
 });
 
 mp.events.add('rotatePreviewVehicle', (rotation) => {
@@ -70,8 +63,7 @@ mp.events.add('previewVehicleChangeColor', (color, colorMain) => {
 
 mp.events.add('showCatalog', () => {
     // Eliminamos el menú de previsualización
-    previewBrowser.destroy();
-    previewBrowser = null;
+	mp.events.call('destroyBrowser');
 
     // Eliminamos el vehículo creado
     previewVehicle.destroy();
@@ -86,15 +78,16 @@ mp.events.add('showCatalog', () => {
 	previewCamera = null;
 	
 	// Mostramos la ventana del catálogo
-	carShopBrowser = mp.browsers.new('package://WiredPlayers/statics/html/vehicleCatalog.html');
+	mp.events.call('createBrowser', ['package://WiredPlayers/statics/html/vehicleCatalog.html', 'populateVehicleList', dealership, carShopVehicles]);
 });
 
 mp.events.add('closeCatalog', () => {
-    carShopBrowser.destroy();
-	mp.gui.cursor.visible = false;
+	// Borramos el catálogo
+	mp.events.call('destroyBrowser');
+	
+	// Reactivamos el chat
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
-    carShopBrowser = null;
 });
 
 mp.events.add('checkVehiclePayable', () => {
@@ -106,7 +99,7 @@ mp.events.add('checkVehiclePayable', () => {
 			// Miramos si tiene dinero suficiente en el banco
 			if(mp.players.local.getVariable('PLAYER_BANK') >= vehicleArray[i].price) {
 				// Activamos el botón de compra
-				previewBrowser.execute(`showVehiclePurchaseButton();`);
+				mp.events.call('executeFunction', ['showVehiclePurchaseButton']);
 			}
 			break;
         }
@@ -124,8 +117,7 @@ mp.events.add('purchaseVehicle', () => {
 	let secondColor = secondColorObject.r + ',' + secondColorObject.g + ',' + secondColorObject.b;
 
     // Eliminamos el menú de previsualización
-    previewBrowser.destroy();
-    previewBrowser = null;
+	mp.events.call('destroyBrowser');
 
     // Eliminamos el vehículo creado
     previewVehicle.destroy();
@@ -140,7 +132,6 @@ mp.events.add('purchaseVehicle', () => {
 	previewCamera = null;
 
     // Devolvemos el control al personaje
-	mp.gui.cursor.visible = false;
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
 
@@ -153,8 +144,7 @@ mp.events.add('testVehicle', () => {
 	let model = String(previewVehicle.model);
 	
     // Eliminamos el menú de previsualización
-    previewBrowser.destroy();
-    previewBrowser = null;
+	mp.events.call('destroyBrowser');
 
     // Eliminamos el vehículo creado
     previewVehicle.destroy();
@@ -169,7 +159,6 @@ mp.events.add('testVehicle', () => {
 	previewCamera = null;
 
     // Devolvemos el control al personaje
-	mp.gui.cursor.visible = false;
 	mp.gui.chat.activate(true);
 	mp.gui.chat.show(true);
 

@@ -16,12 +16,6 @@ namespace WiredPlayers.faction
         public static List<ChannelModel> channelList;
         public static List<FactionWarningModel> factionWarningList;
 
-        public Faction()
-        {
-            Event.OnResourceStart += OnResourceStartHandler;
-            Event.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
-        }
-
         public static String GetPlayerFactionRank(Client player)
         {
             String rankString = String.Empty;
@@ -52,30 +46,6 @@ namespace WiredPlayers.faction
             return warn;
         }
 
-        private void OnResourceStartHandler()
-        {
-            factionWarningList = new List<FactionWarningModel>();
-        }
-
-        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
-            {
-                // Borramos el checkpoint
-                Checkpoint locationCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
-                NAPI.Entity.DeleteEntity(locationCheckpoint);
-
-                // Borramos las marcas
-                NAPI.ClientEvent.TriggerClientEvent(player, "deleteFactionWarning");
-
-                // Reseteamos la variable de localización
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
-
-                // Borramos el aviso
-                factionWarningList.RemoveAll(x => x.takenBy == player.Value);
-            }
-        }
-
         private ChannelModel GetPlayerOwnedChannel(int playerId)
         {
             ChannelModel channel = null;
@@ -100,6 +70,32 @@ namespace WiredPlayers.faction
                 sBuilder.Append(data[i].ToString("x2"));
             }
             return sBuilder.ToString();
+        }
+
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
+        {
+            factionWarningList = new List<FactionWarningModel>();
+        }
+
+        [ServerEvent(Event.PlayerEnterCheckpoint)]
+        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
+        {
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FACTION_WARNING) == true)
+            {
+                // Borramos el checkpoint
+                Checkpoint locationCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
+                NAPI.Entity.DeleteEntity(locationCheckpoint);
+
+                // Borramos las marcas
+                NAPI.ClientEvent.TriggerClientEvent(player, "deleteFactionWarning");
+
+                // Reseteamos la variable de localización
+                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FACTION_WARNING);
+
+                // Borramos el aviso
+                factionWarningList.RemoveAll(x => x.takenBy == player.Value);
+            }
         }
 
         [Command("f", Messages.GEN_F_COMMAND, GreedyArg = true)]

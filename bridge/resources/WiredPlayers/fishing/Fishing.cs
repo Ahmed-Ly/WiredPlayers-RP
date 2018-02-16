@@ -13,7 +13,7 @@ namespace WiredPlayers.fishing
     {
         private static Dictionary<int, Timer> fishingTimerList = new Dictionary<int, Timer>();
 
-        public static void OnPlayerDisconnected(Client player, byte type, string reason)
+        public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
@@ -65,7 +65,7 @@ namespace WiredPlayers.fishing
         }
 
         [RemoteEvent("startFishingTimer")]
-        public void StartFishingTimerEvent(Client player, params object[] arguments)
+        public void StartFishingTimerEvent(Client player)
         {
             // Inicializamos el factor de aleatoriedad
             Random random = new Random();
@@ -79,7 +79,7 @@ namespace WiredPlayers.fishing
         }
 
         [RemoteEvent("fishingCanceled")]
-        public void FishingCanceledEvent(Client player, params object[] arguments)
+        public void FishingCanceledEvent(Client player)
         {
             // Cancelamos el estado de pesca del jugador
             NAPI.Player.StopPlayerAnimation(player);
@@ -99,7 +99,7 @@ namespace WiredPlayers.fishing
         }
 
         [RemoteEvent("fishingSuccess")]
-        public void FishingSuccessEvent(Client player, params object[] arguments)
+        public void FishingSuccessEvent(Client player)
         {
             // Calculamos la posibilidad de fallo
             bool failed = false;
@@ -170,7 +170,7 @@ namespace WiredPlayers.fishing
         }
 
         [RemoteEvent("fishingFailed")]
-        public void FishingFailedEvent(Client player, params object[] arguments)
+        public void FishingFailedEvent(Client player)
         {
             // Cancelamos el estado de pesca del jugador
             NAPI.Player.StopPlayerAnimation(player);
@@ -188,7 +188,7 @@ namespace WiredPlayers.fishing
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_ALREADY_FISHING);
             }
-            else if (NAPI.Player.GetPlayerVehicleSeat(player) == Constants.VEHICLE_SEAT_DRIVER)
+            else if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
             {
                 NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                 VehicleHash vehicleModel = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);

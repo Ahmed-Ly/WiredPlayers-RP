@@ -38,22 +38,6 @@ namespace WiredPlayers.globals
         private Timer minuteTimer;
         private Timer playersCheckTimer;
 
-        public object Houses { get; private set; }
-
-        public Globals()
-        {
-            Event.OnResourceStart += OnResourceStart;
-            Event.OnPlayerDisconnected += OnPlayerDisconnected;
-            Event.OnPlayerEnterColShape += OnPlayerEnterColShape;
-            Event.OnPlayerExitColShape += OnPlayerExitColShape;
-            Event.OnPlayerEnterVehicle += OnPlayerEnterVehicle;
-        }
-
-        private void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
-        {
-            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_HELMET, player, false);
-        }
-
         public static Client GetPlayerById(int id)
         {
             Client target = null;
@@ -95,256 +79,7 @@ namespace WiredPlayers.globals
             }
             return position;
         }
-
-        private void OnResourceStart()
-        {
-            eventAreaList = new List<ColShape>();
-            scoreList = new List<ScoreModel>();
-            adminTicketList = new List<AdminTicketModel>();
-            fastFoodOrderList = new List<FastFoodOrderModel>();
-
-            // Área para cambiar de personaje en el lobby
-            ColShape characterSelectionRectangle = NAPI.ColShape.Create2DColShape(151.25f, -1002.18f, 1.8f, 2.5f);
-            NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
-            NAPI.Data.SetEntityData(characterSelectionRectangle, EntityData.SHAPE_CAPTION, "character-selector");
-            eventAreaList.Add(characterSelectionRectangle);
-
-            // Añadimos el interior del concesionario
-            NAPI.World.RequestIpl("shr_int");
-            NAPI.World.RequestIpl("shr_int_lod");
-            NAPI.World.RemoveIpl("fakeint");
-            NAPI.World.RemoveIpl("fakeint_lod");
-            NAPI.World.RemoveIpl("fakeint_boards");
-            NAPI.World.RemoveIpl("fakeint_boards_lod");
-            NAPI.World.RemoveIpl("shutter_closed");
-
-            // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
-            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
-
-            // Área para abrir las puertas principales del concesionario
-            ColShape motorSportRectangle = NAPI.ColShape.Create2DColShape(-62.61f, -1094.54f, 4.69f, 2.71f);
-            NAPI.Data.SetEntityData(motorSportRectangle, EntityData.SHAPE_CAPTION, "motorsport-main-doors");
-            eventAreaList.Add(motorSportRectangle);
-
-            // Área para abrir las puertas del parking del concesionario
-            ColShape motorSportParkingRectangle = NAPI.ColShape.Create2DColShape(-40.63f, -1110.12f, 4.02f, 4.02f);
-            NAPI.Data.SetEntityData(motorSportParkingRectangle, EntityData.SHAPE_CAPTION, "motorsport-parking-doors");
-            eventAreaList.Add(motorSportParkingRectangle);
-
-            // Área para bloquear puertas de negocios
-            ColShape supermarketRectangle = NAPI.ColShape.Create2DColShape(-711.5449f, -915.5397f, 204.56f, 204.25f);
-            NAPI.Data.SetEntityData(supermarketRectangle, EntityData.SHAPE_CAPTION, "supermarket");
-            eventAreaList.Add(supermarketRectangle);
-
-            ColShape clubhouseRectangle = NAPI.ColShape.Create2DColShape(981.7533f, -102.7987f, 877f, 881.1f);
-            NAPI.Data.SetEntityData(clubhouseRectangle, EntityData.SHAPE_CAPTION, "clubhouse");
-            eventAreaList.Add(clubhouseRectangle);
-
-            ColShape vanillaRectangle = NAPI.ColShape.Create2DColShape(127.9552f, -1298.503f, 1171.7653f, 1167.0788f);
-            NAPI.Data.SetEntityData(vanillaRectangle, EntityData.SHAPE_CAPTION, "vanilla");
-            eventAreaList.Add(vanillaRectangle);
-
-            // Área para condenar a jugadores
-            ColShape jailRectangle = NAPI.ColShape.Create2DColShape(459.8638f, -992.2576f, 6.3419f, 4.65f);
-            NAPI.Data.SetEntityData(jailRectangle, EntityData.SHAPE_CAPTION, "jail");
-            eventAreaList.Add(jailRectangle);
-
-            // Área para los vestuarios del LSPD
-            ColShape lspdRoomLockersRectangle = NAPI.ColShape.Create2DColShape(455.3337f, -990.8022f, 527.39f, 544.29f);
-            NAPI.Data.SetEntityData(lspdRoomLockersRectangle, EntityData.SHAPE_CAPTION, "lockerslspd");
-            eventAreaList.Add(lspdRoomLockersRectangle);
-
-            foreach (InteriorModel interior in Constants.INTERIOR_LIST)
-            {
-                if (interior.blipId > 0)
-                {
-                    interior.blip = NAPI.Blip.CreateBlip(interior.entrancePosition);
-                    NAPI.Blip.SetBlipSprite(interior.blip, interior.blipId);
-                    NAPI.Blip.SetBlipName(interior.blip, interior.blipName);
-                    NAPI.Blip.SetBlipShortRange(interior.blip, true);
-                }
-
-                if (interior.captionMessage != String.Empty)
-                {
-                    interior.textLabel = NAPI.TextLabel.CreateTextLabel(interior.captionMessage, interior.entrancePosition, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
-                }
-            }
-
-            // Definimos variables globales del servidor
-            Random rnd = new Random();
-            orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
-
-            // Creamos los timers cíclicos
-            playersCheckTimer = new Timer(UpdatePlayerList, null, 500, 500);
-            minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
-        }
-
-        private void OnPlayerEnterColShape(ColShape shape, Client player)
-        {
-            // Miramos si es un área prestablecida
-            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
-            {
-                // Obtenemos el texto identificativo
-                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
-
-                switch (shapeCaption)
-                {
-                    case "character-selector":
-                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
-                        {
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
-                        }
-                        break;
-                    case "motorsport-main-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, false, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, false, 0f, false);
-                        break;
-                    case "motorsport-parking-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, false, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, false, 0f, false);
-                        break;
-                    case "jail":
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_AREA, true);
-                        break;
-                    case "supermarket":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        break;
-                    case "clubhouse":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                        break;
-                    case "vanilla":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                        break;
-                    case "lockerslspd":
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA, true);
-                        break;
-                }
-            }
-        }
-
-        private void OnPlayerExitColShape(ColShape shape, Client player)
-        {
-            // Miramos si es un área prestablecida
-            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
-            {
-                // Obtenemos el texto identificativo
-                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
-
-                switch (shapeCaption)
-                {
-                    case "character-selector":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
-                        break;
-                    case "motorsport-main-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, true, 0f, false);
-                        break;
-                    case "motorsport-parking-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, true, 0f, false);
-                        break;
-                    case "supermarket":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        break;
-                    case "clubhouse":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                        break;
-                    case "vanilla":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                        break;
-                    case "jail":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JAIL_AREA);
-                        break;
-                    case "lockerslspd":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA);
-                        break;
-                }
-            }
-        }
-
-        private void OnPlayerDisconnected(Client player, byte type, string reason)
-        {
-            // Eliminamos el timer de spawn si existe
-            Login.OnPlayerDisconnected(player, type, reason);
-
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
-            {
-                // Eliminamos el estado de conexión
-                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PLAYING);
-
-                // Se elimina el personaje de la lista de conectados
-                scoreList.RemoveAll(score => score.playerId == player.Value);
-
-                // Borramos la duda que tenga abierta
-                adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
-
-                // Llamamos a todos los eventos de las otras clases
-                Chat.OnPlayerDisconnected(player, type, reason);
-                DrivingSchool.OnPlayerDisconnected(player, type, reason);
-                Emergency.OnPlayerDisconnected(player, type, reason);
-                FastFood.OnPlayerDisconnected(player, type, reason);
-                Fishing.OnPlayerDisconnected(player, type, reason);
-                Garbage.OnPlayerDisconnected(player, type, reason);
-                Hooker.OnPlayerDisconnected(player, type, reason);
-                Police.OnPlayerDisconnected(player, type, reason);
-                Thief.OnPlayerDisconnected(player, type, reason);
-                Vehicles.OnPlayerDisconnected(player, type, reason);
-                Weapons.OnPlayerDisconnected(player, type, reason);
-
-                // Si lleva algo en la mano, lo borramos
-                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
-                {
-                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-                    ItemModel item = GetItemModelFromId(itemId);
-                    if (item != null && item.objectHandle != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
-                    {
-                        NAPI.Entity.DetachEntity(item.objectHandle);
-                        NAPI.Entity.DeleteEntity(item.objectHandle);
-                    }
-                }
-
-                // Guardamos los datos del personaje
-                PlayerModel character = new PlayerModel();
-
-                // Datos no sincronizados
-                character.position = NAPI.Entity.GetEntityPosition(player);
-                character.rotation = NAPI.Entity.GetEntityRotation(player);
-                character.health = NAPI.Player.GetPlayerHealth(player);
-                character.armor = NAPI.Player.GetPlayerArmor(player);
-                character.id = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                character.phone = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
-                character.radio = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RADIO);
-                character.killed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
-                character.faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
-                character.job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
-                character.rank = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK);
-                character.duty = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY);
-                character.carKeys = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
-                character.documentation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DOCUMENTATION);
-                character.licenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
-                character.insurance = NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE);
-                character.weaponLicense = NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE);
-                character.houseRent = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE);
-                character.houseEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
-                character.businessEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
-                character.employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
-                character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
-                character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
-                character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
-                character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
-                character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
-                character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-
-                // Datos sincronizados
-                character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-                character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
-
-                // Guardamos en la base de datos
-                Database.SaveCharacterInformation(character);
-            }
-        }
+        
         /*
         private void OnChatCommandHandler(Client player, String command, CancelEventArgs e)
         {
@@ -996,18 +731,288 @@ namespace WiredPlayers.globals
             float playedHours = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED) / 100;
             return (int)Math.Round(Math.Log(playedHours) * Constants.LEVEL_MULTIPLIER);
         }
+        
+        [ServerEvent(Event.PlayerEnterVehicle)]
+        public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
+        {
+            //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_HELMET, player, false);
+        }
+
+        [ServerEvent(Event.ResourceStart)]
+        public void OnResourceStart()
+        {
+            eventAreaList = new List<ColShape>();
+            scoreList = new List<ScoreModel>();
+            adminTicketList = new List<AdminTicketModel>();
+            fastFoodOrderList = new List<FastFoodOrderModel>();
+
+            // Área para cambiar de personaje en el lobby
+            ColShape characterSelectionRectangle = NAPI.ColShape.Create2DColShape(151.25f, -1002.18f, 1.8f, 2.5f);
+            NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
+            NAPI.Data.SetEntityData(characterSelectionRectangle, EntityData.SHAPE_CAPTION, "character-selector");
+            eventAreaList.Add(characterSelectionRectangle);
+
+            // Añadimos el interior del concesionario
+            NAPI.World.RequestIpl("shr_int");
+            NAPI.World.RequestIpl("shr_int_lod");
+            NAPI.World.RemoveIpl("fakeint");
+            NAPI.World.RemoveIpl("fakeint_lod");
+            NAPI.World.RemoveIpl("fakeint_boards");
+            NAPI.World.RemoveIpl("fakeint_boards_lod");
+            NAPI.World.RemoveIpl("shutter_closed");
+
+            // Evitamos que el personaje reaparezca tras morir
+            NAPI.Server.SetAutoRespawnAfterDeath(false);
+            NAPI.Server.SetAutoSpawnOnConnect(false);
+
+            // Deshabilitamos el chat global
+            NAPI.Server.SetGlobalServerChat(false);
+
+            // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
+            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
+
+            // Área para abrir las puertas principales del concesionario
+            ColShape motorSportRectangle = NAPI.ColShape.Create2DColShape(-62.61f, -1094.54f, 4.69f, 2.71f);
+            NAPI.Data.SetEntityData(motorSportRectangle, EntityData.SHAPE_CAPTION, "motorsport-main-doors");
+            eventAreaList.Add(motorSportRectangle);
+
+            // Área para abrir las puertas del parking del concesionario
+            ColShape motorSportParkingRectangle = NAPI.ColShape.Create2DColShape(-40.63f, -1110.12f, 4.02f, 4.02f);
+            NAPI.Data.SetEntityData(motorSportParkingRectangle, EntityData.SHAPE_CAPTION, "motorsport-parking-doors");
+            eventAreaList.Add(motorSportParkingRectangle);
+
+            // Área para bloquear puertas de negocios
+            ColShape supermarketRectangle = NAPI.ColShape.Create2DColShape(-711.5449f, -915.5397f, 204.56f, 204.25f);
+            NAPI.Data.SetEntityData(supermarketRectangle, EntityData.SHAPE_CAPTION, "supermarket");
+            eventAreaList.Add(supermarketRectangle);
+
+            ColShape clubhouseRectangle = NAPI.ColShape.Create2DColShape(981.7533f, -102.7987f, 877f, 881.1f);
+            NAPI.Data.SetEntityData(clubhouseRectangle, EntityData.SHAPE_CAPTION, "clubhouse");
+            eventAreaList.Add(clubhouseRectangle);
+
+            ColShape vanillaRectangle = NAPI.ColShape.Create2DColShape(127.9552f, -1298.503f, 1171.7653f, 1167.0788f);
+            NAPI.Data.SetEntityData(vanillaRectangle, EntityData.SHAPE_CAPTION, "vanilla");
+            eventAreaList.Add(vanillaRectangle);
+
+            // Área para condenar a jugadores
+            ColShape jailRectangle = NAPI.ColShape.Create2DColShape(459.8638f, -992.2576f, 6.3419f, 4.65f);
+            NAPI.Data.SetEntityData(jailRectangle, EntityData.SHAPE_CAPTION, "jail");
+            eventAreaList.Add(jailRectangle);
+
+            // Área para los vestuarios del LSPD
+            ColShape lspdRoomLockersRectangle = NAPI.ColShape.Create2DColShape(455.3337f, -990.8022f, 527.39f, 544.29f);
+            NAPI.Data.SetEntityData(lspdRoomLockersRectangle, EntityData.SHAPE_CAPTION, "lockerslspd");
+            eventAreaList.Add(lspdRoomLockersRectangle);
+
+            foreach (InteriorModel interior in Constants.INTERIOR_LIST)
+            {
+                if (interior.blipId > 0)
+                {
+                    interior.blip = NAPI.Blip.CreateBlip(interior.entrancePosition);
+                    NAPI.Blip.SetBlipSprite(interior.blip, interior.blipId);
+                    NAPI.Blip.SetBlipName(interior.blip, interior.blipName);
+                    NAPI.Blip.SetBlipShortRange(interior.blip, true);
+                }
+
+                if (interior.captionMessage != String.Empty)
+                {
+                    interior.textLabel = NAPI.TextLabel.CreateTextLabel(interior.captionMessage, interior.entrancePosition, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
+                }
+            }
+
+            // Definimos variables globales del servidor
+            Random rnd = new Random();
+            orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
+
+            // Creamos los timers cíclicos
+            playersCheckTimer = new Timer(UpdatePlayerList, null, 500, 500);
+            minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
+        }
+
+        [ServerEvent(Event.PlayerEnterColshape)]
+        public void OnPlayerEnterColshape(ColShape shape, Client player)
+        {
+            // Miramos si es un área prestablecida
+            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
+            {
+                // Obtenemos el texto identificativo
+                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
+
+                switch (shapeCaption)
+                {
+                    case "character-selector":
+                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
+                        {
+                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
+                        }
+                        break;
+                    case "motorsport-main-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, false, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, false, 0f, false);
+                        break;
+                    case "motorsport-parking-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, false, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, false, 0f, false);
+                        break;
+                    case "jail":
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_AREA, true);
+                        break;
+                    case "supermarket":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        break;
+                    case "clubhouse":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
+                        break;
+                    case "vanilla":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
+                        break;
+                    case "lockerslspd":
+                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA, true);
+                        break;
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerExitColshape)]
+        public void OnPlayerExitColshape(ColShape shape, Client player)
+        {
+            // Miramos si es un área prestablecida
+            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
+            {
+                // Obtenemos el texto identificativo
+                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
+
+                switch (shapeCaption)
+                {
+                    case "character-selector":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
+                        break;
+                    case "motorsport-main-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, true, 0f, false);
+                        break;
+                    case "motorsport-parking-doors":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, true, 0f, false);
+                        break;
+                    case "supermarket":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
+                        break;
+                    case "clubhouse":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
+                        break;
+                    case "vanilla":
+                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
+                        break;
+                    case "jail":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JAIL_AREA);
+                        break;
+                    case "lockerslspd":
+                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA);
+                        break;
+                }
+            }
+        }
+
+        [ServerEvent(Event.PlayerDisconnected)]
+        public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
+        {
+            // Eliminamos el timer de spawn si existe
+            Login.OnPlayerDisconnected(player, type, reason);
+
+            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
+            {
+                // Eliminamos el estado de conexión
+                NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PLAYING);
+
+                // Se elimina el personaje de la lista de conectados
+                scoreList.RemoveAll(score => score.playerId == player.Value);
+
+                // Borramos la duda que tenga abierta
+                adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
+
+                // Llamamos a todos los eventos de las otras clases
+                Chat.OnPlayerDisconnected(player, type, reason);
+                DrivingSchool.OnPlayerDisconnected(player, type, reason);
+                Emergency.OnPlayerDisconnected(player, type, reason);
+                FastFood.OnPlayerDisconnected(player, type, reason);
+                Fishing.OnPlayerDisconnected(player, type, reason);
+                Garbage.OnPlayerDisconnected(player, type, reason);
+                Hooker.OnPlayerDisconnected(player, type, reason);
+                Police.OnPlayerDisconnected(player, type, reason);
+                Thief.OnPlayerDisconnected(player, type, reason);
+                Vehicles.OnPlayerDisconnected(player, type, reason);
+                Weapons.OnPlayerDisconnected(player, type, reason);
+
+                // Si lleva algo en la mano, lo borramos
+                if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
+                {
+                    int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
+                    ItemModel item = GetItemModelFromId(itemId);
+                    if (item != null && item.objectHandle != null && NAPI.Entity.DoesEntityExist(item.objectHandle) == true)
+                    {
+                        NAPI.Entity.DetachEntity(item.objectHandle);
+                        NAPI.Entity.DeleteEntity(item.objectHandle);
+                    }
+                }
+
+                // Guardamos los datos del personaje
+                PlayerModel character = new PlayerModel();
+
+                // Datos no sincronizados
+                character.position = NAPI.Entity.GetEntityPosition(player);
+                character.rotation = NAPI.Entity.GetEntityRotation(player);
+                character.health = NAPI.Player.GetPlayerHealth(player);
+                character.armor = NAPI.Player.GetPlayerArmor(player);
+                character.id = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+                character.phone = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE);
+                character.radio = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RADIO);
+                character.killed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
+                character.faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
+                character.job = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
+                character.rank = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK);
+                character.duty = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY);
+                character.carKeys = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
+                character.documentation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DOCUMENTATION);
+                character.licenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
+                character.insurance = NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE);
+                character.weaponLicense = NAPI.Data.GetEntityData(player, EntityData.PLAYER_WEAPON_LICENSE);
+                character.houseRent = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE);
+                character.houseEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
+                character.businessEntered = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
+                character.employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
+                character.jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
+                character.jobDeliver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
+                character.jobPoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_POINTS);
+                character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
+                character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
+                character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
+
+                // Datos sincronizados
+                character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
+                character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
+
+                // Guardamos en la base de datos
+                Database.SaveCharacterInformation(character);
+
+                // Avisamos a los jugadores cercanos de la desconexión
+                Chat.SendMessageToNearbyPlayers(player, player.Name + " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
+            }
+        }
 
         [RemoteEvent("checkPlayerEventKeyStopAnim")]
-        public void CheckPlayerEventKeyStopAnimEvent(Client player, params object[] arguments)
+        public void CheckPlayerEventKeyStopAnimEvent(Client player)
         {
-            if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ANIMATION) == false)
+            if (!NAPI.Data.HasEntityData(player, EntityData.PLAYER_ANIMATION) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
                 NAPI.Player.StopPlayerAnimation(player);
             }
         }
 
         [RemoteEvent("checkPlayerInventoryKey")]
-        public void CheckPlayerInventoryKeyEvent(Client player, params object[] arguments)
+        public void CheckPlayerInventoryKeyEvent(Client player)
         {
             if (GetPlayerInventoryTotal(player) > 0)
             {
@@ -1021,7 +1026,7 @@ namespace WiredPlayers.globals
         }
 
         [RemoteEvent("checkPlayerEventKey")]
-        public void CheckPlayerEventKeyEvent(Client player, params object[] arguments)
+        public void CheckPlayerEventKeyEvent(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
@@ -1329,14 +1334,13 @@ namespace WiredPlayers.globals
         }
 
         [RemoteEvent("processMenuAction")]
-        public void ProcessMenuActionEvent(Client player, params object[] arguments)
+        public void ProcessMenuActionEvent(Client player, int itemId, String action)
         {
             String message = String.Empty;
-            int itemId = (int)arguments[0];
             ItemModel item = GetItemModelFromId(itemId);
             BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
-            switch (arguments[1].ToString().ToLower())
+            switch (action)
             {
                 case "consumir":
                     item.amount--;
@@ -1557,7 +1561,7 @@ namespace WiredPlayers.globals
         }
 
         [RemoteEvent("closeVehicleTrunk")]
-        public void CloseVehicleTrunkEvent(Client player, params object[] arguments)
+        public void CloseVehicleTrunkEvent(Client player)
         {
             // Cerramos el maletero del vehículo
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
@@ -1568,9 +1572,8 @@ namespace WiredPlayers.globals
         }
 
         [RemoteEvent("getPlayerTattoos")]
-        public void GetPlayerTattoosEvent(Client player, params object[] arguments)
+        public void GetPlayerTattoosEvent(Client player, Client targetPlayer)
         {
-            Client targetPlayer = NAPI.Entity.GetEntityFromHandle<Client>((NetHandle)arguments[0]);
             int targetId = NAPI.Data.GetEntityData(targetPlayer, EntityData.PLAYER_SQL_ID);
             List<TattooModel> playerTattooList = GetPlayerTattoos(targetId);
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerTattoos", NAPI.Util.ToJson(playerTattooList), targetPlayer);
@@ -2577,7 +2580,7 @@ namespace WiredPlayers.globals
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ALREADY_FUCKING);
                         }
-                        else if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_DRIVER)
+                        else if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_VEHICLE_DRIVING);
                         }
@@ -2664,7 +2667,7 @@ namespace WiredPlayers.globals
                         else
                         {
                             NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
-                            if (NAPI.Player.GetPlayerVehicleSeat(player) != Constants.VEHICLE_SEAT_RIGHT_REAR)
+                            if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.RightRear)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_IN_RIGHT_REAR);
                             }
