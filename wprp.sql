@@ -483,6 +483,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `duty` int(11) NOT NULL DEFAULT '0',
   `killed` int(11) NOT NULL DEFAULT '0',
   `jobPoints` varchar(64) COLLATE latin1_spanish_ci NOT NULL DEFAULT '0,0,0,0,0,0,0',
+  `rolePoints` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;

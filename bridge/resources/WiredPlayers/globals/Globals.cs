@@ -1687,7 +1687,7 @@ namespace WiredPlayers.globals
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ABOUT_COMPLEMENTS);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_FOR_AVOID_CLIPPING1);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_FOR_AVOID_CLIPPING2);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showClothesBusinessPurchaseMenu");
+                        NAPI.ClientEvent.TriggerClientEvent(player, "showClothesBusinessPurchaseMenu", business.name, business.multiplier);
                         break;
                     case Constants.BUSINESS_TYPE_BARBER_SHOP:
                         NAPI.ClientEvent.TriggerClientEvent(player, "showHairdresserMenu", business.name);

@@ -311,7 +311,7 @@ namespace WiredPlayers.business
             }
         }
 
-        [RemoteEvent("clothesSlotSelected")]
+        [RemoteEvent("getClothesByType")]
         public void ClothesSlotSelectedEvent(Client player, int type, int slot)
         {
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
@@ -319,7 +319,7 @@ namespace WiredPlayers.business
             if (clothesList.Count > 0)
             {
                 BusinessModel business = GetBusinessById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED));
-                NAPI.ClientEvent.TriggerClientEvent(player, "showClothesFromSelectedType", NAPI.Util.ToJson(clothesList), business.multiplier);
+                NAPI.ClientEvent.TriggerClientEvent(player, "showTypeClothes", NAPI.Util.ToJson(clothesList));
             }
             else
             {

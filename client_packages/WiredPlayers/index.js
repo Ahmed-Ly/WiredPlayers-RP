@@ -1,5 +1,6 @@
 require('./WiredPlayers/login/login.js');
 require('./WiredPlayers/business/business.js');
+require('./WiredPlayers/business/clothesShop.js');
 require('./WiredPlayers/business/tattooShop.js');
 require('./WiredPlayers/business/hairdresser.js');
 require('./WiredPlayers/carshop/carShop.js');

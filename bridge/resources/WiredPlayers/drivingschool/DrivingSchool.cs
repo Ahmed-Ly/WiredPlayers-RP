@@ -51,9 +51,12 @@ namespace WiredPlayers.drivingschool
             NAPI.Entity.SetEntityRotation(vehicle, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ROTATION));
 
             // Eliminamos el checkpoint
-            Checkpoint licenseCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
-            NAPI.Entity.DeleteEntity(licenseCheckpoint);
-            NAPI.ClientEvent.TriggerClientEvent(player, "deleteLicenseCheckpoint");
+            if(NAPI.Vehicle.GetVehicleDriver(vehicle) == player)
+            {
+                Checkpoint licenseCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
+                NAPI.Entity.DeleteEntity(licenseCheckpoint);
+                NAPI.ClientEvent.TriggerClientEvent(player, "deleteLicenseCheckpoint");
+            }
 
             // Reseteamos las variables
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_VEHICLE);
@@ -186,8 +189,8 @@ namespace WiredPlayers.drivingschool
 
                         if (checkPoint < Constants.CAR_LICENSE_CHECKPOINTS.Count - 2)
                         {
-                            currentCheckpoint.Position = Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1];
-                            currentCheckpoint.Direction = Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 2];
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1]);
+                            NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 2]);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
@@ -195,8 +198,8 @@ namespace WiredPlayers.drivingschool
                         }
                         else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 2)
                         {
-                            currentCheckpoint.Position = Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1];
-                            currentCheckpoint.Direction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1]);
+                            NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
@@ -205,8 +208,8 @@ namespace WiredPlayers.drivingschool
                         else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 1)
                         {
                             Vector3 lastCheckPointPosition = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
-                            currentCheckpoint.Position = lastCheckPointPosition;
-                            NAPI.Entity.SetEntityModel(currentCheckpoint, 4);
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, lastCheckPointPosition);
+                            NAPI.Entity.SetEntityModel(currentCheckpoint, (int)CheckpointType.Checkerboard);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
@@ -235,8 +238,8 @@ namespace WiredPlayers.drivingschool
 
                         if (checkPoint < Constants.BIKE_LICENSE_CHECKPOINTS.Count - 2)
                         {
-                            currentCheckpoint.Position = Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1];
-                            currentCheckpoint.Direction = Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 2];
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1]);
+                            NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 2]);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
@@ -244,8 +247,8 @@ namespace WiredPlayers.drivingschool
                         }
                         else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 2)
                         {
-                            currentCheckpoint.Position = Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1];
-                            currentCheckpoint.Direction = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1]);
+                            NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
@@ -254,8 +257,8 @@ namespace WiredPlayers.drivingschool
                         else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 1)
                         {
                             Vector3 lastCheckPointPosition = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION);
-                            currentCheckpoint.Position = lastCheckPointPosition;
-                            NAPI.Entity.SetEntityModel(currentCheckpoint, 4);
+                            NAPI.Entity.SetEntityPosition(currentCheckpoint, lastCheckPointPosition);
+                            NAPI.Entity.SetEntityModel(currentCheckpoint, (int)CheckpointType.Checkerboard);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
                             // Marcamos el punto en el mapa
