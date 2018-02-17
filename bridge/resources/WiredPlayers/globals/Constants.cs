@@ -87,7 +87,6 @@ namespace WiredPlayers.globals
         public const int BUSINESS_TYPE_BENNYS_WHORKSHOP = 22;
         public const int BUSINESS_TYPE_VANILLA = 23;
         public const int BUSINESS_TYPE_FISHING = 24;
-        // public const int BUSINESS_TYPE_RESTAURANT = 18; 
 
         // Números de teléfono
         public const int NUMBER_POLICE = 091;

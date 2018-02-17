@@ -15,3 +15,14 @@
 /client_packages/.listcache
 /bt.dat
 /bridge/server_exceptions.txt
+!/bridge/runtime/MySql.Data.dll
+!/bridge/runtime/Newtonsoft.Json.dll
+!/bridge/runtime/System.ComponentModel.Primitives.dll
+!/bridge/runtime/System.Configuration.ConfigurationManager.dll
+!/bridge/runtime/System.Data.Common.dll
+!/bridge/runtime/System.Data.dll
+!/bridge/runtime/System.Management.dll
+!/bridge/runtime/System.Security.Cryptography.Algorithms.dll
+!/bridge/runtime/System.Security.Cryptography.Primitives.dll
+!/bridge/runtime/System.Security.Permissions.dll
+!/bridge/runtime/System.Text.Encoding.CodePages.dll
