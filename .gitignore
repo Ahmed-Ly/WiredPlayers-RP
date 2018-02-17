@@ -7,7 +7,7 @@
 /bridge/resources/WiredPlayers/.vs/WiredPlayers/v15
 /bridge/resources/WiredPlayers
 /bridge/server_logs.txt
-/bridge/runtime
+/bridge/runtime/*
 /bridge/acl.xml
 /server.exe
 /plugins
