@@ -6,6 +6,7 @@ require('./WiredPlayers/business/hairdresser.js');
 require('./WiredPlayers/carshop/carShop.js');
 require('./WiredPlayers/bank/bank.js');
 require('./WiredPlayers/globals/browser.js');
+require('./WiredPlayers/globals/doors.js');
 require('./WiredPlayers/globals/dxDrawer.js');
 require('./WiredPlayers/globals/globals.js');
 require('./WiredPlayers/drivingschool/drivingSchool.js');

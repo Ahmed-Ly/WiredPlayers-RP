@@ -327,17 +327,6 @@ namespace WiredPlayers.login
                         NAPI.Player.SetPlayerSkin(player, pedHash);
                     }
 
-                    // Cerramos las puertas de comisaría
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 320433149, 434.7479f, -983.2151f, 30.83926f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1215222675, 434.7479f, -980.6184f, 30.83926f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 469.9679f, -1014.452f, 26.53623f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -2023754432, 467.3716f, -1014.452f, 26.53623f, true, 0f, false);
-
-                    // Cerramos las celdas de comisaria
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -994.4086f, 25.06443f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -997.6583f, 25.06443f, true, 0f, false);
-                    //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 631614199, 461.8065f, -1001.302f, 25.06443f, true, 0f, false);
-
                     // Hacemos al personaje visible
                     NAPI.Entity.SetEntityTransparency(player, 255);
 

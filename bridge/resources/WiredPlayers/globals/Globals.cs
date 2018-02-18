@@ -34,7 +34,6 @@ namespace WiredPlayers.globals
         public static List<ItemModel> itemList;
         public static List<ScoreModel> scoreList;
         public static List<AdminTicketModel> adminTicketList;
-        public static List<ColShape> eventAreaList;
         private Timer minuteTimer;
         private Timer playersCheckTimer;
 
@@ -725,16 +724,12 @@ namespace WiredPlayers.globals
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
-            eventAreaList = new List<ColShape>();
             scoreList = new List<ScoreModel>();
             adminTicketList = new List<AdminTicketModel>();
             fastFoodOrderList = new List<FastFoodOrderModel>();
 
             // Área para cambiar de personaje en el lobby
-            ColShape characterSelectionRectangle = NAPI.ColShape.Create2DColShape(151.25f, -1002.18f, 1.8f, 2.5f);
-            NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
-            NAPI.Data.SetEntityData(characterSelectionRectangle, EntityData.SHAPE_CAPTION, "character-selector");
-            eventAreaList.Add(characterSelectionRectangle);
+            NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false);
 
             // Añadimos el interior del concesionario
             NAPI.World.RequestIpl("shr_int");
@@ -754,39 +749,6 @@ namespace WiredPlayers.globals
 
             // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
             NAPI.World.RequestIpl("hei_bi_hw1_13_door");
-
-            // Área para abrir las puertas principales del concesionario
-            ColShape motorSportRectangle = NAPI.ColShape.Create2DColShape(-62.61f, -1094.54f, 4.69f, 2.71f);
-            NAPI.Data.SetEntityData(motorSportRectangle, EntityData.SHAPE_CAPTION, "motorsport-main-doors");
-            eventAreaList.Add(motorSportRectangle);
-
-            // Área para abrir las puertas del parking del concesionario
-            ColShape motorSportParkingRectangle = NAPI.ColShape.Create2DColShape(-40.63f, -1110.12f, 4.02f, 4.02f);
-            NAPI.Data.SetEntityData(motorSportParkingRectangle, EntityData.SHAPE_CAPTION, "motorsport-parking-doors");
-            eventAreaList.Add(motorSportParkingRectangle);
-
-            // Área para bloquear puertas de negocios
-            ColShape supermarketRectangle = NAPI.ColShape.Create2DColShape(-711.5449f, -915.5397f, 204.56f, 204.25f);
-            NAPI.Data.SetEntityData(supermarketRectangle, EntityData.SHAPE_CAPTION, "supermarket");
-            eventAreaList.Add(supermarketRectangle);
-
-            ColShape clubhouseRectangle = NAPI.ColShape.Create2DColShape(981.7533f, -102.7987f, 877f, 881.1f);
-            NAPI.Data.SetEntityData(clubhouseRectangle, EntityData.SHAPE_CAPTION, "clubhouse");
-            eventAreaList.Add(clubhouseRectangle);
-
-            ColShape vanillaRectangle = NAPI.ColShape.Create2DColShape(127.9552f, -1298.503f, 1171.7653f, 1167.0788f);
-            NAPI.Data.SetEntityData(vanillaRectangle, EntityData.SHAPE_CAPTION, "vanilla");
-            eventAreaList.Add(vanillaRectangle);
-
-            // Área para condenar a jugadores
-            ColShape jailRectangle = NAPI.ColShape.Create2DColShape(459.8638f, -992.2576f, 6.3419f, 4.65f);
-            NAPI.Data.SetEntityData(jailRectangle, EntityData.SHAPE_CAPTION, "jail");
-            eventAreaList.Add(jailRectangle);
-
-            // Área para los vestuarios del LSPD
-            ColShape lspdRoomLockersRectangle = NAPI.ColShape.Create2DColShape(455.3337f, -990.8022f, 527.39f, 544.29f);
-            NAPI.Data.SetEntityData(lspdRoomLockersRectangle, EntityData.SHAPE_CAPTION, "lockerslspd");
-            eventAreaList.Add(lspdRoomLockersRectangle);
 
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
             {
@@ -811,93 +773,6 @@ namespace WiredPlayers.globals
             // Creamos los timers cíclicos
             playersCheckTimer = new Timer(UpdatePlayerList, null, 500, 500);
             minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
-        }
-
-        [ServerEvent(Event.PlayerEnterColshape)]
-        public void OnPlayerEnterColshape(ColShape shape, Client player)
-        {
-            // Miramos si es un área prestablecida
-            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
-            {
-                // Obtenemos el texto identificativo
-                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
-
-                switch (shapeCaption)
-                {
-                    case "character-selector":
-                        if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == false)
-                        {
-                            NAPI.Data.SetEntityData(player, EntityData.PLAYER_CREATOR_AREA, true);
-                        }
-                        break;
-                    case "motorsport-main-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, false, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, false, 0f, false);
-                        break;
-                    case "motorsport-parking-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, false, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, false, 0f, false);
-                        break;
-                    case "jail":
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_AREA, true);
-                        break;
-                    case "supermarket":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        break;
-                    case "clubhouse":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                        break;
-                    case "vanilla":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                        break;
-                    case "lockerslspd":
-                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA, true);
-                        break;
-                }
-            }
-        }
-
-        [ServerEvent(Event.PlayerExitColshape)]
-        public void OnPlayerExitColshape(ColShape shape, Client player)
-        {
-            // Miramos si es un área prestablecida
-            if (NAPI.Data.HasEntityData(shape, EntityData.SHAPE_CAPTION) == true)
-            {
-                // Obtenemos el texto identificativo
-                String shapeCaption = NAPI.Data.GetEntityData(shape, EntityData.SHAPE_CAPTION);
-
-                switch (shapeCaption)
-                {
-                    case "character-selector":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_CREATOR_AREA);
-                        break;
-                    case "motorsport-main-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -60.54582f, -1094.749f, 26.88872f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -59.89302f, -1092.952f, 26.88362f, true, 0f, false);
-                        break;
-                    case "motorsport-parking-doors":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 1417577297, -37.33113f, -1108.873f, 26.7198f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2059227086, -39.13366f, -1108.218f, 26.7198f, true, 0f, false);
-                        break;
-                    case "supermarket":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 2065277225, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -868672903, -711.5449f, -915.5397f, 19.21559f, true, 0f, false);
-                        break;
-                    case "clubhouse":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, 190770132, 981.7533f, -102.7987f, 74.84873f, true, 0f, false);
-                        break;
-                    case "vanilla":
-                        //NAPI.Native.SendNativeToPlayer(player, Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, -1116041313, 127.9552f, -1298.503f, 29.41962f, true, 0f, false);
-                        break;
-                    case "jail":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JAIL_AREA);
-                        break;
-                    case "lockerslspd":
-                        NAPI.Data.ResetEntityData(player, EntityData.PLAYER_IN_LSPD_ROOM_LOCKERS_AREA);
-                        break;
-                }
-            }
         }
 
         [ServerEvent(Event.PlayerDisconnected)]

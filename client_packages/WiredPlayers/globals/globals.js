@@ -1,5 +1,4 @@
 ﻿var playerList = null;
-var resolution;
 
 mp.events.add('guiReady', () => {
 	// Eliminamos la regeneración de vida
@@ -46,9 +45,6 @@ mp.events.add('resetPlayerWalkingStyle', (player) => {
 });
 
 /*
-NAPI.OnResourceStart.connect(function () {
-    resolution = NAPI.GetScreenResolutionMaintainRatio();
-});
 NAPI.OnKeyDown.connect(function (sender, e) {
     if (e.KeyCode === Keys.F1 && playerList == null && NAPI.Data.GetEntitySharedData(NAPI.GetLocalPlayer(), "PLAYER_PLAYING") == true) {
         playerList = NAPI.CreateCefBrowser(resolution.Width * 0.4, resolution.Height * 0.8, true);
