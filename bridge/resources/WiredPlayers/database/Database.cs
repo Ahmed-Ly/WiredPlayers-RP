@@ -15,17 +15,17 @@ using WiredPlayers.weazelNews;
 using WiredPlayers.telephone;
 using WiredPlayers.admin;
 using System.Collections.Generic;
-using System;
 using System.Globalization;
+using System;
 
 namespace WiredPlayers.database
 {
     public class Database : Script
     {
-        private const String host = "127.0.0.1";
-        private const String user = "gta";
-        private const String pass = "gta5server-WP";
-        private const String database = "gtav";
+        private const String host = "";
+        private const String user = "";
+        private const String pass = "";
+        private const String database = "";
         private static String connectionString = "SERVER=" + host + "; DATABASE=" + database + "; UID=" + user + "; PASSWORD=" + pass + ";";
 
         [ServerEvent(Event.ResourceStart)]

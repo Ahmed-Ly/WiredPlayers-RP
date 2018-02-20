@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         151.80.147.111
--- Versión del servidor:         5.7.21-0ubuntu0.16.04.1 - (Ubuntu)
--- SO del servidor:              Linux
+-- Host:                         127.0.0.1
+-- Versión del servidor:         5.5.5-10.1.29-MariaDB - mariadb.org binary distribution
+-- SO del servidor:              Win32
 -- HeidiSQL Versión:             8.0.0.4396
 -- --------------------------------------------------------
 
@@ -12,7 +12,7 @@
 
 -- Volcando estructura de base de datos para gtav
 DROP DATABASE IF EXISTS `gtav`;
-CREATE DATABASE IF NOT EXISTS `gtav` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE IF NOT EXISTS `gtav` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci */;
 USE `gtav`;
 
 
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `retries` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`socialName`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `source` varchar(24) NOT NULL DEFAULT '',
   `target` varchar(24) NOT NULL DEFAULT '',
-  `action` varchar(8) NOT NULL DEFAULT '',
+  `action` varchar(32) NOT NULL DEFAULT '',
   `time` int(11) NOT NULL DEFAULT '0',
   `reason` varchar(150) NOT NULL DEFAULT '',
   `date` datetime NOT NULL,
@@ -53,10 +53,10 @@ DROP TABLE IF EXISTS `answers`;
 CREATE TABLE IF NOT EXISTS `answers` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `question` int(11) NOT NULL,
-  `answer` text CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `answer` text NOT NULL,
   `correct` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `blood` (
   `used` bit(1) NOT NULL DEFAULT b'0',
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `time` int(10) NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`phone`,`target`,`date`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `channels` (
   `owner` int(10) NOT NULL DEFAULT '0',
   `password` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `clothes` (
   `drawable` int(10) NOT NULL DEFAULT '0',
   `dressed` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `contactNumber` int(6) NOT NULL,
   `contactName` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `furniture` (
   `posZ` float NOT NULL DEFAULT '0',
   `rotation` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -201,13 +201,13 @@ CREATE TABLE IF NOT EXISTS `furniture` (
 DROP TABLE IF EXISTS `hotwires`;
 CREATE TABLE IF NOT EXISTS `hotwires` (
   `vehicle` int(10) NOT NULL,
-  `player` varchar(24) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
+  `player` varchar(24) NOT NULL DEFAULT '',
   `posX` float NOT NULL,
   `posY` float NOT NULL,
   `posZ` float NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`player`,`vehicle`,`date`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `items` (
   `posZ` float NOT NULL DEFAULT '0',
   `dimension` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -256,10 +256,10 @@ CREATE TABLE IF NOT EXISTS `items` (
 DROP TABLE IF EXISTS `licensed`;
 CREATE TABLE IF NOT EXISTS `licensed` (
   `item` int(11) NOT NULL DEFAULT '0',
-  `buyer` varchar(24) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
+  `buyer` varchar(24) NOT NULL DEFAULT '',
   `date` datetime NOT NULL,
   PRIMARY KEY (`item`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` varchar(180) NOT NULL DEFAULT '',
   `deleted` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `money` (
   `amount` int(11) NOT NULL DEFAULT '0',
   `date` date NOT NULL,
   `hour` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS `parkings` (
   `posZ` float NOT NULL DEFAULT '0',
   `capacity` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -328,10 +328,10 @@ CREATE TABLE IF NOT EXISTS `parkings` (
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE IF NOT EXISTS `permissions` (
   `playerId` int(10) NOT NULL DEFAULT '0',
-  `command` varchar(16) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
-  `option` varchar(16) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
+  `command` varchar(16) NOT NULL DEFAULT '',
+  `option` varchar(16) NOT NULL DEFAULT '',
   PRIMARY KEY (`playerId`,`command`,`option`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -340,10 +340,10 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 DROP TABLE IF EXISTS `questions`;
 CREATE TABLE IF NOT EXISTS `questions` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `question` text CHARACTER SET utf8 NOT NULL,
+  `question` text NOT NULL,
   `license` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -399,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `skins` (
   `lipstickModel` int(11) NOT NULL,
   `lipstickColor` int(11) NOT NULL,
   PRIMARY KEY (`characterId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -422,10 +422,10 @@ DROP TABLE IF EXISTS `tattoos`;
 CREATE TABLE IF NOT EXISTS `tattoos` (
   `player` int(10) NOT NULL DEFAULT '0',
   `zone` int(10) NOT NULL DEFAULT '0',
-  `library` varchar(32) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
-  `hash` varchar(32) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
+  `library` varchar(32) NOT NULL DEFAULT '',
+  `hash` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`player`,`hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -438,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `tunning` (
   `slot` int(11) NOT NULL DEFAULT '0',
   `component` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -447,7 +447,7 @@ CREATE TABLE IF NOT EXISTS `tunning` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) CHARACTER SET latin1 NOT NULL,
+  `name` varchar(32) NOT NULL,
   `posX` float(10,0) NOT NULL DEFAULT '201',
   `posY` float NOT NULL DEFAULT '-932.094',
   `posZ` float NOT NULL DEFAULT '30.6868',
@@ -463,10 +463,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `rank` int(11) NOT NULL DEFAULT '0',
   `phone` int(11) NOT NULL DEFAULT '0',
   `radio` int(11) NOT NULL DEFAULT '0',
-  `jailed` varchar(8) COLLATE latin1_spanish_ci NOT NULL DEFAULT '0,0',
-  `carKeys` varchar(32) COLLATE latin1_spanish_ci NOT NULL DEFAULT '0,0,0,0,0',
+  `jailed` varchar(8) NOT NULL DEFAULT '0,0',
+  `carKeys` varchar(32) NOT NULL DEFAULT '0,0,0,0,0',
   `documentation` int(11) NOT NULL DEFAULT '0',
-  `licenses` varchar(32) COLLATE latin1_spanish_ci NOT NULL DEFAULT '-1,-1,-1',
+  `licenses` varchar(32) NOT NULL DEFAULT '-1,-1,-1',
   `insurance` int(11) NOT NULL DEFAULT '0',
   `weaponLicense` int(11) NOT NULL DEFAULT '0',
   `houseRent` int(11) NOT NULL DEFAULT '0',
@@ -476,17 +476,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `jobCooldown` int(11) NOT NULL DEFAULT '0',
   `played` int(11) NOT NULL DEFAULT '0',
   `status` int(11) NOT NULL DEFAULT '1',
-  `socialName` varchar(32) CHARACTER SET latin1 NOT NULL,
+  `socialName` varchar(32) NOT NULL,
   `adminRank` int(11) NOT NULL DEFAULT '0',
-  `adminname` varchar(24) COLLATE latin1_spanish_ci NOT NULL DEFAULT '',
+  `adminname` varchar(24) NOT NULL DEFAULT '',
   `employeeCooldown` int(11) NOT NULL DEFAULT '0',
   `duty` int(11) NOT NULL DEFAULT '0',
   `killed` int(11) NOT NULL DEFAULT '0',
-  `jobPoints` varchar(64) COLLATE latin1_spanish_ci NOT NULL DEFAULT '0,0,0,0,0,0,0',
+  `jobPoints` varchar(64) NOT NULL DEFAULT '0,0,0,0,0,0,0',
   `rolePoints` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -516,17 +516,7 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
   `colorType` int(11) NOT NULL DEFAULT '1',
   `pearlescent` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- La exportación de datos fue deseleccionada.
-
-
--- Volcando estructura para tabla gtav.wtr
-DROP TABLE IF EXISTS `wtr`;
-CREATE TABLE IF NOT EXISTS `wtr` (
-  `socialname` varchar(255) DEFAULT NULL,
-  `lastIp` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- La exportación de datos fue deseleccionada.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

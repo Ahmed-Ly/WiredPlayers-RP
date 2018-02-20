@@ -312,7 +312,7 @@ namespace WiredPlayers.business
         }
 
         [RemoteEvent("getClothesByType")]
-        public void ClothesSlotSelectedEvent(Client player, int type, int slot)
+        public void GetClothesByTypeEvent(Client player, int type, int slot)
         {
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             List<BusinessClothesModel> clothesList = GetBusinessClothesFromSlotType(sex, type, slot);

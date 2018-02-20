@@ -740,15 +740,15 @@ namespace WiredPlayers.globals
             NAPI.World.RemoveIpl("fakeint_boards_lod");
             NAPI.World.RemoveIpl("shutter_closed");
 
+            // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
+            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
+
             // Evitamos que el personaje reaparezca tras morir
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetAutoSpawnOnConnect(false);
 
             // Deshabilitamos el chat global
             NAPI.Server.SetGlobalServerChat(false);
-
-            // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
-            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
 
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
             {

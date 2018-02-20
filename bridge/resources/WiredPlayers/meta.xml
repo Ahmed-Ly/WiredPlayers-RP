@@ -92,10 +92,8 @@
   <script src="animations/Animations.cs"/>
 
   <!-- Sistema de casas -->
+  <script src="house/Furniture.cs"/>
   <script src="house/House.cs"/>
-
-  <!-- Sistema de muebles -->
-  <script src="furniture/Furniture.cs"/>
 
   <!-- Sistema de parkings -->
   <script src="parking/Parking.cs"/>

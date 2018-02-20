@@ -4,6 +4,7 @@ using WiredPlayers.database;
 using WiredPlayers.globals;
 using WiredPlayers.model;
 using System;
+using System.Linq;
 
 namespace WiredPlayers.house
 {
@@ -114,8 +115,29 @@ namespace WiredPlayers.house
             }
         }
 
+        [RemoteEvent("getPlayerPurchasedClothes")]
+        public void GetPlayerPurchasedClothesEvent(Client player, int type, int slot)
+        {
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
+            int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
+
+            List<ClothesModel> clothesList = Globals.GetPlayerClothes(playerId).Where(c => c.type == type && c.slot == slot).ToList();
+
+            if(clothesList.Count > 0)
+            {
+                List<String> clothesNames = Globals.GetClothesNames(clothesList);
+
+                // Mostramos la lista de prendas
+                NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerClothes", NAPI.Util.ToJson(clothesList), NAPI.Util.ToJson(clothesNames));
+            }
+            else
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_CLOTHES_IN_WARDROBE);
+            }
+        }
+
         [RemoteEvent("wardrobeClothesItemSelected")]
-        public void WardrobeClothesItemSelectedEvent(Client player, int clothesId, int type, int slot)
+        public void WardrobeClothesItemSelectedEvent(Client player, int clothesId)
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
@@ -127,17 +149,17 @@ namespace WiredPlayers.house
                     clothes.dressed = true;
                     if (clothes.type == 0)
                     {
-                        NAPI.Player.SetPlayerClothes(player, clothes.slot, clothes.drawable, 0);
+                        NAPI.Player.SetPlayerClothes(player, clothes.slot, clothes.drawable, clothes.texture);
                     }
                     else
                     {
-                        NAPI.Player.SetPlayerAccessory(player, clothes.slot, clothes.drawable, 0);
+                        NAPI.Player.SetPlayerAccessory(player, clothes.slot, clothes.drawable, clothes.texture);
                     }
 
                     // Actualizamos la ropa en la base de datos
                     Database.UpdateClothes(clothes);
                 }
-                else if (clothes.id != clothesId && clothes.player == playerId && clothes.type == type && clothes.slot == slot && clothes.dressed)
+                else if (clothes.id != clothesId && clothes.dressed)
                 {
                     clothes.dressed = false;
 
@@ -264,11 +286,10 @@ namespace WiredPlayers.house
                 if (HasPlayerHouseKeys(player, house) == true)
                 {
                     int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
-                    List<ClothesModel> clothesList = Globals.GetPlayerClothes(playerId);
-                    List<String> clothesNames = Globals.GetClothesNames(clothesList);
-                    if (clothesList.Count > 0)
+
+                    if (Globals.GetPlayerClothes(playerId).Count > 0)
                     {
-                        NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerWardrobe", NAPI.Util.ToJson(clothesList), NAPI.Util.ToJson(clothesNames));
+                        NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerWardrobe");
                     }
                     else
                     {
