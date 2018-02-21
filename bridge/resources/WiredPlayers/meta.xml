@@ -7,6 +7,7 @@
   <assembly ref="System.Security.Cryptography.Primitives.dll"/>
   <assembly ref="System.Security.Cryptography.Algorithms.dll"/>
   <assembly ref="System.Text.Encoding.CodePages.dll"/>
+  <assembly ref="System.Text.Encoding.dll"/>
   <assembly ref="System.Security.Permissions.dll"/>
   <assembly ref="System.Configuration.ConfigurationManager.dll"/>
   <assembly ref="System.Management.dll"/>

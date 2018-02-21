@@ -17,6 +17,7 @@ using WiredPlayers.admin;
 using System.Collections.Generic;
 using System.Globalization;
 using System;
+using System.Text;
 
 namespace WiredPlayers.database
 {
@@ -31,6 +32,9 @@ namespace WiredPlayers.database
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
+            // Ajustamos la codificación
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             // Carga de negocios
             Business businessClass = new Business();
             businessClass.LoadDatabaseBusiness();

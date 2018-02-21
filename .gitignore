@@ -26,3 +26,4 @@
 !/bridge/runtime/System.Security.Cryptography.Primitives.dll
 !/bridge/runtime/System.Security.Permissions.dll
 !/bridge/runtime/System.Text.Encoding.CodePages.dll
+!/bridge/runtime/System.Text.Encoding.dll
