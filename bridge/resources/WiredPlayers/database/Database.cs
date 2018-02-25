@@ -23,10 +23,10 @@ namespace WiredPlayers.database
 {
     public class Database : Script
     {
-        private const String host = "127.0.0.1";
-        private const String user = "gta";
-        private const String pass = "gta5server-WP";
-        private const String database = "gtav";
+        private const String host = "";
+        private const String user = "";
+        private const String pass = "";
+        private const String database = "";
         private static String connectionString = "SERVER=" + host + "; DATABASE=" + database + "; UID=" + user + "; PASSWORD=" + pass + ";";
 
         [ServerEvent(Event.ResourceStart)]
@@ -207,7 +207,7 @@ namespace WiredPlayers.database
                     command.CommandText = "INSERT INTO skins VALUES (@playerId, @firstHeadShape, @secondHeadShape, @firstSkinTone, @secondSkinTone, @headMix, @skinMix, ";
                     command.CommandText += "@hairModel, @firstHairColor, @secondHairColor, @beardModel, @beardColor, @chestModel, @chestColor, @blemishesModel, @ageingModel, ";
                     command.CommandText += "@complexionModel, @sundamageModel, @frecklesModel, @noseWidth, @noseHeight, @noseLength, @noseBridge, @noseTip, @noseShift, @browHeight, ";
-                    command.CommandText += "@browWidth, @cheekboneHeight, @cheekboneWidth, @cheeksWidth, @eyes, @lips, @jawWidth, @jawHeigh, @chinLength, @chinPosition, @chinWidth, ";
+                    command.CommandText += "@browWidth, @cheekboneHeight, @cheekboneWidth, @cheeksWidth, @eyes, @lips, @jawWidth, @jawHeight, @chinLength, @chinPosition, @chinWidth, ";
                     command.CommandText += "@chinShape, @neckWidth, @eyesColor, @eyebrowsModel, @eyebrowsColor, @makeupModel, @blushModel, @blushColor, @lipstickModel, @lipstickColor)";
                     command.Parameters.AddWithValue("@playerId", playerId);
                     command.Parameters.AddWithValue("@firstHeadShape", skin.firstHeadShape);
