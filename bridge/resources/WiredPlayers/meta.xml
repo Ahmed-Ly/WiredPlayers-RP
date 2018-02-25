@@ -2,7 +2,7 @@
 <meta>
   <info name="WiredPlayers" author="Xabi" type="gamemode"/>
   
-  <!-- Librerías básicas para la gestión de datos -->
+  <!-- Basic libraries for data management -->
   <assembly ref="System.ComponentModel.Primitives.dll"/>
   <assembly ref="System.Security.Cryptography.Primitives.dll"/>
   <assembly ref="System.Security.Cryptography.Algorithms.dll"/>
@@ -16,10 +16,10 @@
   <assembly ref="Newtonsoft.Json.dll"/>
   <assembly ref="MySql.Data.dll"/>
 
-  <!-- Clase de control de las operaciones sobre la BD -->
+  <!-- Data and config loading -->
   <script src="database/Database.cs"/>
-
-  <!-- Modelos para almacenar los datos de las listas -->
+  
+  <!-- Models used for database queries -->
   <script src="model/AccountModel.cs"/>
   <script src="model/AdminTicketModel.cs"/>
   <script src="model/AnnoucementModel.cs"/>
@@ -71,86 +71,85 @@
   <script src="model/WeaponCrateModel.cs"/>
   <script src="model/WeaponProbabilityModel.cs"/>
 
-  <!-- Variables y funciones globales del servidor -->
+  <!-- Global variables and functions -->
   <script src="globals/Constants.cs"/>
+  <script src="globals/Commands.cs"/>
   <script src="globals/EntityData.cs"/>
   <script src="globals/Globals.cs"/>
   <script src="globals/Messages.cs"/>
+  <script src="globals/Messages_ES.cs"/>
 
-  <!-- Sistema de login -->
+  <!-- Login system -->
   <script src="login/Login.cs"/>
 
-  <!-- Sistema de chat -->
+  <!-- Chat system -->
   <script src="chat/Chat.cs"/>
 
-  <!-- Sistema de banco -->
+  <!-- Bank system -->
   <script src="bank/Bank.cs"/>
 
-  <!-- Sistema de negocios -->
+  <!-- Business system -->
   <script src="business/Business.cs"/>
 
-  <!-- Sistema de animaciones -->
+  <!-- Animations system -->
   <script src="animations/Animations.cs"/>
 
-  <!-- Sistema de casas -->
+  <!-- Houses system -->
   <script src="house/Furniture.cs"/>
   <script src="house/House.cs"/>
 
-  <!-- Sistema de parkings -->
+  <!-- Parkings system -->
   <script src="parking/Parking.cs"/>
 
-  <!-- Sistema de vehículos -->
+  <!-- Vehicles system -->
   <script src="vehicles/Vehicles.cs"/>
 
-  <!-- Sistema de autoescuela -->
+  <!-- Driving school system -->
   <script src="drivingschool/DrivingSchool.cs"/>
 
-  <!-- Sistema de concesionario -->
+  <!-- Car dealer system -->
   <script src="carshop/CarShop.cs"/>
 
-  <!-- Sistema de administración -->
+  <!-- Administration system -->
   <script src="admin/Admin.cs"/>
 
-  <!-- Sistema de facción de reportes -->
-  <script src="weazelNews/WeazelNews.cs"/>
-
-  <!-- Trabajo de prostituta -->
-  <script src="hooker/Hooker.cs"/>
-
-  <!-- Sistema común de facciones y trabajos -->
+  <!-- Job and faction systems -->
   <script src="faction/Faction.cs"/>
   <script src="faction/Job.cs"/>
 
-  <!-- Sistema de telefonía -->
+  <!-- Telephone system -->
   <script src="telephone/Telephone.cs"/>
 
-  <!-- Sistema de documentación -->
+  <!-- Weapon system -->
+  <script src="weapons/Weapons.cs" />
+
+  <!-- Licenses and identification system -->
   <script src="townhall/TownHall.cs"/>
 
-  <!-- Sistema de facción policial -->
+  <!-- Police Department -->
   <script src="police/Police.cs"/>
 
-  <!-- Trabajo de ladrón -->
+  <!-- News faction -->
+  <script src="weazelNews/WeazelNews.cs"/>
+
+  <!-- Hooker job -->
+  <script src="hooker/Hooker.cs"/>
+
+  <!-- Thief job -->
   <script src="thief/Thief.cs"/>
 
-  <!-- Sistema de servicios de emergencias -->
+  <!-- Emergency system -->
   <script src="emergency/Emergency.cs"/>
 
-  <!-- Trabajo de repartidor de comida rápida -->
+  <!-- Fastfood deliver job -->
   <script src="fastfood/FastFood.cs"/>
 
-  <!-- Trabajo de basurero -->
+  <!-- Garbage man job -->
   <script src="garbage/Garbage.cs"/>
 
-  <!-- Trabajo de mecánico -->
+  <!-- Mechanic job -->
   <script src="mechanic/Mechanic.cs"/>
 
-  <!-- Trabajo y hobby de pesca -->
+  <!-- Fishing hobby and job -->
   <script src="fishing/Fishing.cs"/>
-
-  <!-- Comandos personaje -->
-  <script src="avatar/Avatar.cs" />
-
-  <!-- Sistema de armas -->
-  <script src="weapons/Weapons.cs" />
 </meta>
