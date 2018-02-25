@@ -6,8 +6,8 @@ namespace WiredPlayers.Animations
 {
     public class Animations : Script
     {
-        [Command("recogiendo")]
-        public void RecogiendoComamnd(Client player)
+        [Command(Commands.COMMAND_GRAB)]
+        public void GrabComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -20,7 +20,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("facepalm")]
+        [Command(Commands.COMMAND_FACEPALM)]
         public void FacepalmComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -34,7 +34,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("loco")]
+        [Command(Commands.COMMAND_LOCO)]
         public void LocoComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -48,8 +48,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("flipar")]
-        public void FliparComamnd(Client player)
+        [Command(Commands.COMMAND_FREAKOUT)]
+        public void FreakoutComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -62,8 +62,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("burla")]
-        public void BurlaComamnd(Client player)
+        [Command(Commands.COMMAND_THUMB_ON_EARS)]
+        public void ThumbOnEarsComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -76,8 +76,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("paz")]
-        public void PazComamnd(Client player)
+        [Command(Commands.COMMAND_VICTORY)]
+        public void VictoryComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -90,8 +90,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("esconderse")]
-        public void EsconderseComamnd(Client player)
+        [Command(Commands.COMMAND_CROUCH)]
+        public void CrouchComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -104,7 +104,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("dj")]
+        [Command(Commands.COMMAND_DJ)]
         public void DjComamnd(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -118,8 +118,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("arrodillarse")]
-        public void ArrodillarseCommand(Client player)
+        [Command(Commands.COMMAND_KNEEL)]
+        public void KneelCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -132,8 +132,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("hablar")]
-        public void HablarCommand(Client player)
+        [Command(Commands.COMMAND_SPEAK)]
+        public void SpeakCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -146,8 +146,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("mecanico", Messages.GEN_ANIMS_MECHANIC)]
-        public void MecanicoCommand(Client player, int action)
+        [Command(Commands.COMMAND_MECHANIC, Messages.GEN_ANIMS_MECHANIC)]
+        public void MechanicCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -176,8 +176,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("cavar")]
-        public void CavarCommand(Client player)
+        [Command(Commands.COMMAND_DIG)]
+        public void DigCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -190,8 +190,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("llorar")]
-        public void LlorarCommand(Client player)
+        [Command(Commands.COMMAND_CRY)]
+        public void CryCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -204,8 +204,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("limpiar", Messages.GEN_ANIMS_CLEAN)]
-        public void LimpiarCommand(Client player, int action)
+        [Command(Commands.COMMAND_CLEAN, Messages.GEN_ANIMS_CLEAN)]
+        public void CleanCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -242,8 +242,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("ducharse", Messages.GEN_ANIMS_SHOWER)]
-        public void DucharseCommand(Client player, int action)
+        [Command(Commands.COMMAND_SHOWER, Messages.GEN_ANIMS_SHOWER)]
+        public void ShowerCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -268,8 +268,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("venaqui")]
-        public void VenaquiCommand(Client player)
+        [Command(Commands.COMMAND_HURRY_UP)]
+        public void HurryUpCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -282,8 +282,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("deporte", Messages.GEN_ANIMS_SPORTS)]
-        public void DeporteCommand(Client player, int action)
+        [Command(Commands.COMMAND_SPORTS, Messages.GEN_ANIMS_SPORTS)]
+        public void SportsCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -360,8 +360,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("teclear")]
-        public void TeclearCommand(Client player)
+        [Command(Commands.COMMAND_TYPE)]
+        public void TypeCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -374,8 +374,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("llamarpuerta")]
-        public void LlamarpuertaCommand(Client player)
+        [Command(Commands.COMMAND_KNOCK_DOOR)]
+        public void KnockDoorCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -388,8 +388,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("graffiti")]
-        public void GraffitiCommand(Client player)
+        [Command(Commands.COMMAND_TAGGING)]
+        public void TaggingCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -402,7 +402,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("striptease", Messages.GEN_ANIMS_STRIPTEASE)]
+        [Command(Commands.COMMAND_STRIPTEASE, Messages.GEN_ANIMS_STRIPTEASE)]
         public void StripteaseCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -476,8 +476,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("beber")]
-        public void BeberCommand(Client player)
+        [Command(Commands.COMMAND_DRINK)]
+        public void DrinkCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -490,8 +490,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("beso", Messages.GEN_ANIMS_KISS)]
-        public void BesoCommand(Client player, int action)
+        [Command(Commands.COMMAND_KISS)]
+        public void KissCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -504,8 +504,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("apuntar", Messages.GEN_ANIMS_AIM)]
-        public void ApuntarCommand(Client player, int action)
+        [Command(Commands.COMMAND_AIM)]
+        public void AimCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -513,21 +513,13 @@ namespace WiredPlayers.Animations
             }
             else
             {
-                switch (action)
-                {
-                    case 1:
-                        NAPI.Player.StopPlayerAnimation(player);
-                        NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "combat@chg_stance", "aima_loop");
-                        break;
-                    default:
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_ANIMS_AIM);
-                        break;
-                }
+                NAPI.Player.StopPlayerAnimation(player);
+                NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "combat@chg_stance", "aima_loop");
             }
         }
 
-        [Command("saludar", Messages.GEN_ANIMS_SALUTE)]
-        public void SaludarCommand(Client player, int action)
+        [Command(Commands.COMMAND_SALUTE, Messages.GEN_ANIMS_SALUTE)]
+        public void SaluteCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -569,8 +561,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("cortemangas")]
-        public void CortemangasCommand(Client player)
+        [Command(Commands.COMMAND_FUCKU)]
+        public void FuckUCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -583,8 +575,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("andar", Messages.GEN_ANIMS_WALK)]
-        public void AndarCommand(Client player, int action)
+        [Command(Commands.COMMAND_WALK, Messages.GEN_ANIMS_WALK)]
+        public void WalkCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -685,8 +677,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("nudillos")]
-        public void NudillosCommand(Client player)
+        [Command(Commands.COMMAND_KNUCKLES)]
+        public void KnucklesCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -699,8 +691,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("rendirse", Messages.GEN_ANIMS_SURRENDER)]
-        public void RendirseCommand(Client player, int action)
+        [Command(Commands.COMMAND_SURRENDER, Messages.GEN_ANIMS_SURRENDER)]
+        public void SurrenderCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -761,8 +753,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("comer")]
-        public void ComerCommand(Client player)
+        [Command(Commands.COMMAND_EAT)]
+        public void EatCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -775,8 +767,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("vomitar")]
-        public void VomitarCommand(Client player)
+        [Command(Commands.COMMAND_PUKE)]
+        public void PukeCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -789,8 +781,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("plantar")]
-        public void PlantarCommand(Client player)
+        [Command(Commands.COMMAND_PLANT)]
+        public void PlantCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -803,8 +795,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("rcp", Messages.GEN_ANIMS_PCR)]
-        public void RcpCommand(Client player, int action)
+        [Command(Commands.COMMAND_CPR, Messages.GEN_ANIMS_CPR)]
+        public void CprCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -831,14 +823,14 @@ namespace WiredPlayers.Animations
                         NAPI.Player.PlayPlayerAnimation(player, 0, "mini@cpr@char_a@cpr_str", "cpr_success");
                         break;
                     default:
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_ANIMS_PCR);
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_ANIMS_CPR);
                         break;
                 }
             }
         }
 
-        [Command("sexocoche", Messages.GEN_ANIMS_CAR_SEX)]
-        public void SexococheCommand(Client player, int action)
+        [Command(Commands.COMMAND_CAR_SEX, Messages.GEN_ANIMS_CAR_SEX)]
+        public void CarSexCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -935,8 +927,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("bailesexy", Messages.GEN_ANIMS_SEXY_DANCE)]
-        public void BailesexyCommand(Client player, int action)
+        [Command(Commands.COMMAND_SEXY_DANCE, Messages.GEN_ANIMS_SEXY_DANCE)]
+        public void SexyDanceCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -977,8 +969,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("sentarse", Messages.GEN_ANIMS_SIT)]
-        public void SentarseCommand(Client player, int action)
+        [Command(Commands.COMMAND_SIT, Messages.GEN_ANIMS_SIT)]
+        public void SitCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1039,8 +1031,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("fumar", Messages.GEN_ANIMS_SMOKING)]
-        public void FumarCommand(Client player, int action)
+        [Command(Commands.COMMAND_SMOKE, Messages.GEN_ANIMS_SMOKING)]
+        public void SmokeCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1069,8 +1061,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("tumbarse", Messages.GEN_ANIMS_LIE_DOWN)]
-        public void TumbarseCommand(Client player, int action)
+        [Command(Commands.COMMAND_LIE_DOWN, Messages.GEN_ANIMS_LIE_DOWN)]
+        public void LieDownCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1111,8 +1103,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("brazos", Messages.GEN_ANIMS_ARMS)]
-        public void BrazosCommand(Client player, int action)
+        [Command(Commands.COMMAND_ARMS, Messages.GEN_ANIMS_ARMS)]
+        public void ArmsCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1145,8 +1137,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("guardia", Messages.GEN_ANIMS_GUARD)]
-        public void GuardiaCommand(Client player, int action)
+        [Command(Commands.COMMAND_GUARD, Messages.GEN_ANIMS_GUARD)]
+        public void GuardCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1179,8 +1171,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("muerto", Messages.GEN_ANIMS_DEAD)]
-        public void MuertoCommand(Client player, int action)
+        [Command(Commands.COMMAND_DEAD, Messages.GEN_ANIMS_DEAD)]
+        public void DeadCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1217,8 +1209,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("pose", Messages.GEN_ANIMS_IDLE)]
-        public void PoseCommand(Client player, int action)
+        [Command(Commands.COMMAND_IDLE, Messages.GEN_ANIMS_IDLE)]
+        public void IdleCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1271,8 +1263,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("telefono", Messages.GEN_ANIMS_TLF)]
-        public void TelefonoCommand(Client player, int action)
+        [Command(Commands.COMMAND_PHONE, Messages.GEN_ANIMS_TLF)]
+        public void PhoneCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1309,8 +1301,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("apoyarse", Messages.GEN_ANIMS_LEAN)]
-        public void ApoyarsebarraCommand(Client player, int action)
+        [Command(Commands.COMMAND_LEAN, Messages.GEN_ANIMS_LEAN)]
+        public void LeanCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1375,8 +1367,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("animar", Messages.GEN_ANIMS_CHEER)]
-        public void AnimarCommand(Client player, int action)
+        [Command(Commands.COMMAND_CHEER, Messages.GEN_ANIMS_CHEER)]
+        public void CheerCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1421,8 +1413,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("bailar", Messages.GEN_ANIMS_DANCE)]
-        public void BailarCommand(Client player, int action)
+        [Command(Commands.COMMAND_DANCE, Messages.GEN_ANIMS_DANCE)]
+        public void DanceCommand(Client player, int action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1463,8 +1455,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("mear")]
-        public void MearCommand(Client player)
+        [Command(Commands.COMMAND_PISS)]
+        public void PissCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1477,8 +1469,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("aplaudir")]
-        public void AplaudirCommand(Client player)
+        [Command(Commands.COMMAND_APLAUSE)]
+        public void AplauseCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1491,8 +1483,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("borracha")]
-        public void BorrachaCommand(Client player)
+        [Command(Commands.COMMAND_DRUNK)]
+        public void DrunkCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1505,8 +1497,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("indiferencia")]
-        public void IndiferenciaCommand(Client player)
+        [Command(Commands.COMMAND_SHRUG)]
+        public void ShrugCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1519,8 +1511,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("nervios")]
-        public void NerviosCommand(Client player)
+        [Command(Commands.COMMAND_DESPERATE)]
+        public void DesperateCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1533,8 +1525,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("pensativo")]
-        public void PensativoCommand(Client player)
+        [Command(Commands.COMMAND_PENSIVE)]
+        public void PensiveCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1547,8 +1539,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("calentarmanos")]
-        public void CalentarmanosCommand(Client player)
+        [Command(Commands.COMMAND_HANDS_HEAT)]
+        public void HandsHeatCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1561,7 +1553,7 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("rock")]
+        [Command(Commands.COMMAND_ROCK)]
         public void RockCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -1575,22 +1567,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("contoneo")]
-        public void ContoneoCommand(Client player)
-        {
-            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
-            }
-            else
-            {
-                NAPI.Player.StopPlayerAnimation(player);
-                NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl), "mini@hookers_spcokehead", "idle_a");
-            }
-        }
-
-        [Command("malherido")]
-        public void MalheridoCommand(Client player)
+        [Command(Commands.COMMAND_INJURED)]
+        public void InjuredCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1603,22 +1581,8 @@ namespace WiredPlayers.Animations
             }
         }
 
-        [Command("tefo")]
-        public void TefoCommand(Client player)
-        {
-            if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
-            {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_IS_DEAD);
-            }
-            else
-            {
-                NAPI.Player.StopPlayerAnimation(player);
-                NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl | Constants.AnimationFlags.OnlyAnimateUpperBody), "anim@mp_player_intupperdock", "idle_a");
-            }
-        }
-
-        [Command("golpeado")]
-        public void GolpeadoCommand(Client player)
+        [Command(Commands.COMMAND_STUMBLE)]
+        public void StumbleCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {

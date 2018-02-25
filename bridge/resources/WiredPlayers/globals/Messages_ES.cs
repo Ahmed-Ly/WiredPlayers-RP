@@ -54,9 +54,7 @@ namespace WiredPlayers.globals
         public const String GEN_ANIMS_SEXY_DANCE = "USO: /bailesexy [1-6]";
         public const String GEN_ANIMS_STRIPTEASE = "USO: /striptease [1-14]";
         public const String GEN_ANIMS_CAR_SEX = "USO: /sexocoche [1-6]";
-        public const String GEN_ANIMS_PCR = "USO: /rcp [1-2]";
-        public const String GEN_ANIMS_KISS = "USO: /beso [1]";
-        public const String GEN_ANIMS_AIM = "USO: /apuntar [1]";
+        public const String GEN_ANIMS_CPR = "USO: /rcp [1-2]";
         public const String GEN_ANIMS_SHOWER = "USO: /ducharse [1-2]";
         public const String GEN_ANIMS_CLEAN = "USO: /limpiar [1-5]";
         public const String GEN_ANIMS_MECHANIC = "USO: /mecanico [1-3]";
