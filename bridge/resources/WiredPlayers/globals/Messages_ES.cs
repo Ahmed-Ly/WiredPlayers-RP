@@ -5,6 +5,11 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_WELCOME_MESSAGE = "Bienvenido a WiredPlayers, {0}.";
+        public const String GEN_WELCOME_HINT = "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.";
+        public const String GEN_HELP_HINT = "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.";
+        public const String GEN_TICKET_HINT = "Utiliza el comando ~b~/duda ~w~para solicitar ayuda de algún miembro del staff.";
+        public const String GEN_NOT_FACTION_WARNING = "No hay ningún aviso pendiente.";
         public const String GEN_COORD_COMMAND = "USO: /coord [Pos. X] [Pos. Y] [Pos. Z]";
         public const String GEN_JOB_COMMAND = "USO: /empleo [Info|Aceptar|Dejar]";
         public const String GEN_FURNITURE_COMMAND = "USO: /muebles [Colocar|Mover|Quitar]";
@@ -139,7 +144,6 @@ namespace WiredPlayers.globals
         public const String GEN_LICENSE_COMMAND = "USO: /licencia [Dar|Quitar] [Armas|Turismos|Motocicletas] [Id. jugador/Nombre jugador]";
         public const String GEN_GUN_COMMAND = "USO: /gun [Id. jugador/Nombre] [Arma] [Balas]";
         public const String GEN_COMMAND_PURCHASE = "USO: /comprar [Cantidad]";
-        public const String GEN_NOT_FACTION_WARNING = "No hay ningún aviso pendiente.";
         public const String GEN_SKIN_COMMAND = "USO: /skin [Nombre del ped]";
         public const String GEN_ALCOHOLIMETER_COMMAND = "USO: /alcoholimetro [Id. jugador/Nombre jugador]";
         public const String GEN_GIVE_COMMAND = "USO: /ceder [Id. jugador/Nombre jugador]";
@@ -326,12 +330,12 @@ namespace WiredPlayers.globals
         public const String INF_CALL_RECEIVED = "Has contestado a la llamada, escribe /colgar cuando hayas acabado.";
         public const String INF_CALL_TAKEN = "Han contestado a tu llamada, escribe /colgar cuando hayas acabado.";
         public const String INF_HOW_TO_START_ENGINE = "Has subido a un vehículo, pulsa K para arrancar o apagar el motor.";
-        public const String INF_PLAYER_RECRUITED = "Han reclutado a {0} en tu facción.";
+        public const String INF_PLAYER_RECRUITED = "Has reclutado a {0} en tu facción.";
         public const String INF_FACTION_RECRUITED = "Has sido reclutado en la facción '{0}'.";
         public const String INF_PLAYER_DISMISSED = "Has expulsado a {0} de la facción.";
         public const String INF_FACTION_DISMISSED = "{0} te ha expulsado de la facción.";
-        public const String INF_PLAYER_RANK_CHANGED = "Has cambiado el rango el rango de {0} a {0}.";
-        public const String INF_FACTION_RANK_CHANGED = "{0} ha cambiado tu rango a {0}.";
+        public const String INF_PLAYER_RANK_CHANGED = "Has cambiado el rango el rango de {0} a {1}.";
+        public const String INF_FACTION_RANK_CHANGED = "{0} ha cambiado tu rango a {1}.";
         public const String INF_EMERGENCY_WARNING = "Hay un aviso de emergencia para atender. Utiliza /atender {0}.";
         public const String INF_POLICE_WARNING = "Hay un aviso de robo para atender. Utiliza /atender.";
         public const String INF_DELIVERER_ORDER_CANCELED = "Has cancelado el pedido que ibas a entregar, ahora puedes coger otro.";

@@ -17,7 +17,7 @@ namespace WiredPlayers.bank
             int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             String name = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
 
-            // Verificamos que la cantidad es válida
+            // Checking that amount is valid
             if (amount > 0)
             {
                 switch (operation)
@@ -33,7 +33,7 @@ namespace WiredPlayers.bank
                         }
                         else
                         {
-                            response = "La cuenta no dispone de la cantidad requerida";
+                            response = "The bank account has not enough funds to process the operation";
                         }
                         break;
                     case Constants.OPERATION_DEPOSIT:
@@ -56,7 +56,7 @@ namespace WiredPlayers.bank
                     case Constants.OPERATION_TRANSFER:
                         if (bank < amount)
                         {
-                            response = "La cuenta no dispone de la cantidad requerida";
+                            response = "The bank account has not enough funds to process the operation";
                         }
                         else
                         {
@@ -65,7 +65,7 @@ namespace WiredPlayers.bank
                                 Client target = NAPI.Pools.GetAllPlayers().Find(x => x.Name == targetName);
                                 if (target == player)
                                 {
-                                    response = "No puedes realizar una transferencia a tu cuenta";
+                                    response = "You can't transfer money to your own account";
                                 }
                                 else
                                 {
@@ -88,7 +88,7 @@ namespace WiredPlayers.bank
                             }
                             else
                             {
-                                response = "La persona destinataria no tiene ninguna cuenta bancaria";
+                                response = "There's no bank account linked to that person";
                             }
                         }
                         break;
@@ -98,7 +98,7 @@ namespace WiredPlayers.bank
             }
             else
             {
-                response = "Ha habido un fallo al procesar la transacción";
+                response = "An error occurred while processing the operation";
             }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "bankOperationResponse", response);

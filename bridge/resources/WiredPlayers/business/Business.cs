@@ -21,10 +21,10 @@ namespace WiredPlayers.business
             businessList = Database.LoadAllBusiness();
             foreach (BusinessModel businessModel in businessList)
             {
-                // Creamos la etiqueta de entrada
+                // We create the entrance TextLabel for each business
                 businessModel.businessLabel = NAPI.TextLabel.CreateTextLabel(businessModel.name, businessModel.position, 30.0f, 0.75f, 4, new Color(255, 255, 255), false, businessModel.dimension);
 
-                // Miramos si está entre los destacados
+                // We mark the blip in the map
                 foreach (BusinessBlipModel blipModel in Constants.BUSINESS_BLIP_LIST)
                 {
                     if (blipModel.id == businessModel.id)
@@ -173,7 +173,7 @@ namespace WiredPlayers.business
         {
             List<BusinessTattooModel> tattooList = new List<BusinessTattooModel>();
 
-            // Cargamos la lista de tatuajes
+            // Loading tattoo list
             foreach (BusinessTattooModel tattoo in Constants.TATTOO_LIST)
             {
                 if (tattoo.slot == zone && tattoo.maleHash.Length > 0 && sex == Constants.SEX_MALE)
@@ -187,25 +187,6 @@ namespace WiredPlayers.business
             }
 
             return tattooList;
-        }
-
-        [ServerEvent(Event.ResourceStart)]
-        public void OnResourceStartHandler()
-        {
-            scrapYard = NAPI.Blip.CreateBlip(new Vector3(-441.6721f, -1696.798f, 18.94322f));
-            NAPI.Blip.SetBlipSprite(scrapYard, 566);
-            NAPI.Blip.SetBlipName(scrapYard, "Desguace");
-            NAPI.Blip.SetBlipShortRange(scrapYard, true);
-
-            hardwareBlip = NAPI.Blip.CreateBlip(new Vector3(-582.131f, -1000.79f, 22.3297f));
-            NAPI.Blip.SetBlipSprite(hardwareBlip, 402);
-            NAPI.Blip.SetBlipName(hardwareBlip, "Ferreteria Little Seoul");
-            NAPI.Blip.SetBlipShortRange(hardwareBlip, true);
-
-            hardwareBlip2 = NAPI.Blip.CreateBlip(new Vector3(342.944f, -1297.85f, 32.5098f));
-            NAPI.Blip.SetBlipSprite(hardwareBlip2, 402);
-            NAPI.Blip.SetBlipName(hardwareBlip2, "Herramientas Bert");
-            NAPI.Blip.SetBlipShortRange(hardwareBlip2, true);
         }
 
         [RemoteEvent("businessPurchaseMade")]
@@ -227,11 +208,11 @@ namespace WiredPlayers.business
                 String purchaseMessage = String.Format(Messages.INF_BUSINESS_ITEM_PURCHASED, price);
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-                // Miramos si tiene el objeto ya en el inventario
+                // We look for the item in the inventory
                 ItemModel itemModel = Globals.GetPlayerItemModelFromHash(playerId, businessItem.hash);
                 if (itemModel == null)
                 {
-                    // Creamos el objeto que ha comprado
+                    // We create the purchased item
                     itemModel = new ItemModel();
                     itemModel.hash = businessItem.hash;
                     if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
@@ -247,7 +228,7 @@ namespace WiredPlayers.business
                     itemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
                     itemModel.dimension = 0;
 
-                    // Añadimos el objeto a la base de datos y a la lista
+                    // Adding the item to the list and database
                     itemModel.id = Database.AddNewItem(itemModel);
                     Globals.itemList.Add(itemModel);
                 }
@@ -261,7 +242,7 @@ namespace WiredPlayers.business
                     Database.UpdateItem(itemModel);
                 }
 
-                // Si tiene hash, le entregamos en mano el objeto
+                // If the item has a valid hash, we give it in hand
                 if (itemModel.ownerEntity == Constants.ITEM_ENTITY_RIGHT_HAND)
                 {
                     itemModel.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(itemModel.hash), itemModel.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)player.Dimension);
@@ -269,21 +250,21 @@ namespace WiredPlayers.business
                 }
                 else if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
                 {
-                    // Damos el arma al jugador
+                    // We give the weapon to the player
                     WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(itemModel.hash);
                     NAPI.Player.GivePlayerWeapon(player, weaponHash, itemModel.amount);
 
-                    // Miramos si ha comprado en el Ammu-Nation
+                    // Checking if it's been bought in the Ammu-Nation
                     if (business.type == Constants.BUSINESS_TYPE_AMMUNATION)
                     {
                         Database.AddLicensedWeapon(itemModel.id, player.Name);
                     }
                 }
 
-                // Añadimos el objeto comprado a la mano
+                // We set the item into the hand variable
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, itemModel.id);
 
-                // Si es un teléfono, le damos el número
+                // If it's a phone, we create a new number
                 if (itemModel.hash == Constants.ITEM_HASH_TELEPHONE)
                 {
                     if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_PHONE) == 0)
@@ -292,13 +273,13 @@ namespace WiredPlayers.business
                         int phone = random.Next(100000, 999999);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PHONE, phone);
 
-                        // Informamos al jugador de su número
+                        // Sending the message with the new number to the player
                         String message = String.Format(Messages.INF_PLAYER_PHONE, phone);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                     }
                 }
 
-                // Si el negocio tiene dueño, le damos el dinero y descontamos los productos
+                // We substract the product and add funds to the business
                 if (business.owner != String.Empty)
                 {
                     business.funds += price;
@@ -332,8 +313,7 @@ namespace WiredPlayers.business
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
             ClothesModel clothes = Globals.GetDressedClothesInSlot(playerId, type, slot);
-
-            // Miramos si llevaba algo o no
+            
             if (clothes != null)
             {
                 if (type == 0)
@@ -361,25 +341,23 @@ namespace WiredPlayers.business
         [RemoteEvent("clothesItemSelected")]
         public void ClothesItemSelectedEvent(Client player, int clothesId, int type, int slot)
         {
-            // Calculamos el precio de la ropa
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             int products = GetClothesProductsPrice(clothesId, sex, type, slot);
             BusinessModel business = GetBusinessById(businessId);
             int price = (int)Math.Round(products * business.multiplier);
 
-            // Miramos si tiene dinero suficiente
+            // We check whether the player has enough money
             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
 
             if (playerMoney >= price)
             {
-                // Sacamos el identificador del jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-                // Restamos al jugador el dinero
+                // Substracting paid money
                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
 
-                // Si el negocio tiene dueño, le damos el dinero y descontamos los productos
+                // We substract the product and add funds to the business
                 if (business.owner != String.Empty)
                 {
                     business.funds += price;
@@ -387,10 +365,10 @@ namespace WiredPlayers.business
                     Database.UpdateBusiness(business);
                 }
 
-                // Desequipamos la ropa anterior
+                // Undress previous clothes
                 Globals.UndressClothes(playerId, type, slot);
 
-                // Creamos el modelo de ropa
+                // We make the new clothes model
                 ClothesModel clothesModel = new ClothesModel();
                 clothesModel.player = playerId;
                 clothesModel.type = type;
@@ -398,11 +376,11 @@ namespace WiredPlayers.business
                 clothesModel.drawable = clothesId;
                 clothesModel.dressed = true;
 
-                // Añadimos el objeto a la base de datos
+                // Storing the clothes into database
                 clothesModel.id = Database.AddClothes(clothesModel);
                 Globals.clothesList.Add(clothesModel);
 
-                // Enviamos el mensaje al jugador
+                // Confirmation message sent to the player
                 String purchaseMessage = String.Format(Messages.INF_BUSINESS_ITEM_PURCHASED, price);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + purchaseMessage);
             }
@@ -422,13 +400,11 @@ namespace WiredPlayers.business
 
             if (playerMoney >= price)
             {
-                // Obtenemos el id del jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-                // Obtenemos la nueva imagen
+                // Getting the new hairstyle from the JSON
                 dynamic skinModel = NAPI.Util.FromJson(skinJson);
-
-                // Creamos el modelo de datos
+                
                 SkinModel skin = new SkinModel();
                 skin.hairModel = skinModel.hairModel;
                 skin.firstHairColor = skinModel.firstHairColor;
@@ -438,10 +414,10 @@ namespace WiredPlayers.business
                 skin.eyebrowsModel = skinModel.eyebrowsModel;
                 skin.eyebrowsColor = skinModel.eyebrowsColor;
 
-                // Recogemos los datos de peluquería
+                // We update values in the database
                 Database.UpdateCharacterHair(playerId, skin);
 
-                // Guardamos los datos para el cliente
+                // Saving new entity data
                 NAPI.Data.SetEntitySharedData(player, EntityData.HAIR_MODEL, skin.hairModel);
                 NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR, skin.firstHairColor);
                 NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR, skin.secondHairColor);
@@ -450,10 +426,10 @@ namespace WiredPlayers.business
                 NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_MODEL, skin.eyebrowsModel);
                 NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_COLOR, skin.eyebrowsColor);
 
-                // Restamos el dinero al jugador
+                // Substract money to the player
                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
 
-                // Si el negocio tiene dueño, le damos el dinero y descontamos los productos
+                // We substract the product and add funds to the business
                 if (business.owner != String.Empty)
                 {
                     business.funds += price;
@@ -461,7 +437,7 @@ namespace WiredPlayers.business
                     Database.UpdateBusiness(business);
                 }
 
-                // Avisamos al jugador
+                // Confirmation message sent to the player
                 String playerMessage = String.Format(Messages.INF_HAIRCUT_PURCHASED, price);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
             }
@@ -470,7 +446,7 @@ namespace WiredPlayers.business
                 String message = String.Format(Messages.ERR_HAIRCUT_MONEY, price);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + message);
 
-                // Volvemos a poner el estilo de pelo al jugador
+                // Setting the old hairstyle to the player
                 NAPI.ClientEvent.TriggerClientEvent(player, "cancelHairdressersChanges");
             }
         }
@@ -481,44 +457,39 @@ namespace WiredPlayers.business
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             List<BusinessTattooModel> tattooList = GetBusinessZoneTattoos(sex, zone);
 
-            // Actualizamos el menú de tatuajes
+            // We update the menu with the tattoos
             NAPI.ClientEvent.TriggerClientEvent(player, "showZoneTattoos", NAPI.Util.ToJson(tattooList));
         }
 
         [RemoteEvent("purchaseTattoo")]
         public void PurchaseTattooEvent(Client player, int tattooZone, int tattooIndex)
         {
-            // Obtenemos los datos del negocio y sexo
             int sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
             BusinessModel business = GetBusinessById(businessId);
 
-            // Obtenemos el tatuaje seleccionado y su precio
+            // Getting the tattoo and its price
             BusinessTattooModel businessTattoo = GetBusinessZoneTattoos(sex, tattooZone).ElementAt(tattooIndex);
             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
             int price = (int)Math.Round(business.multiplier * businessTattoo.price);
 
             if (price <= playerMoney)
             {
-                // Creamos el modelo de datos
                 TattooModel tattoo = new TattooModel();
                 tattoo.player = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                 tattoo.slot = tattooZone;
                 tattoo.library = businessTattoo.library;
                 tattoo.hash = sex == Constants.SEX_MALE ? businessTattoo.maleHash : businessTattoo.femaleHash;
 
-                // Intentamos insertar el tatuaje en la base de datos
-                bool inserted = Database.AddTattoo(tattoo);
-
-                if (inserted)
+                if (Database.AddTattoo(tattoo) == true)
                 {
-                    // Añadimos el tatuaje a la lista
+                    // We add the tattoo to the list
                     Globals.tattooList.Add(tattoo);
 
-                    // Restamos el dinero al jugador
+                    // Substract player money
                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
 
-                    // Si el negocio tiene dueño, le damos el dinero y descontamos los productos
+                    // We substract the product and add funds to the business
                     if (business.owner != String.Empty)
                     {
                         business.funds += price;
@@ -526,16 +497,16 @@ namespace WiredPlayers.business
                         Database.UpdateBusiness(business);
                     }
 
-                    // Avisamos al jugador
+                    // Confirmation message sent to the player
                     String playerMessage = String.Format(Messages.INF_TATTOO_PURCHASED, price);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
 
-                    // Recargamos la lista de tatuajes
+                    // Reload client tattoo list
                     NAPI.ClientEvent.TriggerClientEvent(player, "addPurchasedTattoo", NAPI.Util.ToJson(tattoo));
                 }
                 else
                 {
-                    // El jugador ya tenía ese tatuaje
+                    // Player already had that tattoo
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_TATTOO_DUPLICATED);
                 }
             }
@@ -548,7 +519,7 @@ namespace WiredPlayers.business
         [RemoteEvent("loadCharacterClothes")]
         public void LoadCharacterClothesEvent(Client player)
         {
-            // Generación de la ropa del personaje
+            // Generate player's clothes
             Globals.PopulateCharacterClothes(player);
         }
     }

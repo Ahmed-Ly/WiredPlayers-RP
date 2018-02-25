@@ -295,10 +295,11 @@ namespace WiredPlayers.login
                     break;
                 default:
                     // Mandamos los mensajes de bienvenida
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Bienvenido a WiredPlayers, " + player.SocialClubName);
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.");
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.");
-                    NAPI.Chat.SendChatMessageToPlayer(player, "Utiliza el comando ~b~/duda ~w~para solicitar ayuda de algún miembro del staff.");
+                    String welcomeMessage = String.Format(Messages.GEN_WELCOME_MESSAGE, player.SocialClubName);
+                    NAPI.Chat.SendChatMessageToPlayer(player, welcomeMessage);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_WELCOME_HINT);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_HELP_HINT);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_TICKET_HINT);
 
                     // Miramos si tiene seleccionado algún personaje
                     if (account.lastCharacter > 0)
