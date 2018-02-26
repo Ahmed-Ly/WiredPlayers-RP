@@ -398,7 +398,6 @@ namespace WiredPlayers.globals
         public const String INF_TUNNING_PRODUCTS = "Necesitas {0} productos para llevar a cabo la modificación.";
         public const String INF_PRODUCTS_BOUGHT = "Has comprado {0} productos por {1}$.";
         public const String INF_VEHICLE_TUNNING = "Has modificado el vehículo correctamente.";
-        public const String INF_VEHICLE_ALMOST_CLEANED = "Has lavado un poco el coche, pero aun queda algo de polvo.";
         public const String INF_UNPARK_MONEY = "Te han cobrado {0}$ por sacar el vehículo del aparcamiento.";
         public const String INF_MEDIC_REANIMATED = "{0} ha prestado asistencia médica a {1}.";
         public const String INF_PLAYER_FISHING_ROD_THROWN = "Has lanzado la caña, espera a que piquen.";
