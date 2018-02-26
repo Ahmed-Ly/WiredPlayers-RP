@@ -4,7 +4,7 @@ namespace WiredPlayers.globals
 {
     public class Messages
     {
-        // Mensajes generales
+        // General messages
         public const String GEN_WELCOME_MESSAGE = "Welcome to WiredPlayers, {0}.";
         public const String GEN_WELCOME_HINT = "Use ~b~/welcome ~w~command in order to know how can you start your life in Los Santos.";
         public const String GEN_HELP_HINT = "Use ~b~/help ~w~command whenever you want to get general information.";
@@ -152,7 +152,7 @@ namespace WiredPlayers.globals
         public const String GEN_HEALTH_COMMAND = "USAGE: /health [Player id./Player name] [Amount]";
         public const String GEN_INFO_COMMAND = "USAGE: /info [Player id./Player name]";
 
-        // Mensajes de administración
+        // Admin messages
         public const String ADM_GOD_MODE_ON = "You're now in God mode.";
         public const String ADM_GOD_MODE_OFF = "You've toggled off God mode.";
         public const String ADM_BRING_PLAYER = "The staff member {0} has brought you to his position.";
@@ -211,7 +211,7 @@ namespace WiredPlayers.globals
         public const String ADM_CHARACTERS_SAVED = "All the characters saved.";
         public const String ADM_VEHICLES_SAVED = "All the vehicles saved.";
 
-        // Mensajes de información
+        // Information messages
         public const String INF_LICENSE_VEHICLE_EXIT = "Get back into the vehicle within {0} seconds or you'll fail the license exam.";
         public const String INF_ENTER_LICENSE_CAR_VEHICLE = "Get into a car from the driving school to start the license exam. Don't forget to keep the speed under 100 km/h.";
         public const String INF_ENTER_LICENSE_BIKE_VEHICLE = "Get into a motorcycle from the driving school to start the license exam. Don't forget to keep the speed under 100 km/h.";
@@ -410,68 +410,65 @@ namespace WiredPlayers.globals
         public const String INF_ITEM_GIVEN = "You gave your {0} to {1}.";
         public const String INF_ITEM_RECEIVED = "{0} gave you his {1}.";
 
-        // Mensajes de éxito
-        public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";
-        public const String SUC_LICENSE_DRIVE_PASSED = "Has aprobado el examen práctico.";
-        public const String SUC_ACCOUNT_REGISTER = "Te has registrado correctamente en el servidor.";
-        public const String SUC_VEHICLE_PURCHASED = "Has comprado tu vehículo.";
-        public const String SUC_ADMIN_REVIVED = "El administrador {0} te ha revivido.";
-        public const String SUC_POSSITIVE_RESULT = "{0} ha conseguido un resultado positivo.";
-        public const String SUC_LOCKPICKED = "Has logrado forzar la cerradura.";
-        public const String SUC_VEH_LOCKED = "ha bloqueado el vehículo.";
-        public const String SUC_VEH_UNLOCKED = "ha desbloqueado el vehículo.";
-        public const String SUC_VEH_HOTWIREED = "Has conseguido arrancar el vehículo.";
-        public const String SUC_TARGET_REANIMATED = "El doctor {0} ha conseguido reanimarte.";
-        public const String SUC_INTERVIEW_ACCEPTED = "{0} ha aceptado tu solicitud de entrevista.";
-        public const String SUC_HOOKER_CLIENT_SATISFIED = "Has terminado con este cliente.";
-        public const String SUC_HOOKER_SERVICE_FINISHED = "El servicio de la prostituta ha terminado.";
-        public const String SUC_HELP_REQUEST_SENT = "Tu duda ha sido enviada correctamente, espera a que te atienda un miembro del staff.";
-        public const String SUC_VEHICLE_SCRAPYARD = "Has recibido {0}$ por desguazar tu vehículo.";
-        public const String SUC_VEHICLE_COMPLETELY_CLEANED = "Has terminado de lavar el coche por completo.";
-        public const String SUC_HOUSE_SOLD = "Has vendido tu casa al estado por un Value de {0}$";
+        // Success messages
+        public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";
+        public const String SUC_LICENSE_DRIVE_PASSED = "You passed the practical exam.";
+        public const String SUC_VEHICLE_PURCHASED = "You purchased your vehicle.";
+        public const String SUC_ADMIN_REVIVED = "The staff {0} revived you.";
+        public const String SUC_POSSITIVE_RESULT = "{0} had a possitive result.";
+        public const String SUC_LOCKPICKED = "You successfully lockpicked.";
+        public const String SUC_VEH_LOCKED = "locked his vehicle.";
+        public const String SUC_VEH_UNLOCKED = "unlocked his vehicle.";
+        public const String SUC_VEH_HOTWIREED = "You managed to hotwire the vehicle.";
+        public const String SUC_TARGET_REANIMATED = "The doctor {0} reanimated you.";
+        public const String SUC_INTERVIEW_ACCEPTED = "{0} accepted your interview request.";
+        public const String SUC_HOOKER_CLIENT_SATISFIED = "You've finished with this client.";
+        public const String SUC_HOOKER_SERVICE_FINISHED = "The hooker's service has finished.";
+        public const String SUC_HELP_REQUEST_SENT = "A new ticket has been generated, wait for a staff member to answer it.";
+        public const String SUC_VEHICLE_SCRAPYARD = "You received {0}$ for scrapping your vehicle.";
+        public const String SUC_HOUSE_SOLD = "You sold yous house for {0}$";
 
-        // Mensajes de error
-        public const String ERR_PLAYER_CANT_LOGIN = "No está disponible el login por comando en estos momentos.";
-        public const String ERR_LICENSE_EXAM_FAILED = "Has suspendido el examen teórico.";
-        public const String ERR_LICENSE_DRIVE_FAILED = "Has suspendido el examen práctico.";
-        public const String ERR_PLAYER_HAS_IDENTIFICATION = "Ya tienes la documentación en regla.";
-        public const String ERR_PLAYER_NOT_IDENTIFICATION_MONEY = "Necesitas {0}$ para sacarte la documentación.";
-        public const String ERR_PLAYER_HAS_MEDICAL_INSURANCE = "Ya tienes un seguro médico vigente.";
-        public const String ERR_PLAYER_NOT_MEDICAL_INSURANCE_MONEY = "Necesitas {0}$ para sacarte el seguro médico.";
-        public const String ERR_PLAYER_HAS_TAXI_LICENSE = "Ya tienes una licencia de taxis.";
-        public const String ERR_PLAYER_NOT_TAXI_LICENSE_MONEY = "Necesitas {0}$ para sacarte la licencia de taxis.";
-        public const String ERR_PLAYER_NO_FINES = "No has seleccionado ninguna multa a pagar.";
-        public const String ERR_PLAYER_NOT_FINE_MONEY = "Necesitas {0}$ para pagar tus multas.";
-        public const String ERR_WEAPON_LICENSE_EXPIRED = "No tienes la licencia de armas vigente.";
-        public const String ERR_PLAYER_CANT_CHAT = "No puedes usar el chat dentro de la sala de selección de personaje.";
-        public const String ERR_PLAYER_CANT_COMMAND = "No puedes usar comandos dentro de la sala de selección de personaje.";
-        public const String ERR_NO_VEHICLES_NEAR = "No tienes ningún vehículo cerca.";
-        public const String ERR_NOT_IN_VEHICLE = "No estás subido en ningún vehículo.";
-        public const String ERR_NOT_VEHICLE_DRIVING = "No estás conduciendo el vehículo.";
-        public const String ERR_CLIENT_NOT_VEHICLE_DRIVING = "El cliente debe estar en el asiento del conductor.";
-        public const String ERR_NOT_VEHICLE_PASSENGER = "No estás en el asiento del copiloto.";
-        public const String ERR_CARSHOP_SPAWN_OCCUPIED = "Todos los sitios de aparcamiento del concesionario están ocupados.";
-        public const String ERR_NOT_IN_CARSHOP = "No estás en ningún concesionario.";
-        public const String ERR_NOT_IN_CAR_PRACTICE = "No estás haciendo el examen práctico de conducción.";
-        public const String ERR_LICENSE_FAILED_NOT_IN_VEHICLE = "Has suspendido el examen por no subir en el vehículo.";
-        public const String ERR_CAR_LICENSE_ACHIEVED = "Ya tienes la licencia de turismos.";
-        public const String ERR_NO_CHARACTER_SELECTED = "No has seleccionado ningún personaje.";
-        public const String ERR_NOT_IN_VEHICLE_FACTION = "No perteneces a la misma facción que este vehículo.";
-        public const String ERR_ADMIN_VEHICLE = "Este vehículo pertenece a la administración.";
-        public const String ERR_NOT_IN_VEHICLE_JOB = "No tienes el trabajo necesario para acceder a este vehículo.";
-        public const String ERR_NOT_CAR_KEYS = "No tienes las llaves de este vehículo.";
-        public const String ERR_CARSHOP_NO_MONEY = "Necesitas tener al menos {0}$ en el banco para comprar el vehículo.";
-        public const String ERR_PLAYER_NOT_FOUND = "El jugador objetivo no se encuentra conectado.";
-        public const String ERR_PLAYER_NOT_DEAD = "El jugador objetivo no se encuentra inconsciente.";
-        public const String ERR_PLAYER_NOT_STATE_FACTION = "No estás en ninguna facción estatal.";
-        public const String ERR_PLAYER_JOB_STATE_FACTION = "No puedes acceder a este empleo estando en una facción estatal.";
-        public const String ERR_RADIO_FREQUENCY_NONE = "No estás conectado a ninguna frecuencia de radio.";
-        public const String ERR_PLAYER_NOT_POLICE_FACTION = "No perteneces al departamento de policía.";
-        public const String ERR_PLAYER_NOT_NEWS_FACTION = "No perteneces a Weazel News.";
-        public const String ERR_PLAYER_NOT_EMERGENCY_FACTION = "No perteneces al departamento de emergencias.";
-        public const String ERR_PLAYER_NOT_POLICE_EMERGENCY_FACTION = "No perteneces al departamento de policía ni al de emergencias.";
-        public const String ERR_PLAYER_NOT_IN_HOUSE = "No estás dentro de ninguna casa.";
-        public const String ERR_PLAYER_NOT_HOUSE_OWNER = "No eres el propietario de esta casa.";
+        // Error messages
+        public const String ERR_LICENSE_EXAM_FAILED = "You failed the theoric exam.";
+        public const String ERR_LICENSE_DRIVE_FAILED = "You failed the practical exam.";
+        public const String ERR_PLAYER_HAS_IDENTIFICATION = "You already have you identification card.";
+        public const String ERR_PLAYER_NOT_IDENTIFICATION_MONEY = "You need {0}$ to get your identification card.";
+        public const String ERR_PLAYER_HAS_MEDICAL_INSURANCE = "You already have a medical insurance.";
+        public const String ERR_PLAYER_NOT_MEDICAL_INSURANCE_MONEY = "You need {0}$ to get a medical insurance.";
+        public const String ERR_PLAYER_HAS_TAXI_LICENSE = "You already have a taxi license.";
+        public const String ERR_PLAYER_NOT_TAXI_LICENSE_MONEY = "You need {0}$ to get the taxi license.";
+        public const String ERR_PLAYER_NO_FINES = "You didn't select any fine to pay.";
+        public const String ERR_PLAYER_NOT_FINE_MONEY = "You need {0}$ to pay your fines.";
+        public const String ERR_WEAPON_LICENSE_EXPIRED = "Your weapon license has expired.";
+        public const String ERR_PLAYER_CANT_CHAT = "You can't use the chat in the lobby.";
+        public const String ERR_PLAYER_CANT_COMMAND = "You can't use any command in the lobby.";
+        public const String ERR_NO_VEHICLES_NEAR = "You don't have any vehicle near you.";
+        public const String ERR_NOT_IN_VEHICLE = "You aren't inside any vehicle.";
+        public const String ERR_NOT_VEHICLE_DRIVING = "You're not driving the vehicle.";
+        public const String ERR_CLIENT_NOT_VEHICLE_DRIVING = "The client must be on driver's seat.";
+        public const String ERR_NOT_VEHICLE_PASSENGER = "You aren't on passenger's seat.";
+        public const String ERR_CARSHOP_SPAWN_OCCUPIED = "All the parking places of the car dealer are occupied.";
+        public const String ERR_NOT_IN_CARSHOP = "You're not in any cat dealer.";
+        public const String ERR_NOT_IN_CAR_PRACTICE = "You're not doing the car practical exam.";
+        public const String ERR_LICENSE_FAILED_NOT_IN_VEHICLE = "You failed the exam for not returning to your vehicle.";
+        public const String ERR_CAR_LICENSE_ACHIEVED = "You already have a car license.";
+        public const String ERR_NO_CHARACTER_SELECTED = "You didn't select any character.";
+        public const String ERR_NOT_IN_VEHICLE_FACTION = "You're not in the same faction this vehicle is.";
+        public const String ERR_ADMIN_VEHICLE = "This vehicle can only be accessed by the staff.";
+        public const String ERR_NOT_IN_VEHICLE_JOB = "You don't have the required job to drive this vehicle.";
+        public const String ERR_NOT_CAR_KEYS = "You don't have this vehicle's keys.";
+        public const String ERR_CARSHOP_NO_MONEY = "You need at least {0}$ in your bank account to purchase this vehicle.";
+        public const String ERR_PLAYER_NOT_FOUND = "The target player is not connected to the server.";
+        public const String ERR_PLAYER_NOT_DEAD = "The target player is not dead.";
+        public const String ERR_PLAYER_NOT_STATE_FACTION = "You aren't part of any state faction.";
+        public const String ERR_PLAYER_JOB_STATE_FACTION = "You can apply for this job being part of a state faction.";
+        public const String ERR_RADIO_FREQUENCY_NONE = "You're not connected to any radio frequency.";
+        public const String ERR_PLAYER_NOT_POLICE_FACTION = "You aren't part of the police department.";
+        public const String ERR_PLAYER_NOT_NEWS_FACTION = "You aren't a journalist.";
+        public const String ERR_PLAYER_NOT_EMERGENCY_FACTION = "You aren't part of the emergency department.";
+        public const String ERR_PLAYER_NOT_POLICE_EMERGENCY_FACTION = "You aren't part of the police department neither emergency department.";
+        public const String ERR_PLAYER_NOT_IN_HOUSE = "You're not inside any house.";
+        public const String ERR_PLAYER_NOT_HOUSE_OWNER = "You're not the owner of this house.";
         public const String ERR_PLAYER_HOUSE_RENTED = "Ya estás viviendo de alquiler en una casa.";
         public const String ERR_HOUSE_NOT_BUYABLE = "Esta casa no está en venta.";
         public const String ERR_HOUSE_NOT_RENTABLE = "Esta casa no está en alquiler.";

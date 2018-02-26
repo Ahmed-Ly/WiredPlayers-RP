@@ -413,7 +413,6 @@ namespace WiredPlayers.globals
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";
         public const String SUC_LICENSE_DRIVE_PASSED = "Has aprobado el examen práctico.";
-        public const String SUC_ACCOUNT_REGISTER = "Te has registrado correctamente en el servidor.";
         public const String SUC_VEHICLE_PURCHASED = "Has comprado tu vehículo.";
         public const String SUC_ADMIN_REVIVED = "El administrador {0} te ha revivido.";
         public const String SUC_POSSITIVE_RESULT = "{0} ha conseguido un resultado positivo.";
@@ -427,11 +426,9 @@ namespace WiredPlayers.globals
         public const String SUC_HOOKER_SERVICE_FINISHED = "El servicio de la prostituta ha terminado.";
         public const String SUC_HELP_REQUEST_SENT = "Tu duda ha sido enviada correctamente, espera a que te atienda un miembro del staff.";
         public const String SUC_VEHICLE_SCRAPYARD = "Has recibido {0}$ por desguazar tu vehículo.";
-        public const String SUC_VEHICLE_COMPLETELY_CLEANED = "Has terminado de lavar el coche por completo.";
         public const String SUC_HOUSE_SOLD = "Has vendido tu casa al estado por un valor de {0}$";
 
         // Mensajes de error
-        public const String ERR_PLAYER_CANT_LOGIN = "No está disponible el login por comando en estos momentos.";
         public const String ERR_LICENSE_EXAM_FAILED = "Has suspendido el examen teórico.";
         public const String ERR_LICENSE_DRIVE_FAILED = "Has suspendido el examen práctico.";
         public const String ERR_PLAYER_HAS_IDENTIFICATION = "Ya tienes la documentación en regla.";
