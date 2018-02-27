@@ -76,7 +76,7 @@ namespace WiredPlayers.admin
                 }
 
                 // We send the message to all the players in the server
-                NAPI.Chat.SendChatMessageToAll(secondMessage.Length > 0 ? Constants.COLOR_ADMIN_INFO + "[AVISO ADMINISTRATIVO] " + message + "..." : Constants.COLOR_ADMIN_INFO + "[AVISO ADMINISTRATIVO] " + message);
+                NAPI.Chat.SendChatMessageToAll(secondMessage.Length > 0 ? Constants.COLOR_ADMIN_INFO + Messages.GEN_ADMIN_NOTICE + message + "..." : Constants.COLOR_ADMIN_INFO + Messages.GEN_ADMIN_NOTICE + message);
                 if (secondMessage.Length > 0)
                 {
                     NAPI.Chat.SendChatMessageToAll(Constants.COLOR_ADMIN_INFO + secondMessage);
@@ -464,7 +464,7 @@ namespace WiredPlayers.admin
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 NAPI.Vehicle.RepairVehicle(NAPI.Player.GetPlayerVehicle(player));
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + "Has reparado el vehículo.");
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_VEHICLE_REPAIRED);
                             }
                             break;
                         case Commands.ARGUMENT_LOCK:
@@ -688,7 +688,7 @@ namespace WiredPlayers.admin
                                         business.multiplier = 3.0f;
                                         business.owner = String.Empty;
                                         business.locked = false;
-                                        business.name = "Negocio";
+                                        business.name = Messages.GEN_BUSINESS;
                                         business.id = Database.AddNewBusiness(business);
                                         business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, business.dimension);
                                         Business.businessList.Add(business);
@@ -935,7 +935,7 @@ namespace WiredPlayers.admin
                             String houseLabel = String.Empty;
                             house = new HouseModel();
                             house.ipl = Constants.HOUSE_IPL_LIST[0].ipl;
-                            house.name = "Casa";
+                            house.name = Messages.GEN_HOUSE;
                             house.position = player.Position;
                             house.dimension = player.Dimension;
                             house.price = 10000;

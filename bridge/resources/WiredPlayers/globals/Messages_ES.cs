@@ -5,6 +5,21 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_CHAT_SAY = " dice: ";
+        public const String GEN_CHAT_YELL = " grita: ¡";
+        public const String GEN_CHAT_WHISPER = " susurra: ";
+        public const String GEN_CHAT_PHONE = " por teléfono: ";
+        public const String GEN_CHAT_RADIO = " por radio: ";
+        public const String GEN_PM_TO = "Mensaje privado a ";
+        public const String GEN_PM_FROM = "Mensaje privado de ";
+        public const String GEN_PHONE = "[Teléfono] ";
+        public const String GEN_CAR_DEALER = "Concesionario de coches";
+        public const String GEN_MOTORCYCLE_DEALER = "Concesionario de motos";
+        public const String GEN_BOAT_DEALER = "Concesionario de barcos";
+        public const String GEN_CATALOG_HELP = "Escribe el comando para ver la lista de vehículos";
+        public const String GEN_HOUSE = "Casa";
+        public const String GEN_BUSINESS = "Negocio";
+        public const String GEN_ADMIN_NOTICE = "[AVISO ADMINISTRATIVO] ";
         public const String GEN_WELCOME_MESSAGE = "Bienvenido a WiredPlayers, {0}.";
         public const String GEN_WELCOME_HINT = "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.";
         public const String GEN_HELP_HINT = "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.";
@@ -192,6 +207,7 @@ namespace WiredPlayers.globals
         public const String ADM_TICKET_ANSWERED = "Has respondido a la consulta con identificador '{0}'.";
         public const String ADM_VEHICLE_BRING = "Has traído el vehículo {0} a tu posición.";
         public const String ADM_VEHICLE_GOTO = "Te has teleportado a la posición del vehículo {0}.";
+        public const String ADM_VEHICLE_REPAIRED = "Has reparado el vehículo.";
         public const String ADM_SPECTATING_PLAYER = "Estás reconeando a {0}.";
         public const String ADM_SPECT_STOPPED = "Has dejado de reconear.";
         public const String ADM_PLAYER_JAILED = "{0} ha sido encarcelado {1} minutos. Razón: {2}";

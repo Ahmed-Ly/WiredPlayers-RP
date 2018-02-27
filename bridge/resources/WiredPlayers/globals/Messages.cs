@@ -5,6 +5,21 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_CHAT_SAY = " says: ";
+        public const String GEN_CHAT_YELL = " yells: ";
+        public const String GEN_CHAT_WHISPER = " whispers: ";
+        public const String GEN_CHAT_PHONE = " at phone: ";
+        public const String GEN_CHAT_RADIO = " at radio: ";
+        public const String GEN_PM_TO = "Private message to ";
+        public const String GEN_PM_FROM = "Private message from ";
+        public const String GEN_PHONE = "[Phone] ";
+        public const String GEN_CAR_DEALER = "Car dealer";
+        public const String GEN_MOTORCYCLE_DEALER = "Motorcycle dealer";
+        public const String GEN_BOAT_DEALER = "Boat dealer";
+        public const String GEN_CATALOG_HELP = "Type the command above to see the vehicle list";
+        public const String GEN_HOUSE = "House";
+        public const String GEN_BUSINESS = "Busines";
+        public const String GEN_ADMIN_NOTICE = "[STAFF NOTIFICATION] ";
         public const String GEN_WELCOME_MESSAGE = "Welcome to WiredPlayers, {0}.";
         public const String GEN_WELCOME_HINT = "Use ~b~/welcome ~w~command in order to know how can you start your life in Los Santos.";
         public const String GEN_HELP_HINT = "Use ~b~/help ~w~command whenever you want to get general information.";
@@ -75,18 +90,18 @@ namespace WiredPlayers.globals
         public const String GEN_MECHANIC_REPAIR_COMMAND = "USAGE: /repair [Vehicle id.] [Chassis|Doors|Tyres|Glasses|Engine] [Price]";
         public const String GEN_MECHANIC_REPAINT_COMMAND = "USAGE: /repaint [Vehicle id.]";
         public const String GEN_HOOKER_SERVICE_COMMAND = "USAGE: /service [Sex|Oral] [Player id./Player name] [Price]";
-        public const String GEN_SAY_COMMAND = "USAGE: /say [Mensaje]";
-        public const String GEN_YELL_COMMAND = "USAGE: /yell [Mensaje]";
-        public const String GEN_WHISPER_COMMAND = "USAGE: /whisper [Mensaje]";
-        public const String GEN_ME_COMMAND = "USAGE: /me [Mensaje]";
-        public const String GEN_DO_COMMAND = "USAGE: /do [Mensaje]";
-        public const String GEN_OOC_COMMAND = "USAGE: /ooc [Mensaje]";
-        public const String GEN_AME_COMMAND = "USAGE: /ame [Mensaje]";
-        public const String GEN_F_COMMAND = "USAGE: /f [Mensaje]";
-        public const String GEN_R_COMMAND = "USAGE: /r [Mensaje]";
-        public const String GEN_DP_COMMAND = "USAGE: /dp [Mensaje]";
-        public const String GEN_DE_COMMAND = "USAGE: /de [Mensaje]";
-        public const String GEN_FR_COMMAND = "USAGE: /fr [Mensaje]";
+        public const String GEN_SAY_COMMAND = "USAGE: /say [Message]";
+        public const String GEN_YELL_COMMAND = "USAGE: /yell [Message]";
+        public const String GEN_WHISPER_COMMAND = "USAGE: /whisper [Message]";
+        public const String GEN_ME_COMMAND = "USAGE: /me [Message]";
+        public const String GEN_DO_COMMAND = "USAGE: /do [Message]";
+        public const String GEN_OOC_COMMAND = "USAGE: /ooc [Message]";
+        public const String GEN_AME_COMMAND = "USAGE: /ame [Message]";
+        public const String GEN_F_COMMAND = "USAGE: /f [Message]";
+        public const String GEN_R_COMMAND = "USAGE: /r [Message]";
+        public const String GEN_DP_COMMAND = "USAGE: /dp [Message]";
+        public const String GEN_DE_COMMAND = "USAGE: /de [Message]";
+        public const String GEN_FR_COMMAND = "USAGE: /fr [Message]";
         public const String GEN_MP_COMMAND = "USAGE: /mp [Player id./Player name] [Message]";
         public const String GEN_RENTABLE_COMMAND = "USAGE: /rentable [Amount]";
         public const String GEN_HOUSE_COMMAND = "USAGE: /house [Info|Create|Modify|Remove|Tp]";
@@ -189,9 +204,10 @@ namespace WiredPlayers.globals
         public const String ADM_SAVE_PARKINGS = "{0} parkings have been updated.";
         public const String ADM_SAVE_FINISH = "Entity saving finished.";
         public const String ADM_NEW_ADMIN_TICKET = "There's a new incomming assistant ticket.";
-        public const String ADM_TICKET_ANSWERED = "You've answered the ticket number '{0}'.";
-        public const String ADM_VEHICLE_BRING = "You've brough the {0} vehicle to your position.";
-        public const String ADM_VEHICLE_GOTO = "You've teleported to the vehicle {0}.";
+        public const String ADM_TICKET_ANSWERED = "You answered the ticket number '{0}'.";
+        public const String ADM_VEHICLE_BRING = "You brought the {0} vehicle to your position.";
+        public const String ADM_VEHICLE_GOTO = "You teleported to the vehicle {0}.";
+        public const String ADM_VEHICLE_REPAIRED = "You repaired the vehicle.";
         public const String ADM_SPECTATING_PLAYER = "You're spectating {0}.";
         public const String ADM_SPECT_STOPPED = "You've stopped spectating.";
         public const String ADM_PLAYER_JAILED = "{0} has been jailed for {1} minutes. Reason: {2}";

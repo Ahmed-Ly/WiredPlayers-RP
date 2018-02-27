@@ -90,6 +90,17 @@ namespace WiredPlayers.globals
         public const String COMMAND_ROCK = "rock";
         public const String COMMAND_STUMBLE = "stumble";
         public const String COMMAND_INJURED = "injured";
+        public const String COMMAND_CATALOG = "catalog";
+        public const String COMMAND_SAY = "say";
+        public const String COMMAND_YELL = "yell";
+        public const String COMMAND_WHISPER = "whisper";
+        public const String COMMAND_ME = "me";
+        public const String COMMAND_DO = "do";
+        public const String COMMAND_OOC = "ooc";
+        public const String COMMAND_LUCK = "luck";
+        public const String COMMAND_AME = "ame";
+        public const String COMMAND_MEGAPHONE = "m";
+        public const String COMMAND_PM = "pm";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";

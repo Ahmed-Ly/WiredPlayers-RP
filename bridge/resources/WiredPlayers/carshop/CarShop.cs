@@ -75,25 +75,25 @@ namespace WiredPlayers.carshop
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
-            // Creación del concesionario de turismos
-            carShopTextLabel = NAPI.TextLabel.CreateTextLabel("/catalogo", new Vector3(-56.88f, -1097.12f, 26.52f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
-            TextLabel carShopSubTextLabel = NAPI.TextLabel.CreateTextLabel("Escribe el comando para ver la lista de vehículos", new Vector3(-56.88f, -1097.12f, 26.42f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
+            // Car dealer creation
+            carShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(-56.88f, -1097.12f, 26.52f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            TextLabel carShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(-56.88f, -1097.12f, 26.42f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip carShopBlip = NAPI.Blip.CreateBlip(new Vector3(-56.88f, -1097.12f, 26.52f));
-            NAPI.Blip.SetBlipName(carShopBlip, "Concesionario de coches");
+            NAPI.Blip.SetBlipName(carShopBlip, Messages.GEN_CAR_DEALER);
             NAPI.Blip.SetBlipSprite(carShopBlip, 225);
 
-            // Creación del concesionario de motos
-            motorbikeShopTextLabel = NAPI.TextLabel.CreateTextLabel("/catalogo", new Vector3(286.76f, -1148.36f, 29.29f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
-            TextLabel motorbikeShopSubTextLabel = NAPI.TextLabel.CreateTextLabel("Escribe el comando para ver la lista de vehículos", new Vector3(286.76f, -1148.36f, 29.19f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
+            // Motorcycle dealer creation
+            motorbikeShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(286.76f, -1148.36f, 29.29f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            TextLabel motorbikeShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(286.76f, -1148.36f, 29.19f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip motorbikeShopBlip = NAPI.Blip.CreateBlip(new Vector3(286.76f, -1148.36f, 29.29f));
-            NAPI.Blip.SetBlipName(motorbikeShopBlip, "Concesionario de motos");
+            NAPI.Blip.SetBlipName(motorbikeShopBlip, Messages.GEN_MOTORCYCLE_DEALER);
             NAPI.Blip.SetBlipSprite(motorbikeShopBlip, 226);
 
-            // Creación del concesionario de barcos
-            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/catalogo", new Vector3(-711.6249f, -1299.427f, 5.41f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
-            TextLabel shipShopSubTextLabel = NAPI.TextLabel.CreateTextLabel("Escribe el comando para ver la lista de vehículos", new Vector3(-711.6249f, -1299.427f, 5.31f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
+            // Boat dealer creation
+            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(-711.6249f, -1299.427f, 5.41f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            TextLabel shipShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(-711.6249f, -1299.427f, 5.31f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip shipShopBlip = NAPI.Blip.CreateBlip(new Vector3(-711.6249f, -1299.427f, 5.41f));
-            NAPI.Blip.SetBlipName(shipShopBlip, "Concesionario de barcos");
+            NAPI.Blip.SetBlipName(shipShopBlip, Messages.GEN_BOAT_DEALER);
             NAPI.Blip.SetBlipSprite(shipShopBlip, 455);
         }
 
@@ -107,17 +107,17 @@ namespace WiredPlayers.carshop
                     Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_TESTING_VEHICLE);
                     if (NAPI.Player.GetPlayerVehicle(player) == vehicle)
                     {
-                        // Destruímos el vehículo y checkpoint
+                        // We destroy the vehicle and the checkpoint
                         Checkpoint testCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
                         NAPI.Player.WarpPlayerOutOfVehicle(player);
                         NAPI.Entity.DeleteEntity(testCheckpoint);
                         NAPI.Entity.DeleteEntity(vehicle);
 
-                        // Limpiamos las variables
+                        // Variable cleaning
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_TESTING_VEHICLE);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
 
-                        // Quitamos la marca
+                        // Deleting checkpoint
                         NAPI.ClientEvent.TriggerClientEvent(player, "deleteCarshopCheckpoint");
                     }
                 }
@@ -149,7 +149,7 @@ namespace WiredPlayers.carshop
                             }
                             if (!spawnOccupied)
                             {
-                                // Rellenamos los datos básicos del vehículo para su creación
+                                // Basic data for vehicle creation
                                 VehicleModel vehicleModel = new VehicleModel();
                                 vehicleModel.model = GetVehicleModel(vehicleHash);
                                 vehicleModel.plate = String.Empty;
@@ -168,7 +168,7 @@ namespace WiredPlayers.carshop
                                 vehicleModel.gas = 50.0f;
                                 vehicleModel.kms = 0.0f;
 
-                                // Creamos el vehículo comprado
+                                // Creating the purchased vehicle
                                 Vehicles.CreateVehicle(player, vehicleModel, false);
                                 return;
                             }
@@ -189,7 +189,7 @@ namespace WiredPlayers.carshop
                             }
                             if (!spawnOccupied)
                             {
-                                // Rellenamos los datos básicos del vehículo para su creación
+                                // Basic data for vehicle creation
                                 VehicleModel vehicleModel = new VehicleModel();
                                 vehicleModel.model = GetVehicleModel(vehicleHash);
                                 vehicleModel.plate = String.Empty;
@@ -208,7 +208,7 @@ namespace WiredPlayers.carshop
                                 vehicleModel.gas = 50.0f;
                                 vehicleModel.kms = 0.0f;
 
-                                // Creamos el vehículo comprado
+                                // Creating the purchased vehicle
                                 Vehicles.CreateVehicle(player, vehicleModel, false);
                                 return;
                             }
@@ -229,7 +229,7 @@ namespace WiredPlayers.carshop
                             }
                             if (!spawnOccupied)
                             {
-                                // Rellenamos los datos básicos del vehículo para su creación
+                                // Basic data for vehicle creation
                                 VehicleModel vehicleModel = new VehicleModel();
                                 vehicleModel.model = GetVehicleModel(vehicleHash);
                                 vehicleModel.plate = String.Empty;
@@ -248,7 +248,7 @@ namespace WiredPlayers.carshop
                                 vehicleModel.gas = 50.0f;
                                 vehicleModel.kms = 0.0f;
 
-                                // Creamos el vehículo comprado
+                                // Creating the purchased vehicle
                                 Vehicles.CreateVehicle(player, vehicleModel, false);
                                 return;
                             }
@@ -256,7 +256,7 @@ namespace WiredPlayers.carshop
                         break;
                 }
 
-                // Los concesionarios están ocupados
+                // Parking places are occupied
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CARSHOP_SPAWN_OCCUPIED);
             }
             else
@@ -269,7 +269,6 @@ namespace WiredPlayers.carshop
         [RemoteEvent("testVehicle")]
         public void TestVehicleEvent(Client player, String hash)
         {
-            // Inicializamos los valores
             Vehicle vehicle = null;
             Checkpoint testFinishCheckpoint = null;
             VehicleHash vehicleModel = (VehicleHash)UInt32.Parse(hash);
@@ -290,7 +289,7 @@ namespace WiredPlayers.carshop
                     break;
             }
 
-            // Inicializamos las variables
+            // Vehicle variable initialization
             NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_KMS, 0.0f);
             NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, 50.0f);
             NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_TESTING, true);
@@ -298,31 +297,31 @@ namespace WiredPlayers.carshop
             NAPI.Player.SetPlayerIntoVehicle(player, vehicle, (int)VehicleSeat.Driver);
             NAPI.Vehicle.SetVehicleEngineStatus(vehicle, true);
 
-            // Añadimos el checkpoint
+            // Adding the checkpoint
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE, testFinishCheckpoint);
             NAPI.ClientEvent.TriggerClientEvent(player, "showCarshopCheckpoint", testFinishCheckpoint.Position);
 
-            // Mandamos el mensaje
+            // Confirmation message sent to the player
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_TEST_VEHICLE);
         }
 
-        [Command("catalogo")]
+        [Command(Commands.COMMAND_CATALOG)]
         public void CatalogoCommand(Client player)
         {
             int carShop = GetClosestCarShop(player);
             if (carShop > -1)
             {
-                // Obtenemos la lista de vehículos
+                // We get the vehicle list
                 List<CarShopVehicleModel> carList = GetVehicleListInCarShop(carShop);
 
-                // Calculamos la velocidad de cada uno de ellos
+                // Getting the speed for each vehicle in the list
                 foreach (CarShopVehicleModel carShopVehicle in carList)
                 {
                     VehicleHash vehicleHash = NAPI.Util.VehicleNameToModel(carShopVehicle.model);
                     carShopVehicle.speed = (int)Math.Round(NAPI.Vehicle.GetVehicleMaxSpeed(vehicleHash) * 3.6f);
                 }
 
-                // Mostramos el catálogo
+                // We show the catalog
                 NAPI.ClientEvent.TriggerClientEvent(player, "showVehicleCatalog", NAPI.Util.ToJson(carList), carShop);
             }
             else
