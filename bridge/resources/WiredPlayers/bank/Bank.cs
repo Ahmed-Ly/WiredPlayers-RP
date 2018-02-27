@@ -33,7 +33,7 @@ namespace WiredPlayers.bank
                         }
                         else
                         {
-                            response = "The bank account has not enough funds to process the operation";
+                            response = Messages.ERR_BANK_NOT_ENOUGH_MONEY;
                         }
                         break;
                     case Constants.OPERATION_DEPOSIT:
@@ -56,7 +56,7 @@ namespace WiredPlayers.bank
                     case Constants.OPERATION_TRANSFER:
                         if (bank < amount)
                         {
-                            response = "The bank account has not enough funds to process the operation";
+                            response = Messages.ERR_BANK_NOT_ENOUGH_MONEY;
                         }
                         else
                         {
@@ -65,7 +65,7 @@ namespace WiredPlayers.bank
                                 Client target = NAPI.Pools.GetAllPlayers().Find(x => x.Name == targetName);
                                 if (target == player)
                                 {
-                                    response = "You can't transfer money to your own account";
+                                    response = Messages.ERR_TRANSFER_MONEY_OWN;
                                 }
                                 else
                                 {
@@ -88,7 +88,7 @@ namespace WiredPlayers.bank
                             }
                             else
                             {
-                                response = "There's no bank account linked to that person";
+                                response = Messages.ERR_BANK_ACCOUNT_NOT_FOUND;
                             }
                         }
                         break;
@@ -98,7 +98,7 @@ namespace WiredPlayers.bank
             }
             else
             {
-                response = "An error occurred while processing the operation";
+                response = Messages.ERR_BANK_GENERAL_ERROR;
             }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "bankOperationResponse", response);

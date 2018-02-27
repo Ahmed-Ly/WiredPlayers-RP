@@ -665,6 +665,10 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_ALREADY_FISHING = "Ya estás pescando.";
         public const String ERR_NO_FISH_SELLABLE = "No tienes pescado para vender.";
         public const String ERR_WEATHER_VALUE_INVALID = "El clima debe estar comprendido entre 0 y 12.";
+        public const String ERR_BANK_NOT_ENOUGH_MONEY = "La cuenta no dispone de la cantidad requerida.";
+        public const String ERR_TRANSFER_MONEY_OWN = "No puedes realizar una transferencia a tu propia cuenta.";
+        public const String ERR_BANK_ACCOUNT_NOT_FOUND = "La persona destinataria no tiene ninguna cuenta bancaria.";
+        public const String ERR_BANK_GENERAL_ERROR = "Ha habido un fallo al procesar la transacción.";
 
         // Mensajes descriptivos.
         public const String DESC_JOB_HOOKER = "Prostitución - Gana dinero vendiendo tu cuerpo, es tan sencillo como eso.Tú eliges tus clientes y tus precios.";

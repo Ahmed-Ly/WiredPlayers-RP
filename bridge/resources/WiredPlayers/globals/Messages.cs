@@ -665,6 +665,10 @@ namespace WiredPlayers.globals
         public const String ERR_PLAYER_ALREADY_FISHING = "You're already fishing.";
         public const String ERR_NO_FISH_SELLABLE = "You don't have any fish to sell.";
         public const String ERR_WEATHER_VALUE_INVALID = "Weather value must be in 0 to 12 interval.";
+        public const String ERR_BANK_NOT_ENOUGH_MONEY = "The bank account has not enough funds to process the operation.";
+        public const String ERR_TRANSFER_MONEY_OWN = "You can't transfer money to your own account.";
+        public const String ERR_BANK_ACCOUNT_NOT_FOUND = "There's no bank account linked to that person.";
+        public const String ERR_BANK_GENERAL_ERROR = "An error occurred while processing the operation.";
 
         // Mensajes descriptivos.
         public const String DESC_JOB_HOOKER = "Hooker - Win money selling your body, simple as that. You choose your clients and price.";
