@@ -647,7 +647,6 @@ namespace WiredPlayers.globals
         public const String ERR_NOT_IN_MECHANIC_WORKSHOP = "No estás en ningún taller.";
         public const String ERR_EMPLOYEE_COOLDOWN = "Necesitas cumplir {0} pagas más hasta poder dejar el empleo.";
         public const String ERR_PLAYER_INSIDE_VEHICLE = "No puedes hacer esto desde dentro del vehículo";
-        public const String ERR_VEHICLE_ALREADY_CLEAN = "El vehículo ya está completamente limpio.";
         public const String ERR_HAIRCUT_MONEY = "Necesitas tener al menos {0}$ para cambiar tu look.";
         public const String ERR_TATTOO_DUPLICATED = "Ya tienes un tatuaje igual.";
         public const String ERR_VEHICLE_TRUNK_OPENED = "El maletero del vehículo está abierto.";
@@ -660,7 +659,6 @@ namespace WiredPlayers.globals
         public const String ERR_NOT_FISHING_ZONE = "No estás en ninguna zona de pesca.";
         public const String ERR_NO_FISHING_ROD = "No tienes una caña en la mano derecha.";
         public const String ERR_PLAYER_NO_BAITS = "No tienes nada que usar como cebo.";
-        public const String ERR_PLAYER_NOT_FISHING_ZONE = "No estás en ninguna zona de pesca.";
         public const String ERR_NOT_FISHING_BUSINESS = "No estás en ninguna tienda de pesca.";
         public const String ERR_FISHING_CANCELED = "Has tirado de la caña demasiado pronto.";
         public const String ERR_FISHING_FAILED = "El pez se ha escapado del anzuelo.";

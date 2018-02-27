@@ -241,7 +241,7 @@ namespace WiredPlayers.fishing
                         }
 
                         // Avisamos de que no se encuentra en la zona de pesca
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_FISHING_ZONE);
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_FISHING_ZONE);
                     }
                     else
                     {
