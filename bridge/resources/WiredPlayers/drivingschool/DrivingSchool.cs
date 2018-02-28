@@ -374,7 +374,7 @@ namespace WiredPlayers.drivingschool
         }
 
         [Command(Commands.COMMAND_DRIVING_SCHOOL, Messages.GEN_DRIVING_SCHOOL_COMMAND)]
-        public void AutoescuelaCommand(Client player, String type)
+        public void DrivingSchoolCommand(Client player, String type)
         {
             int licenseStatus = 0;
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
@@ -512,7 +512,7 @@ namespace WiredPlayers.drivingschool
         }
 
         [Command(Commands.COMMAND_LICENSES)]
-        public void LicenciasCommand(Client player)
+        public void LicensesCommand(Client player)
         {
             int currentLicense = 0;
             String playerLicenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);

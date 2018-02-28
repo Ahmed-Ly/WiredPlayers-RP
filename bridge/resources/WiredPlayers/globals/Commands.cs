@@ -103,6 +103,25 @@ namespace WiredPlayers.globals
         public const String COMMAND_PM = "pm";
         public const String COMMAND_DRIVING_SCHOOL = "drivingschool";
         public const String COMMAND_LICENSES = "licenses";
+        public const String COMMAND_HEAL = "heal";
+        public const String COMMAND_REANIMATE = "reanimate";
+        public const String COMMAND_EXTRACT = "extract";
+        public const String COMMAND_DIE = "die";
+        public const String COMMAND_F = "f";
+        public const String COMMAND_R = "r";
+        public const String COMMAND_DP = "dp";
+        public const String COMMAND_DE = "de";
+        public const String COMMAND_FR = "fr";
+        public const String COMMAND_FREQUENCY = "frequency";
+        public const String COMMAND_RECRUIT = "recruit";
+        public const String COMMAND_DISMISS = "dismiss";
+        public const String COMMAND_RANK = "rank";
+        public const String COMMAND_REPORTS = "reports";
+        public const String COMMAND_ATTEND = "attend";
+        public const String COMMAND_CLEAR_REPORTS = "clearreports";
+        public const String COMMAND_MEMBERS = "members";
+        public const String COMMAND_JOB = "job";
+        public const String COMMAND_DUTY = "duty";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -146,5 +165,10 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_SET = "set";
         public const String ARGUMENT_CAR = "car";
         public const String ARGUMENT_MOTORCYCLE = "motorcycle";
+        public const String ARGUMENT_CONNECT = "connect";
+        public const String ARGUMENT_DISCONNECT = "disconnect";
+        public const String ARGUMENT_ACCEPT = "accept";
+        public const String ARGUMENT_CANCEL = "cancel";
+        public const String ARGUMENT_LEAVE = "leave";
     }
 }

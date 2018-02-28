@@ -5,6 +5,20 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_FASTFOOD_JOB = "Trabajo de repartidor";
+        public const String GEN_MECHANIC_JOB = "Trabajo de mecánico";
+        public const String GEN_GARBAGE_JOB = "Trabajo de basurero";
+        public const String GEN_MEMBERS_ONLINE = "Miembros conectados:";
+        public const String GEN_REPORTS_HEADER = "Lista de avisos:";
+        public const String GEN_FACTION_LSPD = "LSPD";
+        public const String GEN_FACTION_EMS = "EMS";
+        public const String GEN_FACTION_NEWS = "Weazel News";
+        public const String GEN_FACTION_TOWNHALL = "Ayuntamiento";
+        public const String GEN_FACTION_TRANSPORT = "Servicio de transportes";
+        public const String GEN_TIME = "Hora: ";
+        public const String GEN_PLACE = "lugar: ";
+        public const String GEN_ATTENDED_BY = "estado: atendido por ";
+        public const String GEN_UNATTENDED = "estado: sin atender";
         public const String GEN_CHAT_SAY = " dice: ";
         public const String GEN_CHAT_YELL = " grita: ¡";
         public const String GEN_CHAT_WHISPER = " susurra: ";
@@ -13,11 +27,13 @@ namespace WiredPlayers.globals
         public const String GEN_PM_TO = "Mensaje privado a ";
         public const String GEN_PM_FROM = "Mensaje privado de ";
         public const String GEN_PHONE = "[Teléfono] ";
+        public const String GEN_RADIO = "[Radio] ";
         public const String GEN_DRIVING_SCHOOL = "Autoescuela";
         public const String GEN_CAR_DEALER = "Concesionario de coches";
         public const String GEN_MOTORCYCLE_DEALER = "Concesionario de motos";
         public const String GEN_BOAT_DEALER = "Concesionario de barcos";
         public const String GEN_CATALOG_HELP = "Escribe el comando para ver la lista de vehículos";
+        public const String GEN_JOB_HELP = "Escribe el comando para obtener más información del empleo";
         public const String GEN_HOUSE = "Casa";
         public const String GEN_BUSINESS = "Negocio";
         public const String GEN_ADMIN_NOTICE = "[AVISO ADMINISTRATIVO] ";
@@ -146,8 +162,8 @@ namespace WiredPlayers.globals
         public const String GEN_LOCATE_COMMAND = "USO: /localizar [Id. vehículo]";
         public const String GEN_FUEL_COMMAND = "USO: /repostar [Precio (0 para llenar el depósito)]";
         public const String GEN_GO_COMMAND = "USO: /ir [Taller | Electronica | Comisaria | Ayuntamiento | Autoescuela | Hospital | Mecanico | Weazel | Bahama | Basurero]";
-        public const String GEN_BORRAR_AVISO_COMMAND = "USO: /borraraviso [Id. aviso]";
-        public const String GEN_ATENDER_COMMAND = "USO: /atender [Id. aviso]";
+        public const String GEN_CLEAR_REPORTS_COMMAND = "USO: /borraraviso [Id. aviso]";
+        public const String GEN_ATTEND_COMMAND = "USO: /atender [Id. aviso]";
         public const String GEN_ADMIN_TEXT_COMMAND = "USO: /a [Mensaje]";
         public const String GEN_RECON_COMMAND = "USO: /recon [Id. jugador/Nombre jugador]";
         public const String GEN_COMPLEMENT_COMMAND = "USO: /complemento [Mascara|Bolsa|Accesorio|Sombrero|Gafas|Pendientes] [Poner|Quitar]";
@@ -434,6 +450,8 @@ namespace WiredPlayers.globals
         public const String INF_MOTORCYCLE_LICENSE_POINTS = "Motocicleta: {0} puntos.";
         public const String INF_TAXI_LICENSE_NOT_AVAILABLE = "Taxi: No disponible.";
         public const String INF_TAXI_LICENSE_UP_TO_DATE = "Taxi: Vigente.";
+        public const String INF_BLOOD_EXTRACTED = "Has sacado sangre a {0}.";
+        public const String INF_BLOOD_GIVEN = "El doctor {0} te ha sacado sangre.";
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";
@@ -694,6 +712,7 @@ namespace WiredPlayers.globals
         public const String ERR_TRANSFER_MONEY_OWN = "No puedes realizar una transferencia a tu propia cuenta.";
         public const String ERR_BANK_ACCOUNT_NOT_FOUND = "La persona destinataria no tiene ninguna cuenta bancaria.";
         public const String ERR_BANK_GENERAL_ERROR = "Ha habido un fallo al procesar la transacción.";
+        public const String ERR_LOW_BLOOD = "Tienes muy poca sangre como para recibir una extracción.";
 
         // Mensajes descriptivos.
         public const String DESC_JOB_HOOKER = "Prostitución - Gana dinero vendiendo tu cuerpo, es tan sencillo como eso.Tú eliges tus clientes y tus precios.";

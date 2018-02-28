@@ -18,7 +18,7 @@ namespace WiredPlayers.emergency
 
         public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
-            // Eliminamos el temporizador de muerte
+            // Destroy death timer
             DestroyDeathTimer(player);
         }
 
@@ -31,12 +31,12 @@ namespace WiredPlayers.emergency
 
             if (killer.Value == Constants.ENVIRONMENT_KILL)
             {
-                // Miramos si estaba muerto
+                // Check if the player was dead
                 int databaseKiller = NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED);
 
                 if (databaseKiller == 0)
                 {
-                    // Ponemos al entorno como causante real
+                    // There's no killer, we set the environment as killer
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
                 }
             }
@@ -46,7 +46,7 @@ namespace WiredPlayers.emergency
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_KILLED, killerId);
             }
 
-            // Borramos el timer de la lista
+            // We remove the timer from the list
             Timer deathTimer = deathTimerList[player.Value];
             if (deathTimer != null)
             {
@@ -104,13 +104,12 @@ namespace WiredPlayers.emergency
         public void OnPlayerDeath(Client player, Client killer, uint weapon)
         {
             DeathModel death = new DeathModel(player, killer, weapon);
-
-            // Creamos las variables para dar el aviso
+            
             Vector3 deathPosition = null;
             String deathPlace = String.Empty;
             String deathHour = DateTime.Now.ToString("h:mm:ss tt");
 
-            // Miramos el lugar donde ha muerto
+            // Checking if player died into a house or business
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
@@ -130,14 +129,14 @@ namespace WiredPlayers.emergency
                 deathPosition = NAPI.Entity.GetEntityPosition(player);
             }
 
-            // Creamos el aviso y lo añadimos a la lista
+            // We add the report to the list
             FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, player.Value, deathPlace, deathPosition, -1, deathHour);
             Faction.factionWarningList.Add(factionWarning);
 
-            // Creamos el mensaje de aviso
+            // Report message
             String warnMessage = String.Format(Messages.INF_EMERGENCY_WARNING, Faction.factionWarningList.Count - 1);
 
-            // Damos el aviso a todos los médicos de servicio
+            // Sending the report to all the emergency department's members
             foreach (Client target in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) > 0)
@@ -146,13 +145,13 @@ namespace WiredPlayers.emergency
                 }
             }
 
-            // Creamos el timer para poner el estado de muerto
+            // Timer to process player's death
             Timer deathTimer = new Timer(OnDeathTimer, death, 2500, Timeout.Infinite);
             deathTimerList.Add(player.Value, deathTimer);
         }
 
-        [Command("curar", Messages.GEN_HEAL_COMMAND)]
-        public void CurarCommand(Client player, String targetString)
+        [Command(Commands.COMMAND_HEAL, Messages.GEN_HEAL_COMMAND)]
+        public void HealCommand(Client player, String targetString)
         {
             Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
@@ -163,7 +162,7 @@ namespace WiredPlayers.emergency
                     String playerMessage = String.Format(Messages.INF_MEDIC_HEALED_PLAYER, target.Name);
                     String targetMessage = String.Format(Messages.INF_PLAYER_HEALED_MEDIC, player.Name);
 
-                    // Curamos al personaje
+                    // We heal the character
                     NAPI.Player.SetPlayerHealth(target, 100);
 
                     foreach (Client targetPlayer in NAPI.Pools.GetAllPlayers())
@@ -174,8 +173,7 @@ namespace WiredPlayers.emergency
                             NAPI.Chat.SendChatMessageToPlayer(targetPlayer, Constants.COLOR_CHAT_ME + message);
                         }
                     }
-
-                    // Enviamos el mensaje de aviso
+                    
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                     NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                 }
@@ -190,8 +188,8 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command("reanimar", Messages.GEN_REANIMATE_COMMAND)]
-        public void ReanimarCommand(Client player, String targetString)
+        [Command(Commands.COMMAND_REANIMATE, Messages.GEN_REANIMATE_COMMAND)]
+        public void ReanimateCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
             {
@@ -215,17 +213,16 @@ namespace WiredPlayers.emergency
                     {
                         if (GetRemainingBlood() > 0)
                         {
-                            // Eliminamos el timer
                             DestroyDeathTimer(target);
 
-                            // Creamos el modelo
+                            // We create blood model
                             BloodModel bloodModel = new BloodModel();
                             bloodModel.doctor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                             bloodModel.patient = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
                             bloodModel.type = String.Empty;
                             bloodModel.used = true;
 
-                            // Añadimos la sangre a la base de datos
+                            // Add the blood consumption to the database
                             bloodModel.id = Database.AddBloodTransaction(bloodModel);
                             bloodList.Add(bloodModel);
 
@@ -236,7 +233,7 @@ namespace WiredPlayers.emergency
                         }
                         else
                         {
-                            // No queda sangre en las reservas
+                            // There's no blood left
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_BLOOD_LEFT);
                         }
                     }
@@ -252,8 +249,8 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command("extraer", Messages.GEN_EXTRACT_COMMAND)]
-        public void ExtraerCommand(Client player, String targetString)
+        [Command(Commands.COMMAND_EXTRACT, Messages.GEN_EXTRACT_COMMAND)]
+        public void ExtractCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -267,27 +264,31 @@ namespace WiredPlayers.emergency
             {
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if (target != null && NAPI.Data.GetEntityData(player, "PLAYER_FACTION") == Constants.FACTION_EMERGENCY)
+                if (target != null && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
                 {
                     if (NAPI.Player.GetPlayerHealth(target) > 15)
                     {
-                        // Creamos el modelo
+                        // We create the blood model
                         BloodModel blood = new BloodModel();
                         blood.doctor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                         blood.patient = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
                         blood.type = String.Empty;
                         blood.used = false;
 
-                        // Añadimos la sangre a la base de datos
+                        // We add the blood unit to the database
                         blood.id = Database.AddBloodTransaction(blood);
                         bloodList.Add(blood);
-
+                        
                         NAPI.Player.SetPlayerHealth(target, NAPI.Player.GetPlayerHealth(target) - 15);
-                        NAPI.Chat.SendChatMessageToPlayer(player, String.Format("Sangre extraida, ahora tiene {0}", NAPI.Player.GetPlayerHealth(target)));
+
+                        String playerMessage = String.Format(Messages.INF_BLOOD_EXTRACTED, target.Name);
+                        String targetMessage = String.Format(Messages.INF_BLOOD_EXTRACTED, player.Name);
+                        NAPI.Chat.SendChatMessageToPlayer(player, playerMessage);
+                        NAPI.Chat.SendChatMessageToPlayer(target, targetMessage);
                     }
                     else
                     {
-                        NAPI.Chat.SendChatMessageToPlayer(player, String.Format("El jugador {0} tiene muy poca sangre, por lo tanto, no se le puede extraer", targetString));
+                        NAPI.Chat.SendChatMessageToPlayer(player, Messages.ERR_LOW_BLOOD);
                     }
                 }
                 else
@@ -297,35 +298,33 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command("morir")]
-        public void MorirCommand(Client player)
+        [Command(Commands.COMMAND_DIE)]
+        public void DieCommand(Client player)
         {
-            // Miramos si está muerto y esperando a ir al hospital
+            // Check if the player is dead
             if (NAPI.Data.HasEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) == true)
             {
                 int totalSeconds = Globals.GetTotalSeconds();
 
                 if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
                 {
-                    // Movemos al jugador al hospital
+                    // Move player to the hospital
                     TeleportPlayerToHospital(player);
-
-                    // Eliminamos el timer
                     DestroyDeathTimer(player);
 
-                    // Obtenemos el aviso
+                    // Get the report generated with the death
                     FactionWarningModel factionWarn = Faction.GetFactionWarnByTarget(player.Value, Constants.FACTION_EMERGENCY);
 
                     if (factionWarn != null)
                     {
-                        // Miramos si está atendido el aviso
                         if (factionWarn.takenBy >= 0)
                         {
+                            // Tell the player who attended the report it's been canceled
                             Client doctor = Globals.GetPlayerById(factionWarn.takenBy);
                             NAPI.Chat.SendChatMessageToPlayer(doctor, Constants.COLOR_INFO + Messages.INF_FACTION_WARN_CANCELED);
                         }
 
-                        // Borramos el aviso de la lista
+                        // Remove the report from the list
                         Faction.factionWarningList.Remove(factionWarn);
                     }
 

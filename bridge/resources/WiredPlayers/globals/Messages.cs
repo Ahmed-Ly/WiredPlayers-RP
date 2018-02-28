@@ -5,6 +5,20 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_FASTFOOD_JOB = "Fastfood deliverer job";
+        public const String GEN_MECHANIC_JOB = "Mechanic job";
+        public const String GEN_GARBAGE_JOB = "Garbage man job";
+        public const String GEN_MEMBERS_ONLINE = "Online members:";
+        public const String GEN_REPORTS_HEADER = "Emergency reports:";
+        public const String GEN_FACTION_LSPD = "LSPD";
+        public const String GEN_FACTION_EMS = "EMS";
+        public const String GEN_FACTION_NEWS = "Weazel News";
+        public const String GEN_FACTION_TOWNHALL = "Town hall";
+        public const String GEN_FACTION_TRANSPORT = "Transport service";
+        public const String GEN_TIME = "Time: ";
+        public const String GEN_PLACE = "place: ";
+        public const String GEN_ATTENDED_BY = "status: attended by ";
+        public const String GEN_UNATTENDED = "status: unattended";
         public const String GEN_CHAT_SAY = " says: ";
         public const String GEN_CHAT_YELL = " yells: ";
         public const String GEN_CHAT_WHISPER = " whispers: ";
@@ -13,11 +27,13 @@ namespace WiredPlayers.globals
         public const String GEN_PM_TO = "Private message to ";
         public const String GEN_PM_FROM = "Private message from ";
         public const String GEN_PHONE = "[Phone] ";
+        public const String GEN_RADIO = "[Radio] ";
         public const String GEN_DRIVING_SCHOOL = "Driving school";
         public const String GEN_CAR_DEALER = "Car dealer";
         public const String GEN_MOTORCYCLE_DEALER = "Motorcycle dealer";
         public const String GEN_BOAT_DEALER = "Boat dealer";
         public const String GEN_CATALOG_HELP = "Type the command above to see the vehicle list";
+        public const String GEN_JOB_HELP = "Type the command above to get more information about the job";
         public const String GEN_HOUSE = "House";
         public const String GEN_BUSINESS = "Busines";
         public const String GEN_ADMIN_NOTICE = "[STAFF NOTIFICATION] ";
@@ -146,8 +162,8 @@ namespace WiredPlayers.globals
         public const String GEN_LOCATE_COMMAND = "USAGE: /locate [Vehicle id.]";
         public const String GEN_FUEL_COMMAND = "USAGE: /refuel [Price (0 for full tank)]";
         public const String GEN_GO_COMMAND = "USAGE: /go [Workshop | Electronics | Police | Townhall | License | Hospital | Mechanic | News | Bahama | Garbage]";
-        public const String GEN_BORRAR_AVISO_COMMAND = "USAGE: /clearreports [Report id.]";
-        public const String GEN_ATENDER_COMMAND = "USAGE: /attend [Report id.]";
+        public const String GEN_CLEAR_REPORTS_COMMAND = "USAGE: /clearreports [Report id.]";
+        public const String GEN_ATTEND_COMMAND = "USAGE: /attend [Report id.]";
         public const String GEN_ADMIN_TEXT_COMMAND = "USAGE: /a [Message]";
         public const String GEN_RECON_COMMAND = "USAGE: /recon [Player id./Player name]";
         public const String GEN_COMPLEMENT_COMMAND = "USAGE: /complement [Mask|Bag|Accessory|Hat|Glasses|Earrings] [Wear|Remove]";
@@ -434,6 +450,8 @@ namespace WiredPlayers.globals
         public const String INF_MOTORCYCLE_LICENSE_POINTS = "Motorcycle: {0} points.";
         public const String INF_TAXI_LICENSE_NOT_AVAILABLE = "Taxi: Not available.";
         public const String INF_TAXI_LICENSE_UP_TO_DATE = "Taxi: Valid.";
+        public const String INF_BLOOD_EXTRACTED = "You drew some blood to {0}.";
+        public const String INF_BLOOD_GIVEN = "The doctor {0} drew some of your blood.";
 
         // Success messages
         public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";
@@ -694,6 +712,7 @@ namespace WiredPlayers.globals
         public const String ERR_TRANSFER_MONEY_OWN = "You can't transfer money to your own account.";
         public const String ERR_BANK_ACCOUNT_NOT_FOUND = "There's no bank account linked to that person.";
         public const String ERR_BANK_GENERAL_ERROR = "An error occurred while processing the operation.";
+        public const String ERR_LOW_BLOOD = "Your blood level is to low to be drawn.";
 
         // Mensajes descriptivos.
         public const String DESC_JOB_HOOKER = "Hooker - Win money selling your body, simple as that. You choose your clients and price.";
