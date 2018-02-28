@@ -13,6 +13,7 @@ namespace WiredPlayers.globals
         public const String GEN_PM_TO = "Private message to ";
         public const String GEN_PM_FROM = "Private message from ";
         public const String GEN_PHONE = "[Phone] ";
+        public const String GEN_DRIVING_SCHOOL = "Driving school";
         public const String GEN_CAR_DEALER = "Car dealer";
         public const String GEN_MOTORCYCLE_DEALER = "Motorcycle dealer";
         public const String GEN_BOAT_DEALER = "Boat dealer";
@@ -133,7 +134,7 @@ namespace WiredPlayers.globals
         public const String GEN_PHONE_CALL_COMMAND = "USAGE: /call [Number/Contact]\nService numbers: Police 911 | Emergencies 112 | News 114 | Transport 555";
         public const String GEN_SMS_COMMAND = "USAGE: /sms [Number] [Message]";
         public const String GEN_CONTACTS_COMMAND = "USAGE: /contacts [Number|View|Add|Delete|SMS]";
-        public const String GEN_DRIVING_SCHOOL_COMMAND = "USAGE: /drivingschool [Turism|Motorcycle]";
+        public const String GEN_DRIVING_SCHOOL_COMMAND = "USAGE: /drivingschool [Car|Motorcycle]";
         public const String GEN_ADMIN_COMMAND = "USAGE: /admin [Message]";
         public const String GEN_MEGAPHONE_COMMAND = "USAGE: /megaphone [Message]";
         public const String GEN_UNPARK_COMMAND = "USAGE: /unpark [Vehicle id.]";
@@ -425,6 +426,14 @@ namespace WiredPlayers.globals
         public const String INF_ALCOHOLIMETER_RECEPTOR = "{0} performed an alcohol test on you, the result is {1} mg/l on exhaled air.";
         public const String INF_ITEM_GIVEN = "You gave your {0} to {1}.";
         public const String INF_ITEM_RECEIVED = "{0} gave you his {1}.";
+        public const String INF_CAR_LICENSE_NOT_AVAILABLE = "Car: Not available.";
+        public const String INF_CAR_LICENSE_PRACTICAL_PENDING = "Car: Practical pending.";
+        public const String INF_CAR_LICENSE_POINTS = "Car: {0} points.";
+        public const String INF_MOTORCYCLE_LICENSE_NOT_AVAILABLE = "Motorcycle: Not available.";
+        public const String INF_MOTORCYCLE_LICENSE_PRACTICAL_PENDING = "Motorcycle: Practical pending.";
+        public const String INF_MOTORCYCLE_LICENSE_POINTS = "Motorcycle: {0} points.";
+        public const String INF_TAXI_LICENSE_NOT_AVAILABLE = "Taxi: Not available.";
+        public const String INF_TAXI_LICENSE_UP_TO_DATE = "Taxi: Valid.";
 
         // Success messages
         public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";

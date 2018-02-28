@@ -17,7 +17,7 @@ namespace WiredPlayers.drivingschool
         {
             if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
             {
-                // Eliminamos el timer
+                // We remove the timer
                 drivingSchoolTimer.Dispose();
                 drivingSchoolTimerList.Remove(player.Value);
             }
@@ -25,32 +25,32 @@ namespace WiredPlayers.drivingschool
 
         private void OnDrivingTimer(object playerObject)
         {
-            // Obtenemos el jugador y su vehículo
+            // We get the player and his vehicle
             Client player = (Client)playerObject;
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE);
 
-            // Finalizamos el examen
+            // We finish the exam
             FinishDrivingExam(player, vehicle);
 
-            // Borramos el timer de la lista
+            // Deleting timer from the list
             if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
             {
                 drivingSchoolTimer.Dispose();
                 drivingSchoolTimerList.Remove(player.Value);
             }
 
-            // Enviamos un mensaje al jugador
+            // Confirmation message sent to the player
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_FAILED_NOT_IN_VEHICLE);
         }
 
         private void FinishDrivingExam(Client player, Vehicle vehicle)
         {
-            // Reseteamos el vehículo
+            // Vehicle reseting
             NAPI.Vehicle.RepairVehicle(vehicle);
             NAPI.Entity.SetEntityPosition(vehicle, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
             NAPI.Entity.SetEntityRotation(vehicle, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ROTATION));
 
-            // Eliminamos el checkpoint
+            // Checkpoint delete
             if(NAPI.Vehicle.GetVehicleDriver(vehicle) == player)
             {
                 Checkpoint licenseCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
@@ -58,13 +58,13 @@ namespace WiredPlayers.drivingschool
                 NAPI.ClientEvent.TriggerClientEvent(player, "deleteLicenseCheckpoint");
             }
 
-            // Reseteamos las variables
+            // Entity data cleanup
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_VEHICLE);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRIVING_EXAM);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT);
 
-            // Sacamos al jugador del vehículo
+            // Remove player from vehicle
             NAPI.Player.WarpPlayerOutOfVehicle(player);
         }
 
@@ -77,15 +77,15 @@ namespace WiredPlayers.drivingschool
 
         public static void SetPlayerLicense(Client player, int license, int value)
         {
-            // Obtenemos las licencias
+            // We get player licenses
             String playerLicenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
             String[] licenses = playerLicenses.Split(',');
 
-            // Cambiamos el estado o puntos de la licencia
+            // Changing license status
             licenses[license] = value.ToString();
             playerLicenses = String.Join(",", licenses);
 
-            // Guardamos el estado de las licencias
+            // Save the new licenses
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSES, playerLicenses);
         }
 
@@ -97,7 +97,7 @@ namespace WiredPlayers.drivingschool
                 VehicleHash vehicleHash = (VehicleHash)NAPI.Entity.GetEntityModel(vehicle);
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == Constants.CAR_DRIVING_PRACTICE)
                 {
-                    // Miramos si es un coche
+                    // We check the class of the vehicle
                     if (NAPI.Vehicle.GetVehicleClass(vehicleHash) == Constants.VEHICLE_CLASS_SEDANS)
                     {
                         int checkPoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT);
@@ -110,7 +110,7 @@ namespace WiredPlayers.drivingschool
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
 
-                        // Marcamos el punto en el mapa
+                        // We place a mark on the map
                         NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", Constants.CAR_LICENSE_CHECKPOINTS[checkPoint]);
                     }
                     else
@@ -121,7 +121,7 @@ namespace WiredPlayers.drivingschool
                 }
                 else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == Constants.MOTORCYCLE_DRIVING_PRACTICE)
                 {
-                    // Miramos si es una moto
+                    // We check the class of the vehicle
                     if (NAPI.Vehicle.GetVehicleClass(vehicleHash) == Constants.VEHICLE_CLASS_MOTORCYCLES)
                     {
                         int checkPoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT);
@@ -134,7 +134,7 @@ namespace WiredPlayers.drivingschool
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
 
-                        // Marcamos el punto en el mapa
+                        // We place a mark on the map
                         NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint]);
                     }
                     else
@@ -156,7 +156,7 @@ namespace WiredPlayers.drivingschool
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_VEHICLE) == true)
             {
-                // Está subido en un vehículo de autoescuela
+                // Checking if is a valid vehicle
                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE) == vehicle && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                 {
                     String warn = String.Format(Messages.INF_LICENSE_VEHICLE_EXIT, 15);
@@ -164,10 +164,10 @@ namespace WiredPlayers.drivingschool
                     NAPI.Entity.DeleteEntity(playerDrivingCheckpoint);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + warn);
 
-                    // Eliminamos la marca del mapa
+                    // Removing the checkpoint marker
                     NAPI.ClientEvent.TriggerClientEvent(player, "deleteLicenseCheckpoint");
 
-                    // Creamos el timer para volver a subirse
+                    // When the timer finishes, the exam will be failed
                     Timer drivingSchoolTimer = new Timer(OnDrivingTimer, player, 15000, Timeout.Infinite);
                     drivingSchoolTimerList.Add(player.Value, drivingSchoolTimer);
                 }
@@ -193,7 +193,7 @@ namespace WiredPlayers.drivingschool
                             NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 2]);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 2)
@@ -202,7 +202,7 @@ namespace WiredPlayers.drivingschool
                             NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 1)
@@ -212,18 +212,18 @@ namespace WiredPlayers.drivingschool
                             NAPI.Entity.SetEntityModel(currentCheckpoint, (int)CheckpointType.Checkerboard);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else
                         {
-                            // Finalizamos el examen
+                            // Exam finished
                             FinishDrivingExam(player, vehicle);
 
-                            // Añadimos los puntos a la licencia
+                            // We add points to the license
                             SetPlayerLicense(player, Constants.LICENSE_CAR, 12);
 
-                            // Avisamos al jugador de que ha aprobado
+                            // Confirmation message sent to the player
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LICENSE_DRIVE_PASSED);
                         }
                     }
@@ -242,7 +242,7 @@ namespace WiredPlayers.drivingschool
                             NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 2]);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 2)
@@ -251,7 +251,7 @@ namespace WiredPlayers.drivingschool
                             NAPI.Checkpoint.SetCheckpointDirection(currentCheckpoint, NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_POSITION));
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 1)
@@ -261,18 +261,18 @@ namespace WiredPlayers.drivingschool
                             NAPI.Entity.SetEntityModel(currentCheckpoint, (int)CheckpointType.Checkerboard);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
 
-                            // Marcamos el punto en el mapa
+                            // We place a mark on the map
                             NAPI.ClientEvent.TriggerClientEvent(player, "showLicenseCheckpoint", currentCheckpoint.Position);
                         }
                         else
                         {
-                            // Finalizamos el examen
+                            // Exam finished
                             FinishDrivingExam(player, vehicle);
 
-                            // Añadimos los puntos a la licencia
+                            // We add points to the license
                             SetPlayerLicense(player, Constants.LICENSE_MOTORCYCLE, 12);
 
-                            // Avisamos al jugador de que ha aprobado
+                            // Confirmation message sent to the player
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LICENSE_DRIVE_PASSED);
                         }
                     }
@@ -286,15 +286,14 @@ namespace WiredPlayers.drivingschool
             Client player = NAPI.Vehicle.GetVehicleDriver(vehicle);
             if (player != null && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_COLSHAPE) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == true)
             {
-                // Calculamos el estado actual de daños
                 float currentHealth = NAPI.Vehicle.GetVehicleHealth(vehicle);
 
                 if (lossFirst - currentHealth > 5.0f)
                 {
-                    // Finalizamos el examen
+                    // Exam finished
                     FinishDrivingExam(player, vehicle);
 
-                    // Avisamos al jugador del suspenso
+                    // Inform the player about his failure
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_DRIVE_FAILED);
                 }
             }
@@ -307,7 +306,7 @@ namespace WiredPlayers.drivingschool
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRIVING_EXAM) == true)
                 {
-                    // Comprobamos si está conduciendo un vehículo
+                    // Check if is driving a vehicle
                     if (NAPI.Player.IsPlayerInAnyVehicle(player) && NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
                     {
                         Vehicle vehicle = NAPI.Player.GetPlayerVehicle(player);
@@ -317,10 +316,10 @@ namespace WiredPlayers.drivingschool
                             double speed = Math.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y + velocity.Z * velocity.Z);
                             if (Math.Round(speed * 3.6f) > Constants.MAX_DRIVING_VEHICLE)
                             {
-                                // Finalizamos el examen
+                                // Exam finished
                                 FinishDrivingExam(player, vehicle);
 
-                                // Avisamos al jugador del suspenso
+                                // Inform the player about his failure
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_DRIVE_FAILED);
                             }
                         }
@@ -334,86 +333,85 @@ namespace WiredPlayers.drivingschool
         {
             if (Database.CheckAnswerCorrect(answer) == true)
             {
-                // Incrementamos el número de preguntas
+                // We add the correct answer
                 int nextQuestion = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION) + 1;
 
                 if (nextQuestion < Constants.MAX_LICENSE_QUESTIONS)
                 {
-                    // Aún quedan más preguntas, mostramos la siguiente
+                    // Go for the next question
                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION, nextQuestion);
                     NAPI.ClientEvent.TriggerClientEvent(player, "getNextTestQuestion");
                 }
                 else
                 {
-                    // Ha aprobado el examen
+                    // Player passed the exam
                     int license = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
                     SetPlayerLicense(player, license, 0);
 
-                    // Restablecemos las variables
+                    // Reset the entity data
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
                     NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
 
-                    // Mandamos el mensaje
+                    // Send the message to the player
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LICENSE_EXAM_PASSED);
 
-                    // Cerramos la ventana del examen
+                    // Exam window close
                     NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
                 }
             }
             else
             {
-                // Ha fallado la pregunta
+                // Player failed the exam
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_LICENSE_EXAM_FAILED);
 
-                // Restablecemos las variables
+                // Reset the entity data
                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LICENSE_TYPE);
                 NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION);
 
-                // Cerramos la ventana del examen
+                // Exam window close
                 NAPI.ClientEvent.TriggerClientEvent(player, "finishLicenseExam");
             }
         }
 
-        [Command("autoescuela", Messages.GEN_DRIVING_SCHOOL_COMMAND)]
+        [Command(Commands.COMMAND_DRIVING_SCHOOL, Messages.GEN_DRIVING_SCHOOL_COMMAND)]
         public void AutoescuelaCommand(Client player, String type)
         {
             int licenseStatus = 0;
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
             {
-                if (interior.captionMessage == "Autoescuela" && player.Position.DistanceTo(interior.entrancePosition) < 2.5f)
+                if (interior.captionMessage == Messages.GEN_DRIVING_SCHOOL && player.Position.DistanceTo(interior.entrancePosition) < 2.5f)
                 {
-                    // Inicializamos las listas de preguntas y respuestas
                     List<TestModel> questions = new List<TestModel>();
                     List<TestModel> answers = new List<TestModel>();
 
-                    // Obtenemos el dinero del jugador
+                    // Get the player's money
                     int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-
-                    // Miramos la opción elegida
+                    
                     switch (type.ToLower())
                     {
-                        case "turismo":
-                            // Miramos el estado de la licencia de turismos
+                        case Commands.ARGUMENT_CAR:
+                            // Check for the status if the license
                             licenseStatus = GetPlayerLicenseStatus(player, Constants.LICENSE_CAR);
+
                             switch (licenseStatus)
                             {
                                 case -1:
-                                    // Comprobamos si tiene dinero suficiente
+                                    // Check if the player has enough money
                                     if (money >= Constants.PRICE_DRIVING_THEORICAL)
                                     {
-                                        // No ha aprobado ningún examen
+                                        // Add the questions
                                         questions = Database.GetRandomQuestions(Constants.LICENSE_CAR + 1);
                                         foreach (TestModel question in questions)
                                         {
                                             answers.AddRange(Database.GetQuestionAnswers(question.id));
                                         }
-
-                                        // Añadimos el tipo de licencia y cobramos
+                                        
                                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_CAR);
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION, 0);
+
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
 
-                                        // Mostramos la pantalla del examen teórico
+                                        // Start the exam
                                         NAPI.ClientEvent.TriggerClientEvent(player, "startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
                                     }
                                     else
@@ -423,17 +421,15 @@ namespace WiredPlayers.drivingschool
                                     }
                                     break;
                                 case 0:
-                                    // Comprobamos si tiene dinero suficiente
+                                    // Check if the player has enough money
                                     if (money >= Constants.PRICE_DRIVING_PRACTICAL)
                                     {
-                                        // Añadimos el tipo de licencia y cobramos
                                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_CAR);
-                                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_PRACTICAL);
-
-                                        // Tiene el teórico aprobado, le toca el práctico
+                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_EXAM, Constants.CAR_DRIVING_PRACTICE);
                                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, 0);
 
-                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_EXAM, Constants.CAR_DRIVING_PRACTICE);
+                                        NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_PRACTICAL);
+
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ENTER_LICENSE_CAR_VEHICLE);
                                     }
                                     else
@@ -443,33 +439,34 @@ namespace WiredPlayers.drivingschool
                                     }
                                     break;
                                 default:
-                                    // Tiene puntos en la licencia
+                                    // License up to date
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_ALREADY_LICENSE);
                                     break;
                             }
                             break;
-                        case "motocicleta":
-                            // Miramos el estado de la licencia de motocicletas
+                        case Commands.ARGUMENT_MOTORCYCLE:
+                            // Check for the status if the license
                             licenseStatus = GetPlayerLicenseStatus(player, Constants.LICENSE_MOTORCYCLE);
+
                             switch (licenseStatus)
                             {
                                 case -1:
-                                    // Comprobamos si tiene dinero suficiente
+                                    // Check if the player has enough money
                                     if (money >= Constants.PRICE_DRIVING_THEORICAL)
                                     {
-                                        // No ha aprobado ningún examen
+                                        // Add the questions
                                         questions = Database.GetRandomQuestions(Constants.LICENSE_MOTORCYCLE + 1);
                                         foreach (TestModel question in questions)
                                         {
                                             answers.AddRange(Database.GetQuestionAnswers(question.id));
                                         }
-
-                                        // Añadimos el tipo de licencia y cobramos
+                                        
                                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_MOTORCYCLE);
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LICENSE_QUESTION, 0);
+
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
 
-                                        // Mostramos la pantalla del examen teórico
+                                        // Start the exam
                                         NAPI.ClientEvent.TriggerClientEvent(player, "startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
                                     }
                                     else
@@ -479,16 +476,15 @@ namespace WiredPlayers.drivingschool
                                     }
                                     break;
                                 case 0:
-                                    // Comprobamos si tiene dinero suficiente
+                                    // Check if the player has enough money
                                     if (money >= Constants.PRICE_DRIVING_PRACTICAL)
                                     {
-                                        // Añadimos el tipo de licencia y cobramos
                                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_MOTORCYCLE);
+                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_EXAM, Constants.MOTORCYCLE_DRIVING_PRACTICE);
+                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, 0);
+
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_PRACTICAL);
 
-                                        // Tiene el teórico aprobado, le toca el práctico
-                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_CHECKPOINT, 0);
-                                        NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRIVING_EXAM, Constants.MOTORCYCLE_DRIVING_PRACTICE);
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ENTER_LICENSE_BIKE_VEHICLE);
                                     }
                                     else
@@ -498,7 +494,7 @@ namespace WiredPlayers.drivingschool
                                     }
                                     break;
                                 default:
-                                    // Tiene puntos en la licencia
+                                    // License up to date
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_ALREADY_LICENSE);
                                     break;
                             }
@@ -511,11 +507,11 @@ namespace WiredPlayers.drivingschool
                 }
             }
 
-            // Avisamos de que no está en la autoescuela
+            // Player's not in the driving school
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_DRIVING_SCHOOL);
         }
 
-        [Command("licencias")]
+        [Command(Commands.COMMAND_LICENSES)]
         public void LicenciasCommand(Client player)
         {
             int currentLicense = 0;
@@ -528,44 +524,43 @@ namespace WiredPlayers.drivingschool
                 switch (currentLicense)
                 {
                     case Constants.LICENSE_CAR:
-                        // Miramos el estado de la licencia de turismos
                         switch (currentLicenseStatus)
                         {
                             case -1:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Turismo: No disponible");
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_CAR_LICENSE_NOT_AVAILABLE);
                                 break;
                             case 0:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Turismo: Pendiente del examen práctico");
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_CAR_LICENSE_PRACTICAL_PENDING);
                                 break;
                             default:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Turismo: " + currentLicenseStatus + " puntos");
+                                String message = String.Format(Messages.INF_CAR_LICENSE_POINTS + currentLicenseStatus);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + message);
                                 break;
                         }
                         break;
                     case Constants.LICENSE_MOTORCYCLE:
-                        // Miramos el estado de la licencia de motocicletas
                         switch (currentLicenseStatus)
                         {
                             case -1:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Motocicleta: No disponible");
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_MOTORCYCLE_LICENSE_NOT_AVAILABLE);
                                 break;
                             case 0:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Motocicleta: Pendiente del examen práctico");
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_MOTORCYCLE_LICENSE_PRACTICAL_PENDING);
                                 break;
                             default:
-                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Motocicleta: " + currentLicenseStatus + " puntos");
+                                String message = String.Format(Messages.INF_MOTORCYCLE_LICENSE_POINTS + currentLicenseStatus);
+                                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + message);
                                 break;
                         }
                         break;
                     case Constants.LICENSE_TAXI:
-                        // Miramos el estado de la licencia de taxis
                         if (currentLicenseStatus == -1)
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Taxi: No disponible");
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_TAXI_LICENSE_NOT_AVAILABLE);
                         }
                         else
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Taxi: Vigente");
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.INF_TAXI_LICENSE_UP_TO_DATE);
                         }
                         break;
                 }

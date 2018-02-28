@@ -13,6 +13,7 @@ namespace WiredPlayers.globals
         public const String GEN_PM_TO = "Mensaje privado a ";
         public const String GEN_PM_FROM = "Mensaje privado de ";
         public const String GEN_PHONE = "[Teléfono] ";
+        public const String GEN_DRIVING_SCHOOL = "Autoescuela";
         public const String GEN_CAR_DEALER = "Concesionario de coches";
         public const String GEN_MOTORCYCLE_DEALER = "Concesionario de motos";
         public const String GEN_BOAT_DEALER = "Concesionario de barcos";
@@ -425,6 +426,14 @@ namespace WiredPlayers.globals
         public const String INF_ALCOHOLIMETER_RECEPTOR = "{0} te ha realizado un test de alcoholemia. Has dado {1}mg/l en aire espirado.";
         public const String INF_ITEM_GIVEN = "Le has cedido tu {0} a {1}.";
         public const String INF_ITEM_RECEIVED = "{0} te ha cedido su {1}.";
+        public const String INF_CAR_LICENSE_NOT_AVAILABLE = "Turismo: No disponible.";
+        public const String INF_CAR_LICENSE_PRACTICAL_PENDING = "Turismo: Pendiente del examen práctico.";
+        public const String INF_CAR_LICENSE_POINTS = "Turismo: {0} puntos.";
+        public const String INF_MOTORCYCLE_LICENSE_NOT_AVAILABLE = "Motocicleta: No disponible.";
+        public const String INF_MOTORCYCLE_LICENSE_PRACTICAL_PENDING = "Motocicleta: Pendiente del examen práctico.";
+        public const String INF_MOTORCYCLE_LICENSE_POINTS = "Motocicleta: {0} puntos.";
+        public const String INF_TAXI_LICENSE_NOT_AVAILABLE = "Taxi: No disponible.";
+        public const String INF_TAXI_LICENSE_UP_TO_DATE = "Taxi: Vigente.";
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";

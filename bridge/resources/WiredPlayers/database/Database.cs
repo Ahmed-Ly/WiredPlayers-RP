@@ -16,8 +16,8 @@ using WiredPlayers.telephone;
 using WiredPlayers.admin;
 using System.Collections.Generic;
 using System.Globalization;
-using System;
 using System.Text;
+using System;
 
 namespace WiredPlayers.database
 {
@@ -32,57 +32,57 @@ namespace WiredPlayers.database
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
-            // Ajustamos la codificación
+            // Set the encoding
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            // Carga de negocios
+            // Business loading
             Business businessClass = new Business();
             businessClass.LoadDatabaseBusiness();
 
-            // Carga de casas
+            // House loading
             House houseClass = new House();
             houseClass.LoadDatabaseHouses();
 
-            // Carga de muebles
+            // Furniture loading
             Furniture furnitureClass = new Furniture();
             furnitureClass.LoadDatabaseFurniture();
 
-            // Carga del tunning
+            // Tunning loading
             Mechanic.tunningList = LoadAllTunning();
 
-            // Carga de parkings
+            // Parkings loading
             Parking parkingClass = new Parking();
             parkingClass.LoadDatabaseParkings();
 
-            // Carga de vehículos
+            // Vehicle loading
             Vehicles vehiclesClass = new Vehicles();
             vehiclesClass.LoadDatabaseVehicles();
 
-            // Carga de objetos
+            // Item loading
             Globals.itemList = LoadAllItems();
 
-            // Carga de los controles policiales
+            // Police controls loading
             Police.policeControlList = LoadAllPoliceControls();
 
-            // Carga de las frecuencias de radio
+            // Radio frequency channels loading
             Faction.channelList = LoadAllChannels();
 
-            // Carga de las unidades de sangre
+            // Blood units loading
             Emergency.bloodList = LoadAllBlood();
 
-            // Carga de la lista de anuncios
+            // Announcements loading
             WeazelNews.annoucementList = LoadAllAnnoucements();
 
-            // Carga de la ropa
+            // Clothes loading
             Globals.clothesList = LoadAllClothes();
 
-            // Carga de los tatuajes
+            // Tattoos loading
             Globals.tattooList = LoadAllTattoos();
 
-            // Carga de los contactos de móvil
+            // Phone contacts loading
             Telephone.contactList = LoadAllContacts();
 
-            // Carga de los permsisos especiales
+            // Special permission loading
             Admin.permissionList = LoadAllPermissions();
         }
 

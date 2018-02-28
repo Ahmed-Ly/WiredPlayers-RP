@@ -101,6 +101,8 @@ namespace WiredPlayers.globals
         public const String COMMAND_AME = "ame";
         public const String COMMAND_MEGAPHONE = "m";
         public const String COMMAND_PM = "pm";
+        public const String COMMAND_DRIVING_SCHOOL = "drivingschool";
+        public const String COMMAND_LICENSES = "licenses";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -142,5 +144,7 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_PLACES = "places";
         public const String ARGUMENT_GIVE = "give";
         public const String ARGUMENT_SET = "set";
+        public const String ARGUMENT_CAR = "car";
+        public const String ARGUMENT_MOTORCYCLE = "motorcycle";
     }
 }
