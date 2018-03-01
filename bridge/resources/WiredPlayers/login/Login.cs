@@ -17,7 +17,6 @@ namespace WiredPlayers.login
         {
             if (spawnTimerList.TryGetValue(player.SocialClubName, out Timer spawnTimer) == true)
             {
-                // Eliminamos el timer
                 spawnTimer.Dispose();
                 spawnTimerList.Remove(player.SocialClubName);
             }
@@ -36,16 +35,16 @@ namespace WiredPlayers.login
             NAPI.Player.SetPlayerArmor(player, 0);
             NAPI.Entity.SetEntityTransparency(player, 0);
 
-            // Limpiamos las armas
+            // Clear weapons
             NAPI.Player.RemoveAllPlayerWeapons(player);
 
-            // Inicialización de los entity data sincronizados
+            // Initialize shared entity data
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, 18);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, 3500);
 
-            // Inicialización de los entity data del servidor
+            // Initialize entity data
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, String.Empty);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_RANK, 0);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ADMIN_NAME, String.Empty);
@@ -86,39 +85,39 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntitySharedData(player, EntityData.HEAD_MIX, 0.5f);
             NAPI.Data.SetEntitySharedData(player, EntityData.SKIN_MIX, 0.5f);
 
-            // Generación del peinado
+            // Hair generation
             NAPI.Data.SetEntitySharedData(player, EntityData.HAIR_MODEL, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR, 0);
 
-            // Generación de la barba
+            // Beard generation
             NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_MODEL, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_COLOR, 0);
 
-            // Generación del vello del pecho
+            // Chest hair generation
             NAPI.Data.SetEntitySharedData(player, EntityData.CHEST_MODEL, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.CHEST_COLOR, 0);
 
-            // Generación del vello del pecho
+            // Face marks generation
             NAPI.Data.SetEntitySharedData(player, EntityData.BLEMISHES_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.AGEING_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.COMPLEXION_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.SUNDAMAGE_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.FRECKLES_MODEL, -1);
 
-            // Generación de ojos y cejas
+            // Eyes and eyebrows generation
             NAPI.Data.SetEntitySharedData(player, EntityData.EYES_COLOR, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_MODEL, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_COLOR, 0);
 
-            // Generación del maquillaje
+            // Cosmetics generation
             NAPI.Data.SetEntitySharedData(player, EntityData.MAKEUP_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.BLUSH_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.BLUSH_COLOR, 0);
             NAPI.Data.SetEntitySharedData(player, EntityData.LIPSTICK_MODEL, -1);
             NAPI.Data.SetEntitySharedData(player, EntityData.LIPSTICK_COLOR, 0);
 
-            // Generación de rasgos faciales avanzados
+            // Advanced facial model generation
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_WIDTH, 0.0f);
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_HEIGHT, 0.0f);
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_LENGTH, 0.0f);
@@ -143,16 +142,13 @@ namespace WiredPlayers.login
 
         private void LoadCharacterData(Client player, PlayerModel character)
         {
-            // Cargamos el tipo y tiempo de cárcel
             String[] jail = character.jailed.Split(',');
-
-            // Carga de los datos básicos del personaje compartidos
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, character.money);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, character.bank);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_AGE, character.age);
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, character.sex);
-
-            // Carga de los datos básicos del personaje normales
+            
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_SQL_ID, character.id);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_NAME, character.realName);
             NAPI.Data.SetEntityData(player, EntityData.PLAYER_HEALTH, character.health);
@@ -189,47 +185,39 @@ namespace WiredPlayers.login
 
         private void PopulateCharacterSkin(Client player, SkinModel skinModel)
         {
-            // Generación de la cara
             NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_HEAD_SHAPE, skinModel.firstHeadShape);
             NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_HEAD_SHAPE, skinModel.secondHeadShape);
             NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_SKIN_TONE, skinModel.firstSkinTone);
             NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_SKIN_TONE, skinModel.secondSkinTone);
             NAPI.Data.SetEntitySharedData(player, EntityData.HEAD_MIX, skinModel.headMix);
             NAPI.Data.SetEntitySharedData(player, EntityData.SKIN_MIX, skinModel.skinMix);
-
-            // Generación del peinado
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.HAIR_MODEL, skinModel.hairModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.FIRST_HAIR_COLOR, skinModel.firstHairColor);
             NAPI.Data.SetEntitySharedData(player, EntityData.SECOND_HAIR_COLOR, skinModel.secondHairColor);
-
-            // Generación de la barba
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_MODEL, skinModel.beardModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.BEARD_COLOR, skinModel.beardColor);
-
-            // Generación del vello del pecho
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.CHEST_MODEL, skinModel.chestModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.CHEST_COLOR, skinModel.chestColor);
-
-            // Generación del vello del pecho
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.BLEMISHES_MODEL, skinModel.blemishesModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.AGEING_MODEL, skinModel.ageingModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.COMPLEXION_MODEL, skinModel.complexionModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.SUNDAMAGE_MODEL, skinModel.sundamageModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.FRECKLES_MODEL, skinModel.frecklesModel);
-
-            // Generación de ojos y cejas
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.EYES_COLOR, skinModel.eyesColor);
             NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_MODEL, skinModel.eyebrowsModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.EYEBROWS_COLOR, skinModel.eyebrowsColor);
-
-            // Generación del maquillaje
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.MAKEUP_MODEL, skinModel.makeupModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.BLUSH_MODEL, skinModel.blushModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.BLUSH_COLOR, skinModel.blushColor);
             NAPI.Data.SetEntitySharedData(player, EntityData.LIPSTICK_MODEL, skinModel.lipstickModel);
             NAPI.Data.SetEntitySharedData(player, EntityData.LIPSTICK_COLOR, skinModel.lipstickColor);
-
-            // Generación de rasgos faciales avanzados
+            
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_WIDTH, skinModel.noseWidth);
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_HEIGHT, skinModel.noseHeight);
             NAPI.Data.SetEntitySharedData(player, EntityData.NOSE_LENGTH, skinModel.noseLength);
@@ -251,7 +239,7 @@ namespace WiredPlayers.login
             NAPI.Data.SetEntitySharedData(player, EntityData.CHIN_SHAPE, skinModel.chinShape);
             NAPI.Data.SetEntitySharedData(player, EntityData.NECK_WIDTH, skinModel.neckWidth);
 
-            // Llamamos a la función para actualizar el modelo
+            // Timer to update player's face model
             Timer spawnTimer = new Timer(OnPlayerUpdateTimer, player, 350, Timeout.Infinite);
             spawnTimerList.Add(player.SocialClubName, spawnTimer);
         }
@@ -261,8 +249,7 @@ namespace WiredPlayers.login
             Client player = (Client)playerObject;
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
             List<TattooModel> playerTattooList = Globals.GetPlayerTattoos(playerId);
-
-            // Borramos el timer de la lista
+            
             Timer spawnTimer = spawnTimerList[player.SocialClubName];
             if (spawnTimer != null)
             {
@@ -270,14 +257,14 @@ namespace WiredPlayers.login
                 spawnTimerList.Remove(player.SocialClubName);
             }
 
-            // Llamamos al evento del cliente
+            // Update player's face model
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", player, NAPI.Util.ToJson(playerTattooList));
         }
 
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client player)
         {
-            // Inicializamos el jugador
+            // Initialize the player
             InitializePlayerData(player);
             InitializePlayerSkin(player);
 
@@ -294,32 +281,28 @@ namespace WiredPlayers.login
                     NAPI.Player.KickPlayer(player, Messages.INF_ACCOUNT_NEW);
                     break;
                 default:
-                    // Mandamos los mensajes de bienvenida
+                    // Welcome message
                     String welcomeMessage = String.Format(Messages.GEN_WELCOME_MESSAGE, player.SocialClubName);
                     NAPI.Chat.SendChatMessageToPlayer(player, welcomeMessage);
                     NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_WELCOME_HINT);
                     NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_HELP_HINT);
                     NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_TICKET_HINT);
-
-                    // Miramos si tiene seleccionado algún personaje
+                    
                     if (account.lastCharacter > 0)
                     {
+                        // Load selected character
                         PlayerModel character = Database.LoadCharacterInformationById(account.lastCharacter);
                         SkinModel skin = Database.GetCharacterSkin(account.lastCharacter);
-
-                        // Carga de skin hombre/mujer
+                        
                         String pedModel = character.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
                         PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
                         NAPI.Player.SetPlayerName(player, character.realName);
                         NAPI.Player.SetPlayerSkin(player, pedHash);
-
-                        // Cargamos los datos básicos del personaje
+                        
                         LoadCharacterData(player, character);
-
-                        // Generación del modelo del personaje
+                        
                         PopulateCharacterSkin(player, skin);
-
-                        // Generación de la ropa del personaje
+                        
                         Globals.PopulateCharacterClothes(player);
                     }
                     else
@@ -328,10 +311,10 @@ namespace WiredPlayers.login
                         NAPI.Player.SetPlayerSkin(player, pedHash);
                     }
 
-                    // Hacemos al personaje visible
+                    // Make the player invisible
                     NAPI.Entity.SetEntityTransparency(player, 255);
 
-                    // Mostramos el login y actualizamos el tiempo
+                    // Show login window and synchronize the time
                     TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
                     NAPI.ClientEvent.TriggerClientEvent(player, "accountLoginForm", currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
                     break;
@@ -352,12 +335,12 @@ namespace WiredPlayers.login
             PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
             NAPI.Player.SetPlayerSkin(player, pedHash);
 
-            // Eliminamos la ropa
+            // Remove player's clothes
             NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
             NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
             NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
 
-            // Guardamos la variable
+            // Save sex entity shared data
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_SEX, sex);
         }
 
@@ -366,16 +349,15 @@ namespace WiredPlayers.login
         {
             PlayerModel playerModel = new PlayerModel();
             SkinModel skinModel = JsonConvert.DeserializeObject<SkinModel>(skinJson);
-
-            // Generación del modelo del personaje
+            
             playerModel.realName = playerName;
             playerModel.age = playerAge;
             playerModel.sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
-
-            // Generación del modelo del personaje
+            
             PopulateCharacterSkin(player, skinModel);
 
             int playerId = Database.CreateCharacter(player, playerModel, skinModel);
+
             if (playerId > 0)
             {
                 InitializePlayerData(player);
@@ -393,18 +375,18 @@ namespace WiredPlayers.login
         [RemoteEvent("setCharacterIntoCreator")]
         public void SetCharacterIntoCreatorEvent(Client player)
         {
-            // Cambiamos el skin del personaje al por defecto
+            // Change player's skin
             NAPI.Player.SetPlayerSkin(player, PedHash.FreemodeMale01);
 
-            // Inicializamos los valores de la cara
+            // Initialize player's face mode
             InitializePlayerData(player);
 
-            // Eliminamos la ropa
+            // Remove clothes
             NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
             NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
             NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
 
-            // Establecemos su posición
+            // Set player's position
             NAPI.Entity.SetEntityTransparency(player, 255);
             NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 180.0f));
             NAPI.Entity.SetEntityPosition(player, new Vector3(152.3787f, -1000.644f, -99f));
@@ -416,21 +398,17 @@ namespace WiredPlayers.login
             PlayerModel playerModel = Database.LoadCharacterInformationByName(name);
             SkinModel skinModel = Database.GetCharacterSkin(playerModel.id);
 
-            // Carga de skin hombre/mujer
+            // Load player's model
             String pedModel = playerModel.sex == 0 ? Constants.MALE_PED_MODEL : Constants.FEMALE_PED_MODEL;
             PedHash pedHash = NAPI.Util.PedNameToModel(pedModel);
             NAPI.Player.SetPlayerName(player, playerModel.realName);
             NAPI.Player.SetPlayerSkin(player, pedHash);
-
-            // Cargamos los datos básicos del personaje
+            
             LoadCharacterData(player, playerModel);
-
-            // Generación del modelo del personaje
             PopulateCharacterSkin(player, skinModel);
-
-            // Generación de la ropa del personaje
             Globals.PopulateCharacterClothes(player);
 
+            // Update last selected character
             Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
         }
 
@@ -440,7 +418,7 @@ namespace WiredPlayers.login
             int targetId = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
             List<TattooModel> targetTattooList = Globals.GetPlayerTattoos(targetId);
 
-            // Llamamos al evento del cliente
+            // Update the model clientside
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerCustomSkin", target, NAPI.Util.ToJson(targetTattooList));
         }
     }
