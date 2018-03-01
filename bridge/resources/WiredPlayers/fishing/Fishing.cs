@@ -17,7 +17,7 @@ namespace WiredPlayers.fishing
         {
             if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
-                // Eliminamos el timer
+                // Remove the timer
                 fishingTimer.Dispose();
                 fishingTimerList.Remove(player.Value);
             }
@@ -26,26 +26,25 @@ namespace WiredPlayers.fishing
         private void OnFishingPrewarnTimer(object playerObject)
         {
             Client player = (Client)playerObject;
-
-            // Mandamos el mensaje y aplicamos la animación
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SOMETHING_BAITED);
-            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
-
-            // Borramos el timer de la lista
+            
             if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
-                // Eliminamos el timer
+                // Remove the timer
                 fishingTimer.Dispose();
                 fishingTimerList.Remove(player.Value);
             }
 
-            // Empezamos el minijuego
+            // Start the minigame
             NAPI.ClientEvent.TriggerClientEvent(player, "fishingBaitTaken");
+
+            // Send the message and play fishing animation
+            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@idle_a", "idle_c");
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SOMETHING_BAITED);
         }
 
         private int GetPlayerFishingLevel(Client player)
         {
-            // Obtenemos los puntos del jugador
+            // Get player points
             int fishingPoints = Job.GetJobPoints(player, Constants.JOB_FISHERMAN);
 
             // Calculamos el nivel
@@ -53,52 +52,49 @@ namespace WiredPlayers.fishing
             if (fishingPoints > 300) return 4;
             if (fishingPoints > 150) return 3;
             if (fishingPoints > 50) return 2;
+
             return 1;
         }
 
         [RemoteEvent("startFishingTimer")]
         public void StartFishingTimerEvent(Client player)
         {
-            // Inicializamos el factor de aleatoriedad
             Random random = new Random();
 
-            // Creamos el timer para que piquen
+            // Timer for the game to start
             Timer fishingTimer = new Timer(OnFishingPrewarnTimer, player, random.Next(1250, 2500), Timeout.Infinite);
             fishingTimerList.Add(player.Value, fishingTimer);
 
-            // Aplicamos la animación de lanzar la caña y avisamos al jugador
+            // Confirmation message
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_FISHING_ROD_THROWN);
         }
 
         [RemoteEvent("fishingCanceled")]
         public void FishingCanceledEvent(Client player)
         {
-            // Cancelamos el estado de pesca del jugador
-            NAPI.Player.StopPlayerAnimation(player);
-            NAPI.Player.FreezePlayer(player, false);
-            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FISHING);
-
-            // Borramos el timer de la lista
             if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
             {
-                // Eliminamos el timer
                 fishingTimer.Dispose();
                 fishingTimerList.Remove(player.Value);
             }
 
-            // Mandamos el mensaje al jugador
+            // Cancel the fishing
+            NAPI.Player.StopPlayerAnimation(player);
+            NAPI.Player.FreezePlayer(player, false);
+            NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FISHING);
+            
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FISHING_CANCELED);
         }
 
         [RemoteEvent("fishingSuccess")]
         public void FishingSuccessEvent(Client player)
         {
-            // Calculamos la posibilidad de fallo
+            // Calculate failure chance
             bool failed = false;
             Random random = new Random();
             int successChance = random.Next(100);
 
-            // Obtenemos el nivel del jugador
+            // Getting player's level
             int fishingLevel = GetPlayerFishingLevel(player);
 
             switch (fishingLevel)
@@ -117,7 +113,7 @@ namespace WiredPlayers.fishing
 
             if (!failed)
             {
-                // Obtenemos la ganancia del jugador
+                // Get player earnings
                 int fishWeight = random.Next(fishingLevel * 100, fishingLevel * 750);
                 int playerDatabaseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                 ItemModel fishItem = Globals.GetPlayerItemModelFromHash(playerDatabaseId, Constants.ITEM_HASH_FISH);
@@ -132,7 +128,7 @@ namespace WiredPlayers.fishing
                     fishItem.position = new Vector3(0.0f, 0.0f, 0.0f);
                     fishItem.dimension = 0;
 
-                    // Añadimos el objeto
+                    // Add the fish item to database
                     fishItem.id = Database.AddNewItem(fishItem);
                     Globals.itemList.Add(fishItem);
                 }
@@ -142,7 +138,7 @@ namespace WiredPlayers.fishing
                     Database.UpdateItem(fishItem);
                 }
 
-                // Mandamos el mensaje al jugador
+                // Send the message to the player
                 String message = String.Format(Messages.INF_FISHED_WEIGHT, fishWeight);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
             }
@@ -151,11 +147,11 @@ namespace WiredPlayers.fishing
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_GARBAGE_FISHED);
             }
 
-            // Sumamos un punto al nivel de habilidad
+            // Add one skill point to the player
             int fishingPoints = Job.GetJobPoints(player, Constants.JOB_FISHERMAN);
             Job.SetJobPoints(player, Constants.JOB_FISHERMAN, fishingPoints + 1);
 
-            // Cancelamos el estado de pesca del jugador
+            // Cancel fishing
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Player.FreezePlayer(player, false);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FISHING);
@@ -164,17 +160,16 @@ namespace WiredPlayers.fishing
         [RemoteEvent("fishingFailed")]
         public void FishingFailedEvent(Client player)
         {
-            // Cancelamos el estado de pesca del jugador
+            // Cancel fishing
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Player.FreezePlayer(player, false);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_FISHING);
-
-            // Mandamos el mensaje al jugador
+            
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FISHING_FAILED);
         }
 
-        [Command("pescar")]
-        public void PescarCommand(Client player)
+        [Command(Commands.COMMAND_FISH)]
+        public void FishCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHING) == true)
             {
@@ -217,11 +212,10 @@ namespace WiredPlayers.fishing
                     {
                         foreach (Vector3 fishingPosition in Constants.FISHING_POSITION_LIST)
                         {
-                            // Ponemos al jugador mirando al mar
+                            // Set player looking to the sea
                             NAPI.Entity.SetEntityRotation(player, new Vector3(0.0f, 0.0f, 142.532f));
                             NAPI.Player.FreezePlayer(player, true);
-
-                            // Le quitamos una unidad de cebo
+                            
                             if (bait.amount == 1)
                             {
                                 Globals.itemList.Remove(bait);
@@ -233,14 +227,14 @@ namespace WiredPlayers.fishing
                                 Database.UpdateItem(bait);
                             }
 
-                            // Iniciamos la pesca
-                            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@base", "base");
+                            // Start fishing minigame
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_FISHING, true);
+                            NAPI.Player.PlayPlayerAnimation(player, (int)Constants.AnimationFlags.Loop, "amb@world_human_stand_fishing@base", "base");
                             NAPI.ClientEvent.TriggerClientEvent(player, "startPlayerFishing");
                             return;
                         }
 
-                        // Avisamos de que no se encuentra en la zona de pesca
+                        // Player's not in the fishing zone
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_FISHING_ZONE);
                     }
                     else

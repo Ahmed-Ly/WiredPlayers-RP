@@ -5,6 +5,10 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_ROUTE_NORTH = "Se te ha asignado la ruta norte.";
+        public const String GEN_ROUTE_SOUTH = "Se te ha asignado la ruta sur.";
+        public const String GEN_ROUTE_EAST = "Se te ha asignado la ruta este.";
+        public const String GEN_ROUTE_WEST = "Se te ha asignado la ruta oeste.";
         public const String GEN_FASTFOOD_JOB = "Trabajo de repartidor";
         public const String GEN_MECHANIC_JOB = "Trabajo de mecánico";
         public const String GEN_GARBAGE_JOB = "Trabajo de basurero";

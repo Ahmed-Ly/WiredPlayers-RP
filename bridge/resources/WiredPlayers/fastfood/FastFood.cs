@@ -16,7 +16,7 @@ namespace WiredPlayers.fastfood
         {
             if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
             {
-                // Eliminamos el timer
+                // Destroy the timer
                 fastFoodTimer.Dispose();
                 fastFoodTimerList.Remove(player.Value);
             }
@@ -67,19 +67,19 @@ namespace WiredPlayers.fastfood
             Client player = (Client)playerObject;
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
 
-            // Respawneamos el vehículo
+            // Vehicle respawn
             RespawnFastfoodVehicle(vehicle);
 
-            // Cancelamos el pedido
+            // Cancel the order
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_WON);
 
-            // Quitamos los checkpoints
+            // Delete map blip
             NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
 
-            // Borramos el timer de la lista
+            // Remove timer from the list
             Timer fastFoodTimer = fastFoodTimerList[player.Value];
             if (fastFoodTimer != null)
             {
@@ -87,7 +87,7 @@ namespace WiredPlayers.fastfood
                 fastFoodTimerList.Remove(player.Value);
             }
 
-            // Avisamos al jugador
+            // Send the message to the player
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
         }
 
@@ -118,9 +118,11 @@ namespace WiredPlayers.fastfood
                         int orderId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
                         FastFoodOrderModel order = GetFastfoodOrderFromId(orderId);
                         Checkpoint playerFastFoodCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, order.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT, playerFastFoodCheckpoint);
-                        NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDestinationCheckPoint", order.position);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_VEHICLE, vehicle);
+
+                        NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDestinationCheckPoint", order.position);
                     }
                 }
             }
@@ -136,7 +138,7 @@ namespace WiredPlayers.fastfood
                     String warn = String.Format(Messages.INF_JOB_VEHICLE_LEFT, 60);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + warn);
 
-                    // Creamos el timer para volver a subirse
+                    // Timer with the time left to get into the vehicle
                     Timer fastFoodTimer = new Timer(OnFastFoodTimer, player, 60000, Timeout.Infinite);
                     fastFoodTimerList.Add(player.Value, fastFoodTimer);
                 }
@@ -148,7 +150,7 @@ namespace WiredPlayers.fastfood
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_FASTFOOD)
             {
-                // Obtenemos el checkpoint de reparto
+                // Get the player's deliver checkpoint
                 Checkpoint playerDeliverColShape = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
 
                 if (playerDeliverColShape == checkpoint)
@@ -163,9 +165,12 @@ namespace WiredPlayers.fastfood
                             int elapsed = Globals.GetTotalSeconds() - NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_START);
                             int extra = (int)Math.Round((NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_TIME) - elapsed) / 2.0f);
                             int amount = GetFastFoodOrderAmount(player) + extra;
+
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_START);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_WON, amount > 0 ? amount : 25);
+
                             NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverBack", vehiclePosition);
+
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_DELIVER_COMPLETED);
                         }
                         else
@@ -183,17 +188,21 @@ namespace WiredPlayers.fastfood
                             int orderId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
                             String message = String.Format(Messages.INF_JOB_WON, won);
                             Globals.fastFoodOrderList.RemoveAll(order => order.id == orderId);
+
                             NAPI.Entity.DeleteEntity(playerDeliverColShape);
+                            NAPI.Player.WarpPlayerOutOfVehicle(player);
+
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money + won);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                            NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
+
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_WON);
-                            NAPI.Player.WarpPlayerOutOfVehicle(player);
 
-                            // Devolvemos la moto a su sitio
+                            NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
+
+                            // We get the motorcycle to its spawn point
                             RespawnFastfoodVehicle(vehicle);
                         }
                         else
@@ -218,18 +227,18 @@ namespace WiredPlayers.fastfood
                     }
                     else
                     {
-                        // Obtenemos el tiempo necesario
+                        // Get the time to reach the destination
                         int start = Globals.GetTotalSeconds();
                         int time = (int)Math.Round(player.Position.DistanceTo(order.position) / 9.5f);
 
-                        // Ponemos el pedido como cogido
+                        // We take the order
                         order.taken = true;
 
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_ORDER, orderId);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_START, start);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DELIVER_TIME, time);
 
-                        // Mandamos el mensaje de recogida
+                        // Information message sent to the player
                         String orderMessage = String.Format(Messages.INF_DELIVER_ORDER, time);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + orderMessage);
                     }
@@ -237,12 +246,12 @@ namespace WiredPlayers.fastfood
                 }
             }
 
-            // Mandamos el mensaje de que no se ha encontrado ningún pedido
+            // Order has been deleted
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ORDER_TIMEOUT);
         }
 
-        [Command("pedidos")]
-        public void PedidosCommand(Client player)
+        [Command(Commands.COMMAND_ORDERS)]
+        public void OrdersCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -262,7 +271,7 @@ namespace WiredPlayers.fastfood
             }
             else
             {
-                // Obtenemos los pedidos entregables
+                // Get the deliverable orders
                 List<FastFoodOrderModel> fastFoodOrders = Globals.fastFoodOrderList.Where(o => !o.taken).ToList();
 
                 if (fastFoodOrders.Count > 0)

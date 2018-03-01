@@ -16,7 +16,6 @@ namespace WiredPlayers.garbage
         {
             if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
             {
-                // Eliminamos el timer
                 garbageTimer.Dispose();
                 garbageTimerList.Remove(player.Value);
             }
@@ -34,24 +33,22 @@ namespace WiredPlayers.garbage
             Client player = (Client)playerObject;
             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
-
-            // Respawneamos el vehículo
+            
             RespawnGarbageVehicle(vehicle);
 
-            // Cancelamos la ruta
+            // Cancel the garbage route
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
             NAPI.Data.ResetEntityData(target, EntityData.PLAYER_JOB_CHECKPOINT);
-
-            // Borramos el timer de la lista
+            
             if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
             {
-                // Eliminamos el timer
+                // Remove the timer
                 garbageTimer.Dispose();
                 garbageTimerList.Remove(player.Value);
             }
 
-            // Avisamos a los jugadores
+            // Send the message to both players
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
             NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ERROR + Messages.ERR_JOB_VEHICLE_ABANDONED);
         }
@@ -61,17 +58,17 @@ namespace WiredPlayers.garbage
             Client player = (Client)playerObject;
             Client driver = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
-            // Recogemos la bolsa de basura
-            GTANetworkAPI.Object trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
+            // Get garbage bag
+            GTANetworkAPI.Object garbageBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
             NAPI.Player.StopPlayerAnimation(player);
-            NAPI.Entity.DeleteEntity(trashBag);
+            NAPI.Entity.DeleteEntity(garbageBag);
 
-            // Obtenemos el total de checkpoints
+            // Get the remaining checkpoints
             int route = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_ROUTE);
             int checkPoint = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT) + 1;
             int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
 
-            // Obtenemos el checkpoint actual
+            // Get the current checkpoint
             Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
 
             if (checkPoint < totalCheckPoints)
@@ -79,7 +76,7 @@ namespace WiredPlayers.garbage
                 Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint);
                 Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint + 1);
 
-                // Avanzamos al siguiente checkpoint
+                // Show the next checkpoint
                 NAPI.Entity.SetEntityPosition(garbageCheckpoint, currentGarbagePosition);
                 NAPI.Checkpoint.SetCheckpointDirection(garbageCheckpoint, nextGarbagePosition);
                 NAPI.Data.SetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
@@ -87,9 +84,9 @@ namespace WiredPlayers.garbage
                 NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", currentGarbagePosition);
                 NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
 
-                // Añadimos el objeto basura
-                trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
-                NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, trashBag);
+                // Add the garbage bag
+                garbageBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
+                NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, garbageBag);
             }
             else
             {
@@ -103,12 +100,10 @@ namespace WiredPlayers.garbage
 
             if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
             {
-                // Eliminamos el timer
                 garbageTimer.Dispose();
                 garbageTimerList.Remove(player.Value);
             }
-
-            // Mandamos el mensaje de que se ha recogido la bolsa de basura
+            
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_GARBAGE_COLLECTED);
         }
 
@@ -130,16 +125,15 @@ namespace WiredPlayers.garbage
         {
             Vehicle vehicle = NAPI.Player.GetPlayerVehicle(driver);
             Client partner = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_PARTNER);
-
-            // Respawneamos el vehículo
+            
             RespawnGarbageVehicle(vehicle);
 
-            // Destruímos el check anterior
+            // Destroy the previous checkpoint
             Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_COLSHAPE);
             NAPI.ClientEvent.TriggerClientEvent(driver, "deleteGarbageCheckPoint");
             NAPI.Entity.DeleteEntity(garbageCheckpoint);
 
-            // Limpiamos las variables
+            // Entity data reset
             NAPI.Data.ResetEntityData(driver, EntityData.PLAYER_JOB_PARTNER);
             NAPI.Data.ResetEntityData(partner, EntityData.PLAYER_JOB_PARTNER);
             NAPI.Data.ResetEntityData(driver, EntityData.PLAYER_JOB_COLSHAPE);
@@ -154,19 +148,19 @@ namespace WiredPlayers.garbage
 
             if (!canceled)
             {
-                // Pagamos a los jugadores lo ganado
+                // Pay the earnings to both players
                 int driverMoney = NAPI.Data.GetEntitySharedData(driver, EntityData.PLAYER_MONEY);
                 int partnerMoney = NAPI.Data.GetEntitySharedData(partner, EntityData.PLAYER_MONEY);
                 NAPI.Data.SetEntitySharedData(driver, EntityData.PLAYER_MONEY, driverMoney + Constants.MONEY_GARBAGE_ROUTE);
                 NAPI.Data.SetEntitySharedData(partner, EntityData.PLAYER_MONEY, partnerMoney + Constants.MONEY_GARBAGE_ROUTE);
 
-                // Mandamos el aviso de dinero recibido
+                // Send the message with the earnings
                 String message = String.Format(Messages.INF_GARBAGE_EARNINGS, Constants.MONEY_GARBAGE_ROUTE);
                 NAPI.Chat.SendChatMessageToPlayer(driver, Constants.COLOR_INFO + message);
                 NAPI.Chat.SendChatMessageToPlayer(partner, Constants.COLOR_INFO + message);
             }
 
-            // Sacamos a los ocupantes del vehículo
+            // Remove players from the vehicle
             NAPI.Player.WarpPlayerOutOfVehicle(driver);
             NAPI.Player.WarpPlayerOutOfVehicle(partner);
         }
@@ -196,7 +190,7 @@ namespace WiredPlayers.garbage
                             garbageTimerList.Remove(player.Value);
                         }
 
-                        // Miramos si empieza una ruta o vuelve al camión
+                        // Check whether route starts or he's returning to the truck
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == false)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_PARTNER, player);
@@ -205,11 +199,12 @@ namespace WiredPlayers.garbage
                         }
                         else
                         {
-                            // Continuamos la ruta
+                            // We continue with the previous route
                             Client partner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                             int garbageRoute = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_ROUTE);
                             int checkPoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT);
                             Vector3 garbagePosition = GetGarbageCheckPointPosition(garbageRoute, checkPoint);
+
                             NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", garbagePosition);
                             NAPI.ClientEvent.TriggerClientEvent(partner, "showGarbageCheckPoint", garbagePosition);
                         }
@@ -226,27 +221,28 @@ namespace WiredPlayers.garbage
                             {
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ON_DUTY) == 1)
                                 {
-                                    // Unimos los dos jugadores como compañeros
+                                    // Link both players as partners
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_PARTNER, driver);
                                     NAPI.Data.SetEntityData(driver, EntityData.PLAYER_JOB_PARTNER, player);
 
-                                    // Asignamos la ruta al copiloto
+                                    // Set the route to the passenger
                                     int garbageRoute = NAPI.Data.GetEntityData(driver, EntityData.PLAYER_JOB_ROUTE);
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_ROUTE, garbageRoute);
                                     NAPI.Data.SetEntityData(driver, EntityData.PLAYER_JOB_CHECKPOINT, 0);
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_CHECKPOINT, 0);
 
-                                    // Creamos el primer punto
+                                    // Create the first checkpoint
                                     Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(garbageRoute, 0);
                                     Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(garbageRoute, 1);
                                     Checkpoint garbageCheckpoint = NAPI.Checkpoint.CreateCheckpoint(0, currentGarbagePosition, nextGarbagePosition, 2.5f, new Color(198, 40, 40, 200));
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE, garbageCheckpoint);
-                                    NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", currentGarbagePosition);
-                                    NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
 
-                                    // Añadimos el objeto basura
+                                    // Add garbage bag
                                     GTANetworkAPI.Object trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_GARBAGE_BAG, trashBag);
+
+                                    NAPI.ClientEvent.TriggerClientEvent(driver, "showGarbageCheckPoint", currentGarbagePosition);
+                                    NAPI.ClientEvent.TriggerClientEvent(player, "showGarbageCheckPoint", currentGarbagePosition);
                                 }
                                 else
                                 {
@@ -258,9 +254,9 @@ namespace WiredPlayers.garbage
                         }
                     }
 
-                    // Si no hay nadie conduciendo, echamos al jugador
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WAIT_GARBAGE_DRIVER);
+                    // There's no player driving, kick the passenger
                     NAPI.Player.WarpPlayerOutOfVehicle(player);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WAIT_GARBAGE_DRIVER);
                 }
             }
         }
@@ -278,7 +274,7 @@ namespace WiredPlayers.garbage
                     NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
                     NAPI.ClientEvent.TriggerClientEvent(target, "deleteGarbageCheckPoint");
 
-                    // Creamos el timer para volver a subirse
+                    // Create the timer for driver to get into the vehicle
                     Timer garbageTimer = new Timer(OnGarbageTimer, player, 45000, Timeout.Infinite);
                     garbageTimerList.Add(player.Value, garbageTimer);
                 }
@@ -290,7 +286,7 @@ namespace WiredPlayers.garbage
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_COLSHAPE) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == Constants.JOB_GARBAGE)
             {
-                // Obtenemos el checkpoint de basura
+                // Get garbage checkpoint
                 Checkpoint garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
 
                 if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver && garbageCheckpoint == checkpoint)
@@ -298,7 +294,7 @@ namespace WiredPlayers.garbage
                     NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                     if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_VEHICLE) == vehicle)
                     {
-                        // Finalizar la ruta de basurero
+                        // Finish the route
                         FinishGarbageRoute(player);
                     }
                     else
@@ -309,8 +305,8 @@ namespace WiredPlayers.garbage
             }
         }
 
-        [Command("basurero", Messages.GEN_GARBAGE_JOB_COMMAND)]
-        public void BasuraCommand(Client player, String action)
+        [Command(Commands.COMMAND_GARBAGE, Messages.GEN_GARBAGE_JOB_COMMAND)]
+        public void GarbageCommand(Client player, String action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_GARBAGE)
             {
@@ -324,7 +320,7 @@ namespace WiredPlayers.garbage
             {
                 switch (action.ToLower())
                 {
-                    case "ruta":
+                    case Commands.ARGUMENT_ROUTE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_ROUTE) == true)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Messages.ERR_ALREADY_IN_ROUTE);
@@ -337,21 +333,21 @@ namespace WiredPlayers.garbage
                             switch (garbageRoute)
                             {
                                 case 0:
-                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Se te ha asignado la ruta norte.");
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.GEN_ROUTE_NORTH);
                                     break;
                                 case 1:
-                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Se te ha asignado la ruta sur.");
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.GEN_ROUTE_SOUTH);
                                     break;
                                 case 2:
-                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Se te ha asignado la ruta este.");
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.GEN_ROUTE_EAST);
                                     break;
                                 case 3:
-                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Se te ha asignado la ruta oeste.");
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.GEN_ROUTE_WEST);
                                     break;
                             }
                         }
                         break;
-                    case "recoger":
+                    case Commands.ARGUMENT_PICKUP:
                         if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_GARBAGE_IN_VEHICLE);
@@ -370,7 +366,7 @@ namespace WiredPlayers.garbage
                                     NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl), "anim@move_m@trash", "pickup");
                                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
 
-                                    // Creamos el timer para recoger la basura
+                                    // Make the timer for garbage collection
                                     garbageTimer = new Timer(OnGarbageCollectedTimer, player, 15000, Timeout.Infinite);
                                     garbageTimerList.Add(player.Value, garbageTimer);
                                 }
@@ -385,61 +381,50 @@ namespace WiredPlayers.garbage
                             }
                         }
                         break;
-                    case "cancelar":
+                    case Commands.ARGUMENT_CANCEL:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_PARTNER) == true)
                         {
                             Client partner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                             if (partner != player)
                             {
-                                // Tiene un compañero asignado
                                 GTANetworkAPI.Object trashBag = null;
                                 Checkpoint garbageCheckpoint = null;
 
                                 if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
                                 {
-                                    // Ha cancelado el conductor
+                                    // Driver canceled
                                     trashBag = NAPI.Data.GetEntityData(player, EntityData.PLAYER_GARBAGE_BAG);
                                     garbageCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
-                                }
-                                else
-                                {
-                                    // Ha cancelado el acompañante
-                                    trashBag = NAPI.Data.GetEntityData(partner, EntityData.PLAYER_GARBAGE_BAG);
-                                    garbageCheckpoint = NAPI.Data.GetEntityData(partner, EntityData.PLAYER_JOB_COLSHAPE);
-                                }
-
-                                // Borramos la bolsa de basura
-                                NAPI.Entity.DeleteEntity(trashBag);
-
-                                // Destruímos el check anterior
-                                NAPI.Entity.SetEntityModel(garbageCheckpoint, 4);
-                                NAPI.Entity.SetEntityPosition(garbageCheckpoint, new Vector3(-339.0206f, -1560.117f, 25.23038f));
-
-                                if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
-                                {
-                                    // Ha cancelado el conductor
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ROUTE_FINISHED);
                                     NAPI.ClientEvent.TriggerClientEvent(partner, "deleteGarbageCheckPoint");
                                 }
                                 else
                                 {
-                                    // Ha cancelado el acompañante
+                                    // Passenger canceled
+                                    trashBag = NAPI.Data.GetEntityData(partner, EntityData.PLAYER_GARBAGE_BAG);
+                                    garbageCheckpoint = NAPI.Data.GetEntityData(partner, EntityData.PLAYER_JOB_COLSHAPE);
                                     trashBag = NAPI.Data.GetEntityData(partner, EntityData.PLAYER_GARBAGE_BAG);
                                     NAPI.ClientEvent.TriggerClientEvent(player, "deleteGarbageCheckPoint");
                                 }
+                                
+                                NAPI.Entity.DeleteEntity(trashBag);
+
+                                // Create finish checkpoint
+                                NAPI.Entity.SetEntityModel(garbageCheckpoint, 4);
+                                NAPI.Entity.SetEntityPosition(garbageCheckpoint, new Vector3(-339.0206f, -1560.117f, 25.23038f));
                             }
                             else
                             {
-                                // No tiene compañero, enviamos el mensaje
+                                // Player doesn't have any partner
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ROUTE_CANCELED);
                             }
 
-                            // Eliminamos la búsqueda de compañero
+                            // Remove player from partner search
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                         }
                         else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_ROUTE) == true)
                         {
-                            // Cancelamos la ruta
+                            // Cancel the route
                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_GARBAGE_ROUTE_CANCELED);
                         }
