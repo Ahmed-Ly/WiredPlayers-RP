@@ -72,16 +72,17 @@ namespace WiredPlayers.house
         public static String GetHouseLabelText(HouseModel house)
         {
             String label = String.Empty;
+
             switch (house.status)
             {
                 case Constants.HOUSE_STATE_NONE:
-                    label = house.name + "\n" + "Estado: Ocupada";
+                    label = house.name + "\n" + Messages.GEN_STATE_OCCUPIED;
                     break;
                 case Constants.HOUSE_STATE_RENTABLE:
-                    label = house.name + "\n" + "Estado: En alquiler\n" + house.rental + "$";
+                    label = house.name + "\n" + Messages.GEN_STATE_RENT + "\n" + house.rental + "$";
                     break;
                 case Constants.HOUSE_STATE_BUYABLE:
-                    label = house.name + "\n" + "Estado: En venta\n" + house.price + "$";
+                    label = house.name + "\n" + Messages.GEN_STATE_SALE + "\n" + house.price + "$";
                     break;
             }
             return label;
@@ -127,7 +128,7 @@ namespace WiredPlayers.house
             {
                 List<String> clothesNames = Globals.GetClothesNames(clothesList);
 
-                // Mostramos la lista de prendas
+                // Show player's clothes
                 NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerClothes", NAPI.Util.ToJson(clothesList), NAPI.Util.ToJson(clothesNames));
             }
             else
@@ -141,7 +142,7 @@ namespace WiredPlayers.house
         {
             int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-            // Quitamos la ropa que tenía puesta y ponemos la nueva
+            // Replace player clothes for the new ones
             foreach (ClothesModel clothes in Globals.clothesList)
             {
                 if (clothes.id == clothesId)
@@ -156,21 +157,21 @@ namespace WiredPlayers.house
                         NAPI.Player.SetPlayerAccessory(player, clothes.slot, clothes.drawable, clothes.texture);
                     }
 
-                    // Actualizamos la ropa en la base de datos
+                    // Update dressed clothes into database
                     Database.UpdateClothes(clothes);
                 }
                 else if (clothes.id != clothesId && clothes.dressed)
                 {
                     clothes.dressed = false;
 
-                    // Actualizamos la ropa en la base de datos
+                    // Update dressed clothes into database
                     Database.UpdateClothes(clothes);
                 }
             }
         }
 
-        [Command("alquilable", Messages.GEN_RENTABLE_COMMAND)]
-        public void AlquilableCommand(Client player, int amount = 0)
+        [Command(Commands.COMMAND_RENTABLE, Messages.GEN_RENTABLE_COMMAND)]
+        public void RentableCommand(Client player, int amount = 0)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == 0)
             {
@@ -191,11 +192,11 @@ namespace WiredPlayers.house
                     house.tenants = 2;
                     Database.UpdateHouse(house);
 
-                    // Actualizamos el label de la casa
+                    // Update house's textlabel
                     String labelText = GetHouseLabelText(house);
                     NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
 
-                    // Mandamos el mensaje al jugador
+                    // Message sent to the player
                     String message = String.Format(Messages.INF_HOUSE_STATE_RENT, amount);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                 }
@@ -204,11 +205,11 @@ namespace WiredPlayers.house
                     house.status = Constants.HOUSE_STATE_NONE;
                     Database.UpdateHouse(house);
 
-                    // Actualizamos el label de la casa
+                    // Update house's textlabel
                     String labelText = GetHouseLabelText(house);
                     NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
 
-                    // Mandamos el mensaje al jugador
+                    // Message sent to the player
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOUSE_RENT_CANCEL);
 
                     Database.KickTenantsOut(house.id);
@@ -222,10 +223,9 @@ namespace WiredPlayers.house
             }
         }
 
-        [Command("alquilar")]
-        public void AlquilarCommand(Client player)
+        [Command(Commands.COMMAND_RENT)]
+        public void RentCommand(Client player)
         {
-            // Recorremos la lista de casas
             foreach (HouseModel house in houseList)
             {
                 if (player.Position.DistanceTo(house.position) <= 1.5 && player.Dimension == house.dimension)
@@ -255,14 +255,14 @@ namespace WiredPlayers.house
                                 NAPI.TextLabel.SetTextLabelText(house.houseLabel, labelText);
                             }
 
-                            // Actualizamos los inquilinos
+                            // Update house's tenants
                             Database.UpdateHouse(house);
                         }
                         break;
                     }
                     else if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_RENT_HOUSE) == house.id)
                     {
-                        // desalquilar.
+                        // Remove player's rental
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_RENT_HOUSE, 0);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + String.Format(Messages.INF_HOUSE_RENT_STOP, house.name));
                         house.tenants++;
@@ -276,8 +276,8 @@ namespace WiredPlayers.house
             }
         }
 
-        [Command("armario")]
-        public void ArmarioCommand(Client player)
+        [Command(Commands.COMMAND_WARDROBE)]
+        public void WardrobeCommand(Client player)
         {
             int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
             if (houseId > 0)

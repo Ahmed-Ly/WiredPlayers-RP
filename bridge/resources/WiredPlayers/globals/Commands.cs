@@ -126,6 +126,10 @@ namespace WiredPlayers.globals
         public const String COMMAND_FISH = "fish";
         public const String COMMAND_GARBAGE = "garbage";
         public const String COMMAND_SERVICE = "service";
+        public const String COMMAND_FURNITURE = "furniture";
+        public const String COMMAND_RENTABLE = "rentable";
+        public const String COMMAND_RENT = "rent";
+        public const String COMMAND_WARDROBE = "wardrobe";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -178,5 +182,7 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_PICKUP = "pickup";
         public const String ARGUMENT_ORAL = "oral";
         public const String ARGUMENT_SEX = "sex";
+        public const String ARGUMENT_PLACE = "place";
+        public const String ARGUMENT_MOVE = "move";
     }
 }

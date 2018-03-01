@@ -47,19 +47,20 @@ namespace WiredPlayers.furniture
             }
             return furniture;
         }
-
-        [Command("muebles")]
-        public void MueblesCommand(Client player, String action)
+        
+        [Command(Commands.COMMAND_FURNITURE, Messages.GEN_FURNITURE_COMMAND)]
+        public void FurnitureCommand(Client player, String action)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == true)
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
                 HouseModel house = House.GetHouseById(houseId);
+
                 if (house != null && house.owner == player.Name)
                 {
                     switch (action.ToLower())
                     {
-                        case "colocar":
+                        case Commands.ARGUMENT_PLACE:
                             FurnitureModel furniture = new FurnitureModel();
                             furniture.hash = 1251197000;
                             furniture.house = Convert.ToUInt32(houseId);
@@ -68,12 +69,12 @@ namespace WiredPlayers.furniture
                             furniture.handle = NAPI.Object.CreateObject(furniture.hash, furniture.position, furniture.rotation, (byte)furniture.house);
                             furnitureList.Add(furniture);
                             break;
-                        case "mover":
+                        case Commands.ARGUMENT_MOVE:
                             String furnitureJson = NAPI.Util.ToJson(GetFurnitureInHouse(houseId));
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MOVING_FURNITURE, true);
                             NAPI.ClientEvent.TriggerClientEvent(player, "moveFurniture", furnitureJson);
                             break;
-                        case "quitar":
+                        case Commands.ARGUMENT_REMOVE:
                             break;
                         default:
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FURNITURE_COMMAND);

@@ -23,6 +23,9 @@ namespace WiredPlayers.globals
         public const String GEN_PLACE = "place: ";
         public const String GEN_ATTENDED_BY = "status: attended by ";
         public const String GEN_UNATTENDED = "status: unattended";
+        public const String GEN_STATE_OCCUPIED = "House state: Occupied";
+        public const String GEN_STATE_RENT = "House state: For rent";
+        public const String GEN_STATE_SALE = "House state: For sale";
         public const String GEN_CHAT_SAY = " says: ";
         public const String GEN_CHAT_YELL = " yells: ";
         public const String GEN_CHAT_WHISPER = " whispers: ";
