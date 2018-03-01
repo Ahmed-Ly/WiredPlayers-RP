@@ -456,6 +456,10 @@ namespace WiredPlayers.globals
         public const String INF_TAXI_LICENSE_UP_TO_DATE = "Taxi: Vigente.";
         public const String INF_BLOOD_EXTRACTED = "Has sacado sangre a {0}.";
         public const String INF_BLOOD_GIVEN = "El doctor {0} te ha sacado sangre.";
+        public const String INF_ORAL_SERVICE_OFFER = "Has ofrecido un servicio oral a {0} a cambio de {1}$, espera a que acepte.";
+        public const String INF_ORAL_SERVICE_RECEIVE = "{0} te ha ofrecido un servicio oral a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
+        public const String INF_SEX_SERVICE_OFFER = "Has ofrecido sexo a {0} a cambio de {1}$, espera a que acepte.";
+        public const String INF_SEX_SERVICE_RECEIVE = "{0} te ha ofrecido sexo a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";

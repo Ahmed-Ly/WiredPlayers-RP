@@ -24,35 +24,32 @@ namespace WiredPlayers.hooker
             Client player = (Client)playerObject;
             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
 
-            // Paramos las animaciones
+            // We stop both animations
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Player.StopPlayerAnimation(target);
 
-            // Restablecemos la salud del cliente
+            // Health the player
             NAPI.Player.SetPlayerHealth(player, 100);
-
-            // Reseteamos las variables
+            
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
             NAPI.Data.ResetEntityData(player, EntityData.HOOKER_TYPE_SERVICE);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
             NAPI.Data.ResetEntityData(target, EntityData.PLAYER_ALREADY_FUCKING);
-
-            // Borramos el timer de la lista
+            
             if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
             {
                 sexTimer.Dispose();
                 sexTimerList.Remove(player.Value);
             }
 
-            // Enviamos el mensaje
+            // Send finish message to both players
             NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_CLIENT_SATISFIED);
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_SERVICE_FINISHED);
         }
 
-        [Command("servicio", Messages.GEN_HOOKER_SERVICE_COMMAND)]
-        public void ServicioCommand(Client player, String service, String targetString, int price)
+        [Command(Commands.COMMAND_SERVICE, Messages.GEN_HOOKER_SERVICE_COMMAND)]
+        public void ServiceCommand(Client player, String service, String targetString, int price)
         {
-            NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_HOOKER)
             {
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_HOOKER);
@@ -67,6 +64,7 @@ namespace WiredPlayers.hooker
             }
             else
             {
+                NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
                 Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 if (NAPI.Player.GetPlayerVehicleSeat(target) != (int)VehicleSeat.Driver)
@@ -75,21 +73,30 @@ namespace WiredPlayers.hooker
                 }
                 else
                 {
+                    String playerMessage = String.Empty;
+                    String targetMessage = String.Empty;
+
                     switch (service.ToLower())
                     {
-                        case "oral":
+                        case Commands.ARGUMENT_ORAL:
                             NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
                             NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, price);
                             NAPI.Data.SetEntityData(target, EntityData.HOOKER_TYPE_SERVICE, Constants.HOOKER_SERVICE_BASIC);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Has ofrecido un servicio oral a un cliente a cambio de " + price + "$, el tendrá que aceptar.");
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Una prostituta te ha ofrecido un servicio oral a cambio de " + price + "$. Escribe /aceptar servicio o /cancelar servicio.");
+
+                            playerMessage = String.Format(Messages.INF_ORAL_SERVICE_OFFER, target.Name, price);
+                            targetMessage = String.Format(Messages.INF_ORAL_SERVICE_RECEIVE, player.Name, price);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                             break;
-                        case "sexo":
+                        case Commands.ARGUMENT_SEX:
                             NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
                             NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, price);
                             NAPI.Data.SetEntityData(target, EntityData.HOOKER_TYPE_SERVICE, Constants.HOOKER_SERVICE_FULL);
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Has ofrecido sexo completo a un cliente a cambio de " + price + "$, el tendrá que aceptar.");
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Una prostituta te ha ofrecido sexo completo a cambio de " + price + "$. Escribe /aceptar servicio o /cancelar servicio.");
+
+                            playerMessage = String.Format(Messages.INF_SEX_SERVICE_OFFER, target.Name, price);
+                            targetMessage = String.Format(Messages.INF_SEX_SERVICE_RECEIVE, player.Name, price);
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                             break;
                         default:
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.GEN_HOOKER_SERVICE_COMMAND);

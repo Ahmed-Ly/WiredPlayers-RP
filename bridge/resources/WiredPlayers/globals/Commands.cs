@@ -125,6 +125,7 @@ namespace WiredPlayers.globals
         public const String COMMAND_ORDERS = "orders";
         public const String COMMAND_FISH = "fish";
         public const String COMMAND_GARBAGE = "garbage";
+        public const String COMMAND_SERVICE = "service";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -175,5 +176,7 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_LEAVE = "leave";
         public const String ARGUMENT_ROUTE = "route";
         public const String ARGUMENT_PICKUP = "pickup";
+        public const String ARGUMENT_ORAL = "oral";
+        public const String ARGUMENT_SEX = "sex";
     }
 }
