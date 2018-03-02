@@ -130,6 +130,23 @@ namespace WiredPlayers.globals
         public const String COMMAND_RENTABLE = "rentable";
         public const String COMMAND_RENT = "rent";
         public const String COMMAND_WARDROBE = "wardrobe";
+        public const String COMMAND_REPAIR = "repair";
+        public const String COMMAND_REPAINT = "repaint";
+        public const String COMMAND_TUNNING = "tunning";
+        public const String COMMAND_PARK = "park";
+        public const String COMMAND_UNPARK = "unpark";
+        public const String COMMAND_CHECK = "check";
+        public const String COMMAND_FRISK = "frisk";
+        public const String COMMAND_INCRIMINATE = "incriminate";
+        public const String COMMAND_FINE = "fine";
+        public const String COMMAND_HANDCUFF = "handcuff";
+        public const String COMMAND_EQUIPMENT = "equipment";
+        public const String COMMAND_CONTROL = "control";
+        public const String COMMAND_PUT = "put";
+        public const String COMMAND_REMOVE = "remove";
+        public const String COMMAND_REINFORCES = "reinforces";
+        public const String COMMAND_LICENSE = "license";
+        public const String COMMAND_BREATHALYZER = "breathalyzer";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -184,5 +201,25 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_SEX = "sex";
         public const String ARGUMENT_PLACE = "place";
         public const String ARGUMENT_MOVE = "move";
+        public const String ARGUMENT_CHASSIS = "chassis";
+        public const String ARGUMENT_DOORS = "doors";
+        public const String ARGUMENT_TYRES = "tyres";
+        public const String ARGUMENT_WINDOWS = "windows";
+        public const String ARGUMENT_BASIC = "basic";
+        public const String ARGUMENT_AMMUNITION = "ammunition";
+        public const String ARGUMENT_WEAPON = "weapon";
+        public const String ARGUMENT_PISTOL = "pistol";
+        public const String ARGUMENT_MACHINE_GUN = "machinegun";
+        public const String ARGUMENT_ASSAULT = "assault";
+        public const String ARGUMENT_SHOTGUN = "shotgun";
+        public const String ARGUMENT_SNIPER = "sniper";
+        public const String ARGUMENT_LOAD = "load";
+        public const String ARGUMENT_SAVE = "save";
+        public const String ARGUMENT_RENAME = "rename";
+        public const String ARGUMENT_CLEAR = "clear";
+        public const String ARGUMENT_CONE = "cone";
+        public const String ARGUMENT_BEACON = "beacon";
+        public const String ARGUMENT_BARRIER = "barrier";
+        public const String ARGUMENT_SPIKES = "spikes";
     }
 }

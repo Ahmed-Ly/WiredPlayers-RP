@@ -5,6 +5,14 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_VEHICLE_CHECK_TITLE = "_________Información del vehículo con ID {0}_________";
+        public const String GEN_VEHICLE_MODEL = "Modelo: ";
+        public const String GEN_VEHICLE_PLATE = "Matrícula: ";
+        public const String GEN_VEHICLE_OWNER = "Propietario: ";
+        public const String GEN_PUBLIC_PARKING = "Parking público";
+        public const String GEN_GARAGE = "Garaje";
+        public const String GEN_SCRAPYARD = "Desguace";
+        public const String GEN_POLICE_DEPOT = "Depósito policial";
         public const String GEN_ROUTE_NORTH = "Se te ha asignado la ruta norte.";
         public const String GEN_ROUTE_SOUTH = "Se te ha asignado la ruta sur.";
         public const String GEN_ROUTE_EAST = "Se te ha asignado la ruta este.";
@@ -190,6 +198,8 @@ namespace WiredPlayers.globals
         public const String GEN_WEATHER_COMMAND = "USO: /clima [0-12]";
         public const String GEN_HEALTH_COMMAND = "USO: /vida [Id. jugador/Nombre jugador] [Cantidad]";
         public const String GEN_INFO_COMMAND = "USO: /info [Id. jugador/Nombre jugador]";
+        public const String GEN_FRISK_COMMAND = "USO: /cachear [Id. jugador/Nombre jugador]";
+        public const String GEN_INCRIMINATE_COMMAND = "USO: /inculpar [Id. jugador/Nombre jugador]";
 
         // Mensajes de administración
         public const String ADM_GOD_MODE_ON = "Has activado el modo dios.";
@@ -463,6 +473,8 @@ namespace WiredPlayers.globals
         public const String INF_ORAL_SERVICE_RECEIVE = "{0} te ha ofrecido un servicio oral a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
         public const String INF_SEX_SERVICE_OFFER = "Has ofrecido sexo a {0} a cambio de {1}$, espera a que acepte.";
         public const String INF_SEX_SERVICE_RECEIVE = "{0} te ha ofrecido sexo a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
+        public const String INF_CHECK_VEHICLE_PLATE = "{0} comprueba la matrícula del vehículo {1}.";
+        public const String INF_PLAYER_FRISK = "{0} realiza un cacheo a {1}.";
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";

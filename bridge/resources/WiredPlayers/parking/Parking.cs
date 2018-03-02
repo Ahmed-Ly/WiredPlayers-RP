@@ -58,16 +58,16 @@ namespace WiredPlayers.parking
             switch (type)
             {
                 case Constants.PARKING_TYPE_PUBLIC:
-                    labelText = "Parking público";
+                    labelText = Messages.GEN_PUBLIC_PARKING;
                     break;
                 case Constants.PARKING_TYPE_GARAGE:
-                    labelText = "Garaje";
+                    labelText = Messages.GEN_GARAGE;
                     break;
                 case Constants.PARKING_TYPE_SCRAPYARD:
-                    labelText = "Desguace";
+                    labelText = Messages.GEN_SCRAPYARD;
                     break;
                 case Constants.PARKING_TYPE_DEPOSIT:
-                    labelText = "Depósito policial";
+                    labelText = Messages.GEN_POLICE_DEPOT;
                     break;
             }
             return labelText;
@@ -103,14 +103,13 @@ namespace WiredPlayers.parking
 
         private void PlayerParkVehicle(Client player, ParkingModel parking)
         {
-            // Obtenemos el vehículo
             NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
 
-            // Obtenemos los colores del vehículo
+            // Get vehicle's colors
             Color primaryColor = NAPI.Vehicle.GetVehicleCustomPrimaryColor(vehicle);
             Color secondaryColor = NAPI.Vehicle.GetVehicleCustomSecondaryColor(vehicle);
 
-            // Obtenemos los datos del vehículo
+            // Get vehicle data
             VehicleModel vehicleModel = new VehicleModel();
             vehicleModel.rotation = NAPI.Entity.GetEntityRotation(vehicle);
             vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
@@ -126,28 +125,26 @@ namespace WiredPlayers.parking
             vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
             vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
 
-            // Actualizamos los valores del parking
+            // Update parking values
             vehicleModel.position = parking.position;
             vehicleModel.dimension = Convert.ToUInt32(parking.id);
             vehicleModel.parking = parking.id;
             vehicleModel.parked = 0;
 
-            // Añadimos el vehículo al parking
+            // Link vehicle to the parking
             ParkedCarModel parkedCarModel = new ParkedCarModel();
             parkedCarModel.vehicle = vehicleModel;
             parkedCarModel.parkingId = parking.id;
             parkedCars.Add(parkedCarModel);
 
-            // Guardamos el vehículo
-            Database.SaveVehicle(vehicleModel);
-
-            // Eliminamos el vehículo
+            // Save the vehicle and delete it from the game
             NAPI.Player.WarpPlayerOutOfVehicle(player);
             NAPI.Entity.DeleteEntity(vehicle);
+            Database.SaveVehicle(vehicleModel);
         }
 
-        [Command("aparcar")]
-        public void AparcarCommand(Client player)
+        [Command(Commands.COMMAND_PARK)]
+        public void ParkCommand(Client player)
         {
             if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
             {
@@ -212,21 +209,20 @@ namespace WiredPlayers.parking
                         }
                     }
 
-                    // Mandamos el aviso de que no hay ningún parking cerca
+                    // There's no parking near
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_PARKING_NEAR);
                 }
             }
         }
 
-        [Command("desaparcar", Messages.GEN_UNPARK_COMMAND)]
-        public void DesaparcarCommand(Client player, int vehicleId)
+        [Command(Commands.COMMAND_UNPARK, Messages.GEN_UNPARK_COMMAND)]
+        public void UnparkCommand(Client player, int vehicleId)
         {
-            // Buscamos el vehículo
             VehicleModel vehicle = Vehicles.GetParkedVehicleById(vehicleId);
 
             if (vehicle == null)
             {
-                // No existe ningún vehículo con ese identificador
+                // There's no vehicle with that identifier
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_EXISTS);
             }
             else if (Vehicles.HasPlayerVehicleKeys(player, vehicle) == false)
@@ -239,13 +235,11 @@ namespace WiredPlayers.parking
                 {
                     if (player.Position.DistanceTo(parking.position) < 2.5f)
                     {
-                        // Miramos si el vehículo está en el parking
+                        // Check whether the vehicle is in this parking
                         if (parking.id == vehicle.parking)
                         {
-                            // Obtenemos el dinero del jugador
                             int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
-
-                            // Miramos el tipo de parking
+                            
                             switch (parking.type)
                             {
                                 case Constants.PARKING_TYPE_PUBLIC:
@@ -253,13 +247,11 @@ namespace WiredPlayers.parking
                                 case Constants.PARKING_TYPE_SCRAPYARD:
                                     break;
                                 case Constants.PARKING_TYPE_DEPOSIT:
-                                    // Cobramos el dinero por sacarlo del depósito del LSPD
+                                    // Remove player's money
                                     if (playerMoney >= Constants.PRICE_PARKING_DEPOSIT)
                                     {
-                                        // Restamos el dinero del jugador
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - Constants.PRICE_PARKING_DEPOSIT);
-
-                                        // Enviamos el mensaje al jugador
+                                        
                                         String message = String.Format(Messages.INF_UNPARK_MONEY, Constants.PRICE_PARKING_DEPOSIT);
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                                     }
@@ -272,16 +264,15 @@ namespace WiredPlayers.parking
                                     break;
                             }
 
-                            // Obtenemos el modelo de vehículo aparcado
+                            // Get parked vehicle model
                             ParkedCarModel parkedCar = GetParkedVehicle(vehicleId);
 
-                            // Recreamos el vehículo
+                            // Recreate the vehicle
                             Vehicle newVehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(vehicle.model), parking.position, vehicle.rotation.Z, new Color(0, 0, 0), new Color(0, 0, 0));
                             NAPI.Vehicle.SetVehicleNumberPlate(newVehicle, vehicle.plate == String.Empty ? "LS " + (1000 + vehicle.id) : vehicle.plate);
                             NAPI.Vehicle.SetVehicleEngineStatus(newVehicle, false);
                             NAPI.Vehicle.SetVehicleLocked(newVehicle, false);
-
-                            // Añadimos el color
+                            
                             if (vehicle.colorType == Constants.VEHICLE_COLOR_TYPE_PREDEFINED)
                             {
                                 NAPI.Vehicle.SetVehiclePrimaryColor(newVehicle, Int32.Parse(vehicle.firstColor));
@@ -311,27 +302,27 @@ namespace WiredPlayers.parking
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_GAS, vehicle.gas);
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_KMS, vehicle.kms);
 
-                            // Actualizamos los valores del parking
+                            // Update parking values
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_DIMENSION, 0);
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_PARKING, 0);
                             NAPI.Data.SetEntityData(newVehicle, EntityData.VEHICLE_PARKED, 0);
 
-                            // Añadimos el tunning
+                            // Add tunning
                             Mechanic.AddTunningToVehicle(newVehicle);
 
-                            // Eliminamos el vehículo del parking
+                            // Unlink from the parking
                             parkedCars.Remove(parkedCar);
 
                             return;
                         }
 
-                        // Avisamos de que el vehículo no está aparcado
+                        // The vehicle is not in this parking
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_NOT_THIS_PARKING);
                         return;
                     }
                 }
 
-                // Avisamos de que no está en ningún parking
+                // Player's not in any parking
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_PARKING_NEAR);
             }
         }

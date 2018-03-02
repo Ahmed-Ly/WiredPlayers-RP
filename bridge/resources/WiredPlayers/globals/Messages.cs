@@ -5,6 +5,14 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_VEHICLE_CHECK_TITLE = "_________Information about vehicle with ID {0}_________";
+        public const String GEN_VEHICLE_MODEL = "Model: ";
+        public const String GEN_VEHICLE_PLATE = "Plate: ";
+        public const String GEN_VEHICLE_OWNER = "Owner: "; 
+        public const String GEN_PUBLIC_PARKING = "Public parking";
+        public const String GEN_GARAGE = "Garage";
+        public const String GEN_SCRAPYARD = "Scrapyard";
+        public const String GEN_POLICE_DEPOT = "Police depot";
         public const String GEN_ROUTE_NORTH = "You've been assigned north route.";
         public const String GEN_ROUTE_SOUTH = "You've been assigned south route.";
         public const String GEN_ROUTE_EAST = "You've been assigned east route.";
@@ -111,7 +119,7 @@ namespace WiredPlayers.globals
         public const String GEN_HEAL_COMMAND = "USAGE: /heal [Player id./Player name]";
         public const String GEN_REANIMATE_COMMAND = "USAGE: /reanimate [Player id./Player name]";
         public const String GEN_EXTRACT_COMMAND = "USAGE: /extract [Player id./Player name]";
-        public const String GEN_MECHANIC_REPAIR_COMMAND = "USAGE: /repair [Vehicle id.] [Chassis|Doors|Tyres|Glasses|Engine] [Price]";
+        public const String GEN_MECHANIC_REPAIR_COMMAND = "USAGE: /repair [Vehicle id.] [Chassis|Doors|Tyres|Windows|Engine] [Price]";
         public const String GEN_MECHANIC_REPAINT_COMMAND = "USAGE: /repaint [Vehicle id.]";
         public const String GEN_HOOKER_SERVICE_COMMAND = "USAGE: /service [Sex|Oral] [Player id./Player name] [Price]";
         public const String GEN_SAY_COMMAND = "USAGE: /say [Message]";
@@ -134,7 +142,7 @@ namespace WiredPlayers.globals
         public const String GEN_HOUSE_MODIFY_STRING_COMMAND = "USAGE: /house modify [Owner|Name] [Text]";
         public const String GEN_HOUSE_GOTO_COMMAND = "USAGE: /house tp [House id.]";
         public const String GEN_HOUSE_INFO_COMMAND = "USAGE: /house info [(Opt.) House id.]";
-        public const String GEN_EQUIPMENT_COMMAND = "USAGE: /equipment [Basic|Ammunition|Weapon] [Pistol|Asault|Machinegun|Sniper|Shotgun]";
+        public const String GEN_EQUIPMENT_COMMAND = "USAGE: /equipment [Basic|Ammunition|Weapon] [Pistol|Assault|Machinegun|Sniper|Shotgun]";
         public const String GEN_EQUIPMENT_AMMO_COMMAND = "USAGE: /equipment ammunition";
         public const String GEN_EQUIPMENT_WEAP_COMMAND = "USAGE: /equipment weapon [Pistol|Asault|Machinegun|Sniper|Shotgun]";
         public const String GEN_HANDCUFF_COMMAND = "USAGE: /handcuff [Player id./Player name]";
@@ -180,16 +188,18 @@ namespace WiredPlayers.globals
         public const String GEN_BAN_COMMAND = "USAGE: /ban [Player id./Player name] [Reason]";
         public const String GEN_KICK_COMMAND = "USAGE: /kick [Player id./Player name] [Reason]";
         public const String GEN_JAIL_COMMAND = "USAGE: /jail [Player id./Player name] [Minutes] [Reason]";
-        public const String GEN_LICENSE_COMMAND = "USAGE: /license [Give|Remove] [Weapon|Turism|Motorcycle] [Player id./Player name]";
+        public const String GEN_LICENSE_COMMAND = "USAGE: /license [Give|Remove] [Weapon|Car|Motorcycle] [Player id./Player name]";
         public const String GEN_GUN_COMMAND = "USAGE: /gun [Player id./Player name] [Weapon] [Bullets]";
         public const String GEN_COMMAND_PURCHASE = "USAGE: /purchase [Amount]";
         public const String GEN_SKIN_COMMAND = "USAGE: /skin [Ped model name]";
-        public const String GEN_ALCOHOLIMETER_COMMAND = "USAGE: /breathalyser [Player id./Player name]";
+        public const String GEN_ALCOHOLIMETER_COMMAND = "USAGE: /breathalyzer [Player id./Player name]";
         public const String GEN_GIVE_COMMAND = "USAGE: /give [Player id./Player name]";
         public const String GEN_POINTS_COMMAND = "USAGE: /points [Give|Remove|Set] [Player id./Player name] [Amount]";
         public const String GEN_WEATHER_COMMAND = "USAGE: /weather [0-12]";
         public const String GEN_HEALTH_COMMAND = "USAGE: /health [Player id./Player name] [Amount]";
         public const String GEN_INFO_COMMAND = "USAGE: /info [Player id./Player name]";
+        public const String GEN_FRISK_COMMAND = "USAGE: /frisk [Player id./Player name]";
+        public const String GEN_INCRIMINATE_COMMAND = "USAGE: /incriminate [Player id./Player name]";
 
         // Admin messages
         public const String ADM_GOD_MODE_ON = "You're now in God mode.";
@@ -463,6 +473,8 @@ namespace WiredPlayers.globals
         public const String INF_ORAL_SERVICE_RECEIVE = "{0} offered you oral sex for {1}$, type /accept service to start with it.";
         public const String INF_SEX_SERVICE_OFFER = "You offered {0} sex for {1}$, wait for him to accept.";
         public const String INF_SEX_SERVICE_RECEIVE = "{0} offered you sex for {1}$, type /accept service to start with it.";
+        public const String INF_CHECK_VEHICLE_PLATE = "{0} checks the plate of the {1}.";
+        public const String INF_PLAYER_FRISK = "{0} frisks {1}.";
 
         // Success messages
         public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";
