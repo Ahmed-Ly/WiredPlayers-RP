@@ -20,7 +20,6 @@ namespace WiredPlayers.thief
         {
             if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
             {
-                // Eliminamos el timer
                 robberyTimer.Dispose();
                 robberyTimerList.Remove(player.Value);
             }
@@ -35,16 +34,13 @@ namespace WiredPlayers.thief
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_LOCKPICKING);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
-
-            // Borramos el timer de la lista
+            
             if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
             {
-                // Eliminamos el timer
                 robberyTimer.Dispose();
                 robberyTimerList.Remove(player.Value);
             }
-
-            // Mandamos el mensaje al jugador
+            
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_LOCKPICKED);
         }
 
@@ -57,11 +53,9 @@ namespace WiredPlayers.thief
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_HOTWIRING);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
-
-            // Borramos el timer de la lista
+            
             if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
             {
-                // Eliminamos el timer
                 robberyTimer.Dispose();
                 robberyTimerList.Remove(player.Value);
             }
@@ -74,8 +68,7 @@ namespace WiredPlayers.thief
                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_EMERGENCY_WITH_WARN, player.Position);
                 }
             }
-
-            // Mandamos el mensaje al jugador
+            
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_VEH_HOTWIREED);
         }
 
@@ -87,7 +80,7 @@ namespace WiredPlayers.thief
             decimal stolenItemsDecimal = timeElapsed / Constants.ITEMS_ROBBED_PER_TIME;
             int totalStolenItems = (int)Math.Round(stolenItemsDecimal);
 
-            // Comprobamos si tiene objetos robados
+            // Check if the player has stolen items
             ItemModel stolenItemModel = Globals.GetPlayerItemModelFromHash(playerSqlId, Constants.ITEM_HASH_STOLEN_OBJECTS);
 
             if (stolenItemModel == null)
@@ -109,16 +102,14 @@ namespace WiredPlayers.thief
                 Database.UpdateItem(stolenItemModel);
             }
 
-            // Devolvemos el estado original
+            // Allow player movement
             NAPI.Player.FreezePlayer(player, false);
             NAPI.Player.StopPlayerAnimation(player);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ANIMATION);
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ROBBERY_START);
-
-            // Borramos el timer de la lista
+            
             if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
             {
-                // Eliminamos el timer
                 robberyTimer.Dispose();
                 robberyTimerList.Remove(player.Value);
             }
@@ -127,11 +118,11 @@ namespace WiredPlayers.thief
             String message = String.Format(Messages.INF_PLAYER_ROBBED, totalStolenItems);
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
-            // Añadimos uno al contador de robos
+            // Check if the player commited the maximum thefts allowed
             int totalThefts = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_DELIVER);
             if (Constants.MAX_THEFTS_IN_ROW == totalThefts)
             {
-                // Aplicamos un cooldown de robo al jugador
+                // Apply a cooldown to the player
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_DELIVER, 0);
                 NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, 60);
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_ROB_PRESSURE);
@@ -144,12 +135,11 @@ namespace WiredPlayers.thief
 
         private void GeneratePoliceRobberyWarning(Client player)
         {
-            // Creamos las variables para dar el aviso
             Vector3 robberyPosition = null;
             String robberyPlace = String.Empty;
             String robberyHour = DateTime.Now.ToString("h:mm:ss tt");
 
-            // Miramos el lugar donde ha muerto
+            // Check if he robbed into a house or business
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
             {
                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
@@ -169,14 +159,12 @@ namespace WiredPlayers.thief
                 robberyPosition = NAPI.Entity.GetEntityPosition(player);
             }
 
-            // Creamos el aviso y lo añadimos a la lista
+            // Create the police report
             FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_POLICE, player.Value, robberyPlace, robberyPosition, -1, robberyHour);
             Faction.factionWarningList.Add(factionWarning);
-
-            // Creamos el mensaje de aviso
+            
             String warnMessage = String.Format(Messages.INF_EMERGENCY_WARNING, Faction.factionWarningList.Count - 1);
-
-            // Avisamos a los miembros de la policía conectados
+            
             foreach (Client target in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 1)
@@ -191,8 +179,8 @@ namespace WiredPlayers.thief
         {
             foreach (Vector3 pawnShop in Constants.PAWN_SHOP)
             {
-                // Creación de la tienda de empeños
-                NAPI.TextLabel.CreateTextLabel("Tienda de empeños", pawnShop, 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
+                // Create pawn shops
+                NAPI.TextLabel.CreateTextLabel(Messages.GEN_PAWN_SHOP, pawnShop, 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
             }
         }
 
@@ -203,19 +191,16 @@ namespace WiredPlayers.thief
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_HOTWIRING) == true)
                 {
-                    // Reseteamos la animación y el puente
+                    // Remove player's hotwire
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_HOTWIRING);
                     NAPI.Player.StopPlayerAnimation(player);
-
-                    // Borramos el timer de la lista
+                    
                     if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
                     {
-                        // Eliminamos el timer
                         robberyTimer.Dispose();
                         robberyTimerList.Remove(player.Value);
                     }
-
-                    // Mandamos el mensaje al jugador
+                    
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_STOPPED_HOTWIRE);
                 }
                 else if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ROBBERY_START) == true)
@@ -225,8 +210,8 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command("forzar")]
-        public void ForzarCommand(Client player)
+        [Command(Commands.COMMAND_FORCE)]
+        public void ForceCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -259,14 +244,14 @@ namespace WiredPlayers.thief
                     }
                     else
                     {
-                        // Generamos el aviso a la policía
+                        // Generate police report
                         GeneratePoliceRobberyWarning(player);
 
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_LOCKPICKING, vehicle);
                         NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "missheistfbisetup1", "hassle_intro_loop_f");
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
 
-                        // Creamos el timer de forzado
+                        // Timer to finish forcing the door
                         Timer robberyTimer = new Timer(OnLockpickTimer, player, 10000, Timeout.Infinite);
                         robberyTimerList.Add(player.Value, robberyTimer);
 
@@ -275,8 +260,8 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command("robar")]
-        public void RobarCommand(Client player)
+        [Command(Commands.COMMAND_STEAL)]
+        public void StealCommand(Client player)
         {
             if (player.Position.DistanceTo(new Vector3(-286.7586f, -849.3693f, 31.74337f)) > 1150.0f)
             {
@@ -312,17 +297,17 @@ namespace WiredPlayers.thief
                     }
                     else
                     {
-                        // Generamos el aviso a la policía
+                        // Generate the police report
                         GeneratePoliceRobberyWarning(player);
 
-                        // Ponemos al jugador a robar
+                        // Start stealing items
                         NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "misscarstealfinalecar_5_ig_3", "crouchloop");
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ROBBERY_START, Globals.GetTotalSeconds());
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Estás buscando objetos de valor.");
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SEARCHING_VALUE_ITEMS);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
                         NAPI.Player.FreezePlayer(player, true);
 
-                        // Creamos el timer de robo
+                        // Timer to finish the robbery
                         Timer robberyTimer = new Timer(OnPlayerRob, player, 20000, Timeout.Infinite);
                         robberyTimerList.Add(player.Value, robberyTimer);
                     }
@@ -340,16 +325,16 @@ namespace WiredPlayers.thief
                     }
                     else
                     {
-                        // Generamos el aviso a la policía
+                        // Generate the police report
                         GeneratePoliceRobberyWarning(player);
 
-                        // Ponemos al jugador a robar
+                        // Start stealing items
                         NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl), "veh@plane@cuban@front@ds@base", "hotwire");
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ROBBERY_START, Globals.GetTotalSeconds());
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Estás buscando objetos de valor.");
+                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_SEARCHING_VALUE_ITEMS);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
 
-                        // Creamos el timer de robo
+                        // Timer to finish the robbery
                         Timer robberyTimer = new Timer(OnPlayerRob, player, 35000, Timeout.Infinite);
                         robberyTimerList.Add(player.Value, robberyTimer);
                     }
@@ -361,8 +346,8 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command("puente")]
-        public void PuenteCommand(Client player)
+        [Command(Commands.COMMAND_HOTWIRE)]
+        public void HotwireCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -397,7 +382,6 @@ namespace WiredPlayers.thief
                 }
                 else
                 {
-                    // Obtenemos las variables
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                     Vector3 position = NAPI.Entity.GetEntityPosition(vehicle);
 
@@ -405,21 +389,20 @@ namespace WiredPlayers.thief
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, true);
                     NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl), "veh@plane@cuban@front@ds@base", "hotwire");
 
-                    // Creamos el timer de puente
+                    // Create timer to finish the hotwire
                     Timer robberyTimer = new Timer(OnHotwireTimer, player, 15000, Timeout.Infinite);
                     robberyTimerList.Add(player.Value, robberyTimer);
-
-                    //  Mandamos el mensaje al jugador
+                    
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOTWIRE_STARTED);
 
-                    // Añadimos el puente en la base de datos
+                    // Add hotwire log to the database
                     Database.LogHotwire(player.Name, vehicleId, position);
                 }
             }
         }
 
-        [Command("empeñar")]
-        public void EmpenarCommand(Client player)
+        [Command(Commands.COMMAND_PAWN)]
+        public void PawnCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_THIEF)
             {
@@ -435,19 +418,16 @@ namespace WiredPlayers.thief
                         ItemModel stolenItems = Globals.GetPlayerItemModelFromHash(playerId, Constants.ITEM_HASH_STOLEN_OBJECTS);
                         if (stolenItems != null)
                         {
-                            // Calculamos lo que ha ganado
+                            // Calculate the earnings
                             int wonAmount = stolenItems.amount * Constants.PRICE_STOLEN;
                             String message = String.Format(Messages.INF_PLAYER_PAWNED_ITEMS, wonAmount);
                             int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY) + wonAmount;
 
-                            // Entregamos el dinero en mano al jugador
-                            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money);
-
-                            // Borramos los objetos robados
+                            // Delete stolen items
                             Database.RemoveItem(stolenItems.id);
                             Globals.itemList.Remove(stolenItems);
 
-                            // Informamos de la cantidad vendida
+                            NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                         }
                         else

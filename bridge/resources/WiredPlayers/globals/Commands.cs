@@ -147,6 +147,10 @@ namespace WiredPlayers.globals
         public const String COMMAND_REINFORCES = "reinforces";
         public const String COMMAND_LICENSE = "license";
         public const String COMMAND_BREATHALYZER = "breathalyzer";
+        public const String COMMAND_FORCE = "force";
+        public const String COMMAND_STEAL = "steal";
+        public const String COMMAND_HOTWIRE = "hotwire";
+        public const String COMMAND_PAWN = "pawn";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";

@@ -5,6 +5,7 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_PAWN_SHOP = "Tienda de empeños";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Información del vehículo con ID {0}_________";
         public const String GEN_VEHICLE_MODEL = "Modelo: ";
         public const String GEN_VEHICLE_PLATE = "Matrícula: ";
@@ -475,6 +476,7 @@ namespace WiredPlayers.globals
         public const String INF_SEX_SERVICE_RECEIVE = "{0} te ha ofrecido sexo a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
         public const String INF_CHECK_VEHICLE_PLATE = "{0} comprueba la matrícula del vehículo {1}.";
         public const String INF_PLAYER_FRISK = "{0} realiza un cacheo a {1}.";
+        public const String INF_SEARCHING_VALUE_ITEMS = "Estás buscando objetos de valor."; 
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";

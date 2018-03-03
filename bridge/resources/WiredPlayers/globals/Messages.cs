@@ -5,6 +5,7 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_PAWN_SHOP = "Pawn shop";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Information about vehicle with ID {0}_________";
         public const String GEN_VEHICLE_MODEL = "Model: ";
         public const String GEN_VEHICLE_PLATE = "Plate: ";
@@ -475,6 +476,7 @@ namespace WiredPlayers.globals
         public const String INF_SEX_SERVICE_RECEIVE = "{0} offered you sex for {1}$, type /accept service to start with it.";
         public const String INF_CHECK_VEHICLE_PLATE = "{0} checks the plate of the {1}.";
         public const String INF_PLAYER_FRISK = "{0} frisks {1}.";
+        public const String INF_SEARCHING_VALUE_ITEMS = "You're now searching for valuable items.";
 
         // Success messages
         public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";
