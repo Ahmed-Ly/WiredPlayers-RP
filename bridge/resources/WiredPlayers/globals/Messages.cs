@@ -5,6 +5,7 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_SMS_FROM = "SMS from ";
         public const String GEN_PAWN_SHOP = "Pawn shop";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Information about vehicle with ID {0}_________";
         public const String GEN_VEHICLE_MODEL = "Model: ";
@@ -165,7 +166,7 @@ namespace WiredPlayers.globals
         public const String GEN_NEWS_PRIZE = "USAGE: /prize [Player id./Player name] [Amount] [Reason]";
         public const String GEN_PHONE_CALL_COMMAND = "USAGE: /call [Number/Contact]\nService numbers: Police 911 | Emergencies 112 | News 114 | Transport 555";
         public const String GEN_SMS_COMMAND = "USAGE: /sms [Number] [Message]";
-        public const String GEN_CONTACTS_COMMAND = "USAGE: /contacts [Number|View|Add|Delete|SMS]";
+        public const String GEN_CONTACTS_COMMAND = "USAGE: /contacts [Number|View|Add|Remove|SMS]";
         public const String GEN_DRIVING_SCHOOL_COMMAND = "USAGE: /drivingschool [Car|Motorcycle]";
         public const String GEN_ADMIN_COMMAND = "USAGE: /admin [Message]";
         public const String GEN_MEGAPHONE_COMMAND = "USAGE: /megaphone [Message]";

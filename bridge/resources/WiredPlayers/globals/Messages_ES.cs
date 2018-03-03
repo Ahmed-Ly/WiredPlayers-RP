@@ -5,6 +5,7 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_SMS_FROM = "SMS de ";
         public const String GEN_PAWN_SHOP = "Tienda de empeños";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Información del vehículo con ID {0}_________";
         public const String GEN_VEHICLE_MODEL = "Modelo: ";

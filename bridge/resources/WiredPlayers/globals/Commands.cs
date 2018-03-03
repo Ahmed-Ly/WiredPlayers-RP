@@ -151,6 +151,11 @@ namespace WiredPlayers.globals
         public const String COMMAND_STEAL = "steal";
         public const String COMMAND_HOTWIRE = "hotwire";
         public const String COMMAND_PAWN = "pawn";
+        public const String COMMAND_CALL = "call";
+        public const String COMMAND_ANSWER = "answer";
+        public const String COMMAND_HANG = "hang";
+        public const String COMMAND_SMS = "sms";
+        public const String COMMAND_CONTACTS = "contacts";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -225,5 +230,9 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_BEACON = "beacon";
         public const String ARGUMENT_BARRIER = "barrier";
         public const String ARGUMENT_SPIKES = "spikes";
+        public const String ARGUMENT_NUMBER = "number";
+        public const String ARGUMENT_VIEW = "view";
+        public const String ARGUMENT_ADD = "add";
+        public const String ARGUMENT_SMS = "sms";
     }
 }
