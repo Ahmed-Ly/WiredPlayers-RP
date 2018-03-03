@@ -5,6 +5,8 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_NEWS_ANNOUNCE = "Anuncio Weazel News";
+        public const String GEN_NEWS_PRIZE = "Premio Weazel News";
         public const String GEN_IDENTIFICATION = "Documentación";
         public const String GEN_MEDICAL_INSURANCE = "Seguro médico";
         public const String GEN_TAXI_LICENSE = "Licencia de taxis";
@@ -19,6 +21,8 @@ namespace WiredPlayers.globals
         public const String GEN_GARAGE = "Garaje";
         public const String GEN_SCRAPYARD = "Desguace";
         public const String GEN_POLICE_DEPOT = "Depósito policial";
+        public const String GEN_INTERVIEWER = "Locutor ";
+        public const String GEN_GUEST = "Invitado ";
         public const String GEN_ROUTE_NORTH = "Se te ha asignado la ruta norte.";
         public const String GEN_ROUTE_SOUTH = "Se te ha asignado la ruta sur.";
         public const String GEN_ROUTE_EAST = "Se te ha asignado la ruta este.";
@@ -49,6 +53,8 @@ namespace WiredPlayers.globals
         public const String GEN_PM_FROM = "Mensaje privado de ";
         public const String GEN_PHONE = "[Teléfono] ";
         public const String GEN_RADIO = "[Radio] ";
+        public const String GEN_ANNOUNCEMENT = "[ANUNCIO] ";
+        public const String GEN_ADMIN_NOTICE = "[AVISO ADMINISTRATIVO] ";
         public const String GEN_DRIVING_SCHOOL = "Autoescuela";
         public const String GEN_CAR_DEALER = "Concesionario de coches";
         public const String GEN_MOTORCYCLE_DEALER = "Concesionario de motos";
@@ -58,7 +64,6 @@ namespace WiredPlayers.globals
         public const String GEN_TOWNHALL_HELP = "Escribe el comando para ver los trámites disponibles";
         public const String GEN_HOUSE = "Casa";
         public const String GEN_BUSINESS = "Negocio";
-        public const String GEN_ADMIN_NOTICE = "[AVISO ADMINISTRATIVO] ";
         public const String GEN_WELCOME_MESSAGE = "Bienvenido a WiredPlayers, {0}.";
         public const String GEN_WELCOME_HINT = "Utiliza el comando ~b~/bienvenida ~w~para saber como puedes empezar tu vida en Los Santos.";
         public const String GEN_HELP_HINT = "Utiliza el comando ~b~/ayuda ~w~siempre que quieras para obtener información general.";
@@ -167,8 +172,8 @@ namespace WiredPlayers.globals
         public const String GEN_FREQUENCY_MODIFY_COMMAND = "USO: /frecuencia modificar [Contraseña]";
         public const String GEN_FREQUENCY_CONNECT_COMMAND = "USO: /frecuencia conectar [Id. frecuencia] [Contraseña]";
         public const String GEN_TRUNK_COMMAND = "USO: /maletero [Abrir|Cerrar|Guardar|Sacar]";
-        public const String GEN_NEWS_ANNOUCEMENT = "USO: /anunciar [Mensaje de anuncio]";
-        public const String GEN_NEWS_PRIZE = "USO: /premiar [Id. jugador/Nombre jugador] [Cantidad] [Nombre concurso]";
+        public const String GEN_ANNOUCEMENT_COMMAND = "USO: /anunciar [Mensaje de anuncio]";
+        public const String GEN_PRIZE_COMMAND = "USO: /premiar [Id. jugador/Nombre jugador] [Cantidad] [Nombre concurso]";
         public const String GEN_PHONE_CALL_COMMAND = "USO: /llamar [Número/Contacto]\nNúmeros de servicios: Policía 911 | Emergencias 112 | Noticias 114 | Transportes 555";
         public const String GEN_SMS_COMMAND = "USO: /sms [Número] [Mensaje]";
         public const String GEN_CONTACTS_COMMAND = "USO: /agenda [Numero|Ver|Añadir|Borrar|SMS]";
@@ -482,7 +487,8 @@ namespace WiredPlayers.globals
         public const String INF_SEX_SERVICE_RECEIVE = "{0} te ha ofrecido sexo a cambio de {1}$. Escribe /aceptar servicio o /cancelar servicio.";
         public const String INF_CHECK_VEHICLE_PLATE = "{0} comprueba la matrícula del vehículo {1}.";
         public const String INF_PLAYER_FRISK = "{0} realiza un cacheo a {1}.";
-        public const String INF_SEARCHING_VALUE_ITEMS = "Estás buscando objetos de valor."; 
+        public const String INF_SEARCHING_VALUE_ITEMS = "Estás buscando objetos de valor.";
+        public const String INF_ANNOUNCE_PUBLISHED = "Has publicado un anuncio, anunciarse cuesta 500$.";
 
         // Mensajes de éxito
         public const String SUC_LICENSE_EXAM_PASSED = "Has aprobado el examen teórico.";

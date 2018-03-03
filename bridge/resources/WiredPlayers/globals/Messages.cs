@@ -5,6 +5,8 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_NEWS_ANNOUNCE = "Weazel News announcement";
+        public const String GEN_NEWS_PRIZE = "Weazel News prize";
         public const String GEN_IDENTIFICATION = "Identification card";
         public const String GEN_MEDICAL_INSURANCE = "Medical insurance";
         public const String GEN_TAXI_LICENSE = "Taxi license";
@@ -19,6 +21,8 @@ namespace WiredPlayers.globals
         public const String GEN_GARAGE = "Garage";
         public const String GEN_SCRAPYARD = "Scrapyard";
         public const String GEN_POLICE_DEPOT = "Police depot";
+        public const String GEN_INTERVIEWER = "Interviewer ";
+        public const String GEN_GUEST = "Guest ";
         public const String GEN_ROUTE_NORTH = "You've been assigned north route.";
         public const String GEN_ROUTE_SOUTH = "You've been assigned south route.";
         public const String GEN_ROUTE_EAST = "You've been assigned east route.";
@@ -49,6 +53,8 @@ namespace WiredPlayers.globals
         public const String GEN_PM_FROM = "Private message from ";
         public const String GEN_PHONE = "[Phone] ";
         public const String GEN_RADIO = "[Radio] ";
+        public const String GEN_ANNOUNCEMENT = "[ANNOUNCEMENT] ";
+        public const String GEN_ADMIN_NOTICE = "[STAFF NOTIFICATION] ";
         public const String GEN_DRIVING_SCHOOL = "Driving school";
         public const String GEN_CAR_DEALER = "Car dealer";
         public const String GEN_MOTORCYCLE_DEALER = "Motorcycle dealer";
@@ -58,7 +64,6 @@ namespace WiredPlayers.globals
         public const String GEN_TOWNHALL_HELP = "Type the command above to get the available formalities";
         public const String GEN_HOUSE = "House";
         public const String GEN_BUSINESS = "Busines";
-        public const String GEN_ADMIN_NOTICE = "[STAFF NOTIFICATION] ";
         public const String GEN_WELCOME_MESSAGE = "Welcome to WiredPlayers, {0}.";
         public const String GEN_WELCOME_HINT = "Use ~b~/welcome ~w~command in order to know how can you start your life in Los Santos.";
         public const String GEN_HELP_HINT = "Use ~b~/help ~w~command whenever you want to get general information.";
@@ -167,8 +172,8 @@ namespace WiredPlayers.globals
         public const String GEN_FREQUENCY_MODIFY_COMMAND = "USAGE: /frequency modify [Password]";
         public const String GEN_FREQUENCY_CONNECT_COMMAND = "USAGE: /frequency connect [Frequency id.] [Password]";
         public const String GEN_TRUNK_COMMAND = "USAGE: /trunk [Open|Close|Store|Withdraw]";
-        public const String GEN_NEWS_ANNOUCEMENT = "USAGE: /announce [Announcement message]";
-        public const String GEN_NEWS_PRIZE = "USAGE: /prize [Player id./Player name] [Amount] [Reason]";
+        public const String GEN_ANNOUCEMENT_COMMAND = "USAGE: /announce [Announcement message]";
+        public const String GEN_PRIZE_COMMAND = "USAGE: /prize [Player id./Player name] [Amount] [Reason]";
         public const String GEN_PHONE_CALL_COMMAND = "USAGE: /call [Number/Contact]\nService numbers: Police 911 | Emergencies 112 | News 114 | Transport 555";
         public const String GEN_SMS_COMMAND = "USAGE: /sms [Number] [Message]";
         public const String GEN_CONTACTS_COMMAND = "USAGE: /contacts [Number|View|Add|Remove|SMS]";
@@ -483,6 +488,7 @@ namespace WiredPlayers.globals
         public const String INF_CHECK_VEHICLE_PLATE = "{0} checks the plate of the {1}.";
         public const String INF_PLAYER_FRISK = "{0} frisks {1}.";
         public const String INF_SEARCHING_VALUE_ITEMS = "You're now searching for valuable items.";
+        public const String INF_ANNOUNCE_PUBLISHED = "You published an announce, the cost of the service raises to 500$.";
 
         // Success messages
         public const String SUC_LICENSE_EXAM_PASSED = "You passed the theoric exam.";

@@ -16,7 +16,7 @@ namespace WiredPlayers.TownHall
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
-            townHallTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_TOWNHALL", new Vector3(-139.2177f, -631.8386f, 168.86f), 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
+            townHallTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_TOWNHALL, new Vector3(-139.2177f, -631.8386f, 168.86f), 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
             NAPI.TextLabel.CreateTextLabel(Messages.GEN_TOWNHALL_HELP, new Vector3(-139.2177f, -631.8386f, 168.76f), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
         }
 

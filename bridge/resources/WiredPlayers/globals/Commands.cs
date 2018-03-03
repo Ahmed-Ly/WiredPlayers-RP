@@ -166,6 +166,12 @@ namespace WiredPlayers.globals
         public const String COMMAND_REFUEL = "refuel";
         public const String COMMAND_FILL = "fill";
         public const String COMMAND_SCRAP = "scrap";
+        public const String COMMAND_WEAPONS_EVENT = "weaponsevent";
+        public const String COMMAND_INTERVIEW = "interview";
+        public const String COMMAND_CUT_INTERVIEW = "cutinterview";
+        public const String COMMAND_PRIZE = "prize";
+        public const String COMMAND_ANNOUNCE = "announce";
+        public const String COMMAND_NEWS = "n";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";

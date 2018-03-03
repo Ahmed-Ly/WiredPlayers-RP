@@ -31,7 +31,7 @@ namespace WiredPlayers.weapons
 
         public static void GivePlayerNewWeapon(Client player, WeaponHash weapon, int bullets, bool licensed)
         {
-            // Creamos el objeto
+            // Create weapon model
             ItemModel weaponModel = new ItemModel();
             weaponModel.hash = weapon.ToString();
             weaponModel.amount = bullets;
@@ -41,14 +41,13 @@ namespace WiredPlayers.weapons
             weaponModel.dimension = 0;
             weaponModel.id = Database.AddNewItem(weaponModel);
             Globals.itemList.Add(weaponModel);
-
-            // Damos el arma al jugador
+            
             NAPI.Player.GivePlayerWeapon(player, weapon, 0);
             NAPI.Player.SetPlayerWeaponAmmo(player, weapon, bullets);
-
-            // Miramos si es un arma registrada
+            
             if (licensed)
             {
+                // We add the weapon as a registered into database
                 Database.AddLicensedWeapon(weaponModel.id, player.Name);
             }
         }
@@ -125,7 +124,7 @@ namespace WiredPlayers.weapons
 
         public static void WeaponsPrewarn()
         {
-            // Avisamos a todos los jugadores de facciones conectados
+            // Send the warning message to all factions
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
@@ -134,13 +133,12 @@ namespace WiredPlayers.weapons
                 }
             }
 
-            // Creamos un temporizador para el siguiente aviso
+            // Timer for the next warning
             weaponTimer = new Timer(OnWeaponPrewarn, null, 600000, Timeout.Infinite);
         }
 
         public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
-            // Obtenemos el id del personaje
             WeaponCrateModel weaponCrate = GetPlayerCarriedWeaponCrate(player.Value);
 
             if (weaponCrate != null)
@@ -149,7 +147,7 @@ namespace WiredPlayers.weapons
                 weaponCrate.carriedEntity = String.Empty;
                 weaponCrate.carriedIdentifier = 0;
 
-                // Colocamos el objeto en su posición
+                // Place the crate on the floor
                 NAPI.Entity.DetachEntity(weaponCrate.crateObject);
                 NAPI.Entity.SetEntityPosition(weaponCrate.crateObject, weaponCrate.position);
             }
@@ -157,7 +155,6 @@ namespace WiredPlayers.weapons
 
         private static List<Vector3> GetRandomWeaponSpawns(int spawnPosition)
         {
-            // Inicializamos la lista y obtenemos las posiciones
             Random random = new Random();
             List<Vector3> weaponSpawns = new List<Vector3>();
             List<CrateSpawnModel> cratesInSpawn = GetSpawnsInPosition(spawnPosition);
@@ -189,8 +186,7 @@ namespace WiredPlayers.weapons
         private static CrateContentModel GetRandomCrateContent(int type, int chance)
         {
             CrateContentModel crateContent = new CrateContentModel();
-
-            // Miramos el objeto a crear
+            
             foreach (WeaponProbabilityModel weaponAmmo in Constants.WEAPON_CHANCE_LIST)
             {
                 if (weaponAmmo.type == type && weaponAmmo.minChance <= chance && weaponAmmo.maxChance >= chance)
@@ -206,43 +202,37 @@ namespace WiredPlayers.weapons
 
         private static void OnWeaponPrewarn(object unused)
         {
-            // Limpiamos el timer
             weaponTimer.Dispose();
 
             int currentSpawn = 0;
             weaponCrateList = new List<WeaponCrateModel>();
-
-            // Elegimos una localización aleatoria de las existentes
+            
             Random random = new Random();
             int spawnPosition = random.Next(Constants.MAX_WEAPON_SPAWNS);
 
-            // Añadimos las cajas de armas y munición
+            // Get crates' spawn points
             List<Vector3> weaponSpawns = GetRandomWeaponSpawns(spawnPosition);
-
-            // Creamos las cajas para las localizaciones dadas
+            
             foreach (Vector3 spawn in weaponSpawns)
             {
-                // Obtenemos el contenido
+                // Calculate weapon or ammunition crate
                 int type = currentSpawn % 2;
                 int chance = random.Next(type == 0 ? Constants.MAX_WEAPON_CHANCE : Constants.MAX_AMMO_CHANCE);
                 CrateContentModel crateContent = GetRandomCrateContent(type, chance);
 
-                // Creamos la caja
+                // We create the crate
                 WeaponCrateModel weaponCrate = new WeaponCrateModel();
                 weaponCrate.contentItem = crateContent.item;
                 weaponCrate.contentAmount = crateContent.amount;
                 weaponCrate.position = spawn;
                 weaponCrate.carriedEntity = String.Empty;
                 weaponCrate.crateObject = NAPI.Object.CreateObject(481432069, spawn, new Vector3(0.0f, 0.0f, 0.0f), 0);
-
-                // Añadimos la caja a la lista
-                weaponCrateList.Add(weaponCrate);
-
-                // Incrementamos el contador
+                
+                weaponCrateList.Add(weaponCrate);                
                 currentSpawn++;
             }
 
-            // Avisamos del punto a todas las facciones
+            // Warn all the factions about the place
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
@@ -251,16 +241,15 @@ namespace WiredPlayers.weapons
                 }
             }
 
-            // Creamos un temporizador para avisar a la policía
+            // Timer to warn the police
             weaponTimer = new Timer(OnPoliceCalled, null, 240000, Timeout.Infinite);
         }
 
         private static void OnPoliceCalled(object unused)
         {
-            // Limpiamos el timer
             weaponTimer.Dispose();
 
-            // Avisamos a la facción de policía
+            // Send the warning message to all the police members
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE)
@@ -269,7 +258,7 @@ namespace WiredPlayers.weapons
                 }
             }
 
-            // Creamos un temporizador para avisar a la policía
+            // Finish the event
             weaponTimer = new Timer(OnWeaponEventFinished, null, 3600000, Timeout.Infinite);
         }
 
@@ -277,13 +266,12 @@ namespace WiredPlayers.weapons
         {
             Vehicle vehicle = (Vehicle)vehicleObject;
             int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-
-            // Desempaquetamos las armas
+            
             foreach (WeaponCrateModel weaponCrate in weaponCrateList)
             {
                 if (weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
                 {
-                    // Creamos el arma del cajón
+                    // Unpack the weapon in the crate
                     ItemModel item = new ItemModel();
                     item.hash = weaponCrate.contentItem;
                     item.amount = weaponCrate.contentAmount;
@@ -292,13 +280,13 @@ namespace WiredPlayers.weapons
                     item.id = Database.AddNewItem(item);
                     Globals.itemList.Add(item);
 
-                    // Eliminamos la caja
+                    // Delete the crate
                     weaponCrate.carriedIdentifier = 0;
                     weaponCrate.carriedEntity = String.Empty;
                 }
             }
 
-            // Avisamos al conductor de que ya está disponible
+            // Warn driver about unpacked crates
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE) == vehicle)
@@ -308,14 +296,12 @@ namespace WiredPlayers.weapons
                     break;
                 }
             }
-
-            // Desbloqueamos el vehículo
+            
             NAPI.Data.ResetEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING);
         }
 
         private static void OnWeaponEventFinished(object unused)
         {
-            // Limpiamos el timer
             weaponTimer.Dispose();
 
             foreach (WeaponCrateModel crate in weaponCrateList)
@@ -326,7 +312,7 @@ namespace WiredPlayers.weapons
                 }
             }
 
-            // Borramos todas las cajas de armas
+            // Destroy weapon crates
             weaponCrateList = new List<WeaponCrateModel>();
             weaponTimer = null;
         }
@@ -359,7 +345,7 @@ namespace WiredPlayers.weapons
                 int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                 if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING) && GetVehicleWeaponCrates(vehicleId) > 0)
                 {
-                    // Avisamos de la posición de entrega
+                    // Mark the delivery point
                     Vector3 weaponPosition = new Vector3(-2085.543f, 2600.857f, -0.4712417f);
                     Checkpoint weaponCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, weaponPosition, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE, weaponCheckpoint);
@@ -393,19 +379,19 @@ namespace WiredPlayers.weapons
                     int vehicleId = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                     if (GetVehicleWeaponCrates(vehicleId) > 0)
                     {
-                        // Borramos el checkpoint
+                        // Delete the checkpoint
                         Checkpoint weaponCheckpoint = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_COLSHAPE);
                         NAPI.ClientEvent.TriggerClientEvent(player, "deleteWeaponCheckpoint");
                         NAPI.Entity.DeleteEntity(weaponCheckpoint);
 
-                        // Paramos el vehículo mientras descargan
+                        // Freeze the vehicle
                         NAPI.Vehicle.SetVehicleEngineStatus(vehicle, false);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_VEHICLE, vehicle);
                         NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_WEAPON_UNPACKING, true);
-                        vehicleWeaponTimer.Add(new Timer(OnVehicleUnpackWeapons, vehicle, 60000, Timeout.Infinite));
 
-                        // Mandamos un aviso al jugador
+                        vehicleWeaponTimer.Add(new Timer(OnVehicleUnpackWeapons, vehicle, 60000, Timeout.Infinite));
+                        
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_WAIT_FOR_WEAPONS);
                     }
                 }
@@ -417,7 +403,6 @@ namespace WiredPlayers.weapons
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Obtenemos el identificador del jugador
                 int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
@@ -432,25 +417,25 @@ namespace WiredPlayers.weapons
                     }
                 }
 
-                // Obtenemos los modelos de armas antiguo y nuevos
+                // Get previous and new weapon models
                 ItemModel oldWeaponModel = GetEquippedWeaponItemModelByHash(playerId, oldWeapon);
                 ItemModel currentWeaponModel = GetEquippedWeaponItemModelByHash(playerId, newWeapon);
 
                 if (oldWeaponModel != null)
                 {
-                    // Desequipamos el arma antigua
+                    // Unequip previous weapon
                     oldWeaponModel.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
                     Database.UpdateItem(oldWeaponModel);
                 }
 
                 if (currentWeaponModel != null)
                 {
-                    // Equipamos el arma nueva
+                    // Equip new weapon
                     currentWeaponModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
                     Database.UpdateItem(currentWeaponModel);
                 }
 
-                // Miramos si es un arma o el puño
+                // Check if it's armed
                 if (newWeapon == WeaponHash.Unarmed)
                 {
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
@@ -489,20 +474,20 @@ namespace WiredPlayers.weapons
                         Database.UpdateItem(bulletItem);
                     }
 
-                    // Añadimos la munición al objeto arma
+                    // Add ammunition to the weapon
                     ItemModel weaponItem = GetEquippedWeaponItemModelByHash(playerId, weapon);
                     weaponItem.amount = currentBullets;
                     Database.UpdateItem(weaponItem);
 
-                    // Recargamos el arma
+                    // Reload the weapon
                     NAPI.Player.SetPlayerWeaponAmmo(player, weapon, currentBullets);
                     //NAPI.Native.SendNativeToPlayer(player, Hash.MAKE_PED_RELOAD, player);
                 }
             }
         }
 
-        [Command("armarios")]
-        public void ArmariosCommand(Client player)
+        [Command(Commands.COMMAND_WEAPONS_EVENT)]
+        public void WeaponsEventCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_S_GAME_MASTER)
             {
