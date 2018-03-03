@@ -156,6 +156,16 @@ namespace WiredPlayers.globals
         public const String COMMAND_HANG = "hang";
         public const String COMMAND_SMS = "sms";
         public const String COMMAND_CONTACTS = "contacts";
+        public const String COMMAND_TOWNHALL = "townhall";
+        public const String COMMAND_SEATBELT = "seatbelt";
+        public const String COMMAND_LOCK = "lock";
+        public const String COMMAND_HOOD = "hood";
+        public const String COMMAND_TRUNK = "trunk";
+        public const String COMMAND_KEYS = "keys";
+        public const String COMMAND_LOCATE = "locate";
+        public const String COMMAND_REFUEL = "refuel";
+        public const String COMMAND_FILL = "fill";
+        public const String COMMAND_SCRAP = "scrap";
 
         // Command arguments
         public const String ARGUMENT_INFO = "info";
@@ -234,5 +244,12 @@ namespace WiredPlayers.globals
         public const String ARGUMENT_VIEW = "view";
         public const String ARGUMENT_ADD = "add";
         public const String ARGUMENT_SMS = "sms";
+        public const String ARGUMENT_OPEN = "open";
+        public const String ARGUMENT_CLOSE = "close";
+        public const String ARGUMENT_STORE = "store";
+        public const String ARGUMENT_WITHDRAW = "withdraw";
+        public const String ARGUMENT_SEE = "see";
+        public const String ARGUMENT_LEND = "lend";
+        public const String ARGUMENT_DROP = "drop";
     }
 }

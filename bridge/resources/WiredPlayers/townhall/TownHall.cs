@@ -16,8 +16,8 @@ namespace WiredPlayers.TownHall
         [ServerEvent(Event.ResourceStart)]
         public void OnResourceStart()
         {
-            townHallTextLabel = NAPI.TextLabel.CreateTextLabel("/ayuntamiento", new Vector3(-139.2177f, -631.8386f, 168.86f), 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
-            NAPI.TextLabel.CreateTextLabel("Escribe el comando para ver los trámites disponibles", new Vector3(-139.2177f, -631.8386f, 168.76f), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
+            townHallTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_TOWNHALL", new Vector3(-139.2177f, -631.8386f, 168.86f), 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
+            NAPI.TextLabel.CreateTextLabel(Messages.GEN_TOWNHALL_HELP, new Vector3(-139.2177f, -631.8386f, 168.76f), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
         }
 
         [RemoteEvent("documentOptionSelected")]
@@ -43,7 +43,7 @@ namespace WiredPlayers.TownHall
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_IDENTIFICATION);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DOCUMENTATION, Globals.GetTotalSeconds());
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                        Database.LogPayment(player.Name, "Ayuntamiento", "Documentación", Constants.PRICE_IDENTIFICATION);
+                        Database.LogPayment(player.Name, Messages.GEN_FACTION_TOWNHALL, Messages.GEN_IDENTIFICATION, Constants.PRICE_IDENTIFICATION);
                     }
                     break;
                 case Constants.TRAMITATE_MEDICAL_INSURANCE:
@@ -62,7 +62,7 @@ namespace WiredPlayers.TownHall
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_MEDICAL_INSURANCE);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE, Globals.GetTotalSeconds() + 1209600);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
-                        Database.LogPayment(player.Name, "Ayuntamiento", "Seguro médico", Constants.PRICE_MEDICAL_INSURANCE);
+                        Database.LogPayment(player.Name, Messages.GEN_FACTION_TOWNHALL, Messages.GEN_MEDICAL_INSURANCE, Constants.PRICE_MEDICAL_INSURANCE);
                     }
                     break;
                 case Constants.TRAMITATE_TAXI_LICENSE:
@@ -81,7 +81,7 @@ namespace WiredPlayers.TownHall
                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - Constants.PRICE_TAXI_LICENSE);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                         DrivingSchool.SetPlayerLicense(player, Constants.LICENSE_TAXI, 1);
-                        Database.LogPayment(player.Name, "Ayuntamiento", "Licencia de taxis", Constants.PRICE_TAXI_LICENSE);
+                        Database.LogPayment(player.Name, Messages.GEN_FACTION_TOWNHALL, Messages.GEN_TAXI_LICENSE, Constants.PRICE_TAXI_LICENSE);
                     }
                     break;
                 case Constants.TRAMITATE_FINE_LIST:
@@ -107,7 +107,7 @@ namespace WiredPlayers.TownHall
             int finesProcessed = 0;
             int amount = 0;
 
-            // Obtenemos el coste de todas las multas a pagar
+            // Get the money amount for all the fines
             foreach (FineModel fine in removedFines)
             {
                 amount += fine.amount;
@@ -124,14 +124,14 @@ namespace WiredPlayers.TownHall
             }
             else
             {
-                // Restamos el dinero
+                // Remove money from player
                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - amount);
 
-                // Eliminamos las multas y registramos el pago
+                // Delete paid fines
                 Database.RemoveFines(removedFines);
-                Database.LogPayment(player.Name, "Ayuntamiento", "Pago de multas", amount);
+                Database.LogPayment(player.Name, Messages.GEN_FACTION_TOWNHALL, Messages.GEN_FINES_PAYMENT, amount);
 
-                // Miramos si se han pagado todas las multas
+                // Check if all fines were paid
                 if (finesProcessed == fineList.Count)
                 {
                     // Volvemos a la página anterior
@@ -143,8 +143,8 @@ namespace WiredPlayers.TownHall
             }
         }
 
-        [Command("ayuntamiento")]
-        public void AyuntamientoCommand(Client player)
+        [Command(Commands.COMMAND_TOWNHALL)]
+        public void TownHallCommand(Client player)
         {
             if (player.Position.DistanceTo(townHallTextLabel.Position) < 2.0f)
             {
@@ -152,7 +152,7 @@ namespace WiredPlayers.TownHall
             }
             else
             {
-                // Avisamos de que no está en el ayuntamiento
+                // Player is not in the town hall
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_TOWNHALL);
             }
         }

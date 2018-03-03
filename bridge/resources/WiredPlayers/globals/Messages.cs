@@ -5,6 +5,10 @@ namespace WiredPlayers.globals
     public class Messages
     {
         // General messages
+        public const String GEN_IDENTIFICATION = "Identification card";
+        public const String GEN_MEDICAL_INSURANCE = "Medical insurance";
+        public const String GEN_TAXI_LICENSE = "Taxi license";
+        public const String GEN_FINES_PAYMENT = "Payment of fines";
         public const String GEN_SMS_FROM = "SMS from ";
         public const String GEN_PAWN_SHOP = "Pawn shop";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Information about vehicle with ID {0}_________";
@@ -51,6 +55,7 @@ namespace WiredPlayers.globals
         public const String GEN_BOAT_DEALER = "Boat dealer";
         public const String GEN_CATALOG_HELP = "Type the command above to see the vehicle list";
         public const String GEN_JOB_HELP = "Type the command above to get more information about the job";
+        public const String GEN_TOWNHALL_HELP = "Type the command above to get the available formalities";
         public const String GEN_HOUSE = "House";
         public const String GEN_BUSINESS = "Busines";
         public const String GEN_ADMIN_NOTICE = "[STAFF NOTIFICATION] ";
@@ -151,7 +156,7 @@ namespace WiredPlayers.globals
         public const String GEN_FINE_COMMAND = "USAGE: /fine [Name] [Surname] [Price] [Reason]";
         public const String GEN_GLOBALS_ACCEPT_COMMAND = "USAGE: /accept [Repair|Service|Interview|Money|Vehicle]";
         public const String GEN_GLOBALS_CANCEL_COMMAND = "USAGE: /cancel [Directo|Servicio|Dinero|Pedidos|Pintura]";
-        public const String GEN_KEYS_COMMAND = "USAGE: /keys [See|Lend|Throw] [Vehicle id.] [Player id./Player name]";
+        public const String GEN_KEYS_COMMAND = "USAGE: /keys [See|Lend|Drop] [Vehicle id.] [Player id./Player name]";
         public const String GEN_PAY_COMMAND = "USAGE: /pay [Player id./Player name] [Amount]";
         public const String GEN_SHOW_DOC_COMMAND = "USAGE: /show [Player id./Player name] [Licenses|Identification|Insurance]";
         public const String GEN_NEWS_COMMAND = "USAGE: /n [News message]";

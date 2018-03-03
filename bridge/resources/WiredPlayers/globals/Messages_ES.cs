@@ -5,6 +5,10 @@ namespace WiredPlayers.globals
     public class Messages_ES
     {
         // Mensajes generales
+        public const String GEN_IDENTIFICATION = "Documentación";
+        public const String GEN_MEDICAL_INSURANCE = "Seguro médico";
+        public const String GEN_TAXI_LICENSE = "Licencia de taxis";
+        public const String GEN_FINES_PAYMENT = "Pago de multas";
         public const String GEN_SMS_FROM = "SMS de ";
         public const String GEN_PAWN_SHOP = "Tienda de empeños";
         public const String GEN_VEHICLE_CHECK_TITLE = "_________Información del vehículo con ID {0}_________";
@@ -51,6 +55,7 @@ namespace WiredPlayers.globals
         public const String GEN_BOAT_DEALER = "Concesionario de barcos";
         public const String GEN_CATALOG_HELP = "Escribe el comando para ver la lista de vehículos";
         public const String GEN_JOB_HELP = "Escribe el comando para obtener más información del empleo";
+        public const String GEN_TOWNHALL_HELP = "Escribe el comando para ver los trámites disponibles";
         public const String GEN_HOUSE = "Casa";
         public const String GEN_BUSINESS = "Negocio";
         public const String GEN_ADMIN_NOTICE = "[AVISO ADMINISTRATIVO] ";
