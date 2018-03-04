@@ -373,7 +373,7 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        [Command(Commands.COMMAND_DRIVING_SCHOOL, Messages.GEN_DRIVING_SCHOOL_COMMAND)]
+        [Command(Messages.COM_DRIVING_SCHOOL, Messages.GEN_DRIVING_SCHOOL_COMMAND)]
         public void DrivingSchoolCommand(Client player, String type)
         {
             int licenseStatus = 0;
@@ -389,7 +389,7 @@ namespace WiredPlayers.drivingschool
                     
                     switch (type.ToLower())
                     {
-                        case Commands.ARGUMENT_CAR:
+                        case Messages.ARG_CAR:
                             // Check for the status if the license
                             licenseStatus = GetPlayerLicenseStatus(player, Constants.LICENSE_CAR);
 
@@ -444,7 +444,7 @@ namespace WiredPlayers.drivingschool
                                     break;
                             }
                             break;
-                        case Commands.ARGUMENT_MOTORCYCLE:
+                        case Messages.ARG_MOTORCYCLE:
                             // Check for the status if the license
                             licenseStatus = GetPlayerLicenseStatus(player, Constants.LICENSE_MOTORCYCLE);
 
@@ -511,7 +511,7 @@ namespace WiredPlayers.drivingschool
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_DRIVING_SCHOOL);
         }
 
-        [Command(Commands.COMMAND_LICENSES)]
+        [Command(Messages.COM_LICENSES)]
         public void LicensesCommand(Client player)
         {
             int currentLicense = 0;

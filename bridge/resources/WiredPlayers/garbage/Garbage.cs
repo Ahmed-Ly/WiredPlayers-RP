@@ -305,7 +305,7 @@ namespace WiredPlayers.garbage
             }
         }
 
-        [Command(Commands.COMMAND_GARBAGE, Messages.GEN_GARBAGE_JOB_COMMAND)]
+        [Command(Messages.COM_GARBAGE, Messages.GEN_GARBAGE_JOB_COMMAND)]
         public void GarbageCommand(Client player, String action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_GARBAGE)
@@ -320,7 +320,7 @@ namespace WiredPlayers.garbage
             {
                 switch (action.ToLower())
                 {
-                    case Commands.ARGUMENT_ROUTE:
+                    case Messages.ARG_ROUTE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_ROUTE) == true)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Messages.ERR_ALREADY_IN_ROUTE);
@@ -347,7 +347,7 @@ namespace WiredPlayers.garbage
                             }
                         }
                         break;
-                    case Commands.ARGUMENT_PICKUP:
+                    case Messages.ARG_PICKUP:
                         if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_GARBAGE_IN_VEHICLE);
@@ -381,7 +381,7 @@ namespace WiredPlayers.garbage
                             }
                         }
                         break;
-                    case Commands.ARGUMENT_CANCEL:
+                    case Messages.ARG_CANCEL:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JOB_PARTNER) == true)
                         {
                             Client partner = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);

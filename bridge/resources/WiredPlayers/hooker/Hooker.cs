@@ -47,7 +47,7 @@ namespace WiredPlayers.hooker
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + Messages.SUC_HOOKER_SERVICE_FINISHED);
         }
 
-        [Command(Commands.COMMAND_SERVICE, Messages.GEN_HOOKER_SERVICE_COMMAND)]
+        [Command(Messages.COM_SERVICE, Messages.GEN_HOOKER_SERVICE_COMMAND)]
         public void ServiceCommand(Client player, String service, String targetString, int price)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_HOOKER)
@@ -78,7 +78,7 @@ namespace WiredPlayers.hooker
 
                     switch (service.ToLower())
                     {
-                        case Commands.ARGUMENT_ORAL:
+                        case Messages.ARG_ORAL:
                             NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
                             NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, price);
                             NAPI.Data.SetEntityData(target, EntityData.HOOKER_TYPE_SERVICE, Constants.HOOKER_SERVICE_BASIC);
@@ -88,7 +88,7 @@ namespace WiredPlayers.hooker
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                             NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                             break;
-                        case Commands.ARGUMENT_SEX:
+                        case Messages.ARG_SEX:
                             NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB_PARTNER, player);
                             NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, price);
                             NAPI.Data.SetEntityData(target, EntityData.HOOKER_TYPE_SERVICE, Constants.HOOKER_SERVICE_FULL);

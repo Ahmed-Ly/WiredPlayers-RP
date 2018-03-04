@@ -150,7 +150,7 @@ namespace WiredPlayers.emergency
             deathTimerList.Add(player.Value, deathTimer);
         }
 
-        [Command(Commands.COMMAND_HEAL, Messages.GEN_HEAL_COMMAND)]
+        [Command(Messages.COM_HEAL, Messages.GEN_HEAL_COMMAND)]
         public void HealCommand(Client player, String targetString)
         {
             Client target = Int32.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
@@ -188,7 +188,7 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command(Commands.COMMAND_REANIMATE, Messages.GEN_REANIMATE_COMMAND)]
+        [Command(Messages.COM_REANIMATE, Messages.GEN_REANIMATE_COMMAND)]
         public void ReanimateCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
@@ -249,7 +249,7 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command(Commands.COMMAND_EXTRACT, Messages.GEN_EXTRACT_COMMAND)]
+        [Command(Messages.COM_EXTRACT, Messages.GEN_EXTRACT_COMMAND)]
         public void ExtractCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -298,7 +298,7 @@ namespace WiredPlayers.emergency
             }
         }
 
-        [Command(Commands.COMMAND_DIE)]
+        [Command(Messages.COM_DIE)]
         public void DieCommand(Client player)
         {
             // Check if the player is dead

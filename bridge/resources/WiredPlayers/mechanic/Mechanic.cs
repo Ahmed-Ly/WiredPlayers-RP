@@ -293,7 +293,7 @@ namespace WiredPlayers.mechanic
             }
         }
 
-        [Command(Commands.COMMAND_REPAIR, Messages.GEN_MECHANIC_REPAIR_COMMAND)]
+        [Command(Messages.COM_REPAIR, Messages.GEN_MECHANIC_REPAIR_COMMAND)]
         public void RepairCommand(Client player, int vehicleId, String type, int price = 0)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
@@ -329,10 +329,10 @@ namespace WiredPlayers.mechanic
 
                     switch (type.ToLower())
                     {
-                        case Commands.ARGUMENT_CHASSIS:
+                        case Messages.ARG_CHASSIS:
                             spentProducts = Constants.PRICE_VEHICLE_CHASSIS;
                             break;
-                        case Commands.ARGUMENT_DOORS:
+                        case Messages.ARG_DOORS:
                             for (int i = 0; i < 6; i++)
                             {
                                 if (NAPI.Vehicle.IsVehicleDoorBroken(vehicle, i) == true)
@@ -341,7 +341,7 @@ namespace WiredPlayers.mechanic
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_TYRES:
+                        case Messages.ARG_TYRES:
                             for (int i = 0; i < 4; i++)
                             {
                                 if (NAPI.Vehicle.IsVehicleTyrePopped(vehicle, i) == true)
@@ -350,7 +350,7 @@ namespace WiredPlayers.mechanic
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_WINDOWS:
+                        case Messages.ARG_WINDOWS:
                             for (int i = 0; i < 4; i++)
                             {
                                 if (NAPI.Vehicle.IsVehicleWindowBroken(vehicle, i) == true)
@@ -415,7 +415,7 @@ namespace WiredPlayers.mechanic
             }
         }
 
-        [Command(Commands.COMMAND_REPAINT, Messages.GEN_MECHANIC_REPAINT_COMMAND)]
+        [Command(Messages.COM_REPAINT, Messages.GEN_MECHANIC_REPAINT_COMMAND)]
         public void RepaintCommand(Client player, int vehicleId)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)
@@ -455,7 +455,7 @@ namespace WiredPlayers.mechanic
             }
         }
 
-        [Command(Commands.COMMAND_TUNNING)]
+        [Command(Messages.COM_TUNNING)]
         public void TunningCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_MECHANIC)

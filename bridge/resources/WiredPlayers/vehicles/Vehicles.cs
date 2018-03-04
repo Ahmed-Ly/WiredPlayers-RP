@@ -540,7 +540,7 @@ namespace WiredPlayers.vehicles
             NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_GAS, gas);
         }
 
-        [Command(Commands.COMMAND_SEATBELT)]
+        [Command(Messages.COM_SEATBELT)]
         public void SeatbeltCommand(Client player)
         {
             if (NAPI.Player.IsPlayerInAnyVehicle(player) == false)
@@ -559,7 +559,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_LOCK)]
+        [Command(Messages.COM_LOCK)]
         public void LockCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -599,7 +599,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_HOOD)]
+        [Command(Messages.COM_HOOD)]
         public void HoodCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -633,7 +633,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_TRUNK, Messages.GEN_TRUNK_COMMAND)]
+        [Command(Messages.COM_TRUNK, Messages.GEN_TRUNK_COMMAND)]
         public void TrunkCommand(Client player, String action)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -651,7 +651,7 @@ namespace WiredPlayers.vehicles
 
                     switch (action.ToLower())
                     {
-                        case Commands.ARGUMENT_OPEN:
+                        case Messages.ARG_OPEN:
                             if (!HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_NONE)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
@@ -666,7 +666,7 @@ namespace WiredPlayers.vehicles
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_OPENED);
                             }
                             break;
-                        case Commands.ARGUMENT_CLOSE:
+                        case Messages.ARG_CLOSE:
                             if (!HasPlayerVehicleKeys(player, vehicle) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == Constants.FACTION_NONE)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
@@ -681,7 +681,7 @@ namespace WiredPlayers.vehicles
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_CLOSED);
                             }
                             break;
-                        case Commands.ARGUMENT_STORE:
+                        case Messages.ARG_STORE:
                             if (NAPI.Vehicle.GetVehicleDoorState(vehicle, Constants.VEHICLE_TRUNK) == false)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_TRUNK_CLOSED);
@@ -776,7 +776,7 @@ namespace WiredPlayers.vehicles
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_WITHDRAW:
+                        case Messages.ARG_WITHDRAW:
                             if (NAPI.Vehicle.GetVehicleDoorState(vehicle, Constants.VEHICLE_TRUNK) == false)
                             {
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_VEHICLE_TRUNK_CLOSED);
@@ -814,7 +814,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_KEYS, Messages.GEN_KEYS_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_KEYS, Messages.GEN_KEYS_COMMAND, GreedyArg = true)]
         public void KeysCommand(Client player, String action, int vehicleId, String targetString = "")
         {
             Vehicle vehicle = null;
@@ -825,7 +825,7 @@ namespace WiredPlayers.vehicles
 
             switch (action.ToLower())
             {
-                case Commands.ARGUMENT_SEE:
+                case Messages.ARG_SEE:
                     foreach (String key in playerKeysArray)
                     {
                         if (Int32.Parse(key) == vehicleId)
@@ -860,7 +860,7 @@ namespace WiredPlayers.vehicles
                     // The player doesn't have the keys
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_CAR_KEYS);
                     break;
-                case Commands.ARGUMENT_LEND:
+                case Messages.ARG_LEND:
                     vehicle = GetVehicleById(vehicleId);
 
                     if (vehicle == null)
@@ -915,7 +915,7 @@ namespace WiredPlayers.vehicles
                         }
                     }
                     break;
-                case Commands.ARGUMENT_DROP:
+                case Messages.ARG_DROP:
                     for (int i = 0; i < playerKeysArray.Length; i++)
                     {
                         if (playerKeysArray[i] == vehicleId.ToString())
@@ -938,7 +938,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_LOCATE, Messages.GEN_LOCATE_COMMAND)]
+        [Command(Messages.COM_LOCATE, Messages.GEN_LOCATE_COMMAND)]
         public void LocateCommand(Client player, int vehicleId)
         {
             Vehicle vehicle = GetVehicleById(vehicleId);
@@ -997,7 +997,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_REFUEL, Messages.GEN_FUEL_COMMAND)]
+        [Command(Messages.COM_REFUEL, Messages.GEN_FUEL_COMMAND)]
         public void RefuelCommand(Client player, int amount)
         {
             foreach (BusinessModel business in Business.businessList)
@@ -1078,7 +1078,7 @@ namespace WiredPlayers.vehicles
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_FUEL_STATION_NEAR);
         }
 
-        [Command(Commands.COMMAND_FILL)]
+        [Command(Messages.COM_FILL)]
         public void FillCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
@@ -1127,7 +1127,7 @@ namespace WiredPlayers.vehicles
             }
         }
 
-        [Command(Commands.COMMAND_SCRAP)]
+        [Command(Messages.COM_SCRAP)]
         public void ScrapCommand(Client player)
         {
             if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)

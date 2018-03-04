@@ -84,7 +84,7 @@ namespace WiredPlayers.weazelNews
             return remaining;
         }
 
-        [Command(Commands.COMMAND_INTERVIEW, Messages.GEN_OFFER_ON_AIR_COMMAND)]
+        [Command(Messages.COM_INTERVIEW, Messages.GEN_OFFER_ON_AIR_COMMAND)]
         public void EntrevistarCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -121,7 +121,7 @@ namespace WiredPlayers.weazelNews
             }
         }
 
-        [Command(Commands.COMMAND_CUT_INTERVIEW, Messages.GEN_CUT_ON_AIR_COMMAND)]
+        [Command(Messages.COM_CUT_INTERVIEW, Messages.GEN_CUT_ON_AIR_COMMAND)]
         public void CutInterviewCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -165,7 +165,7 @@ namespace WiredPlayers.weazelNews
             }
         }
 
-        [Command(Commands.COMMAND_PRIZE, Messages.GEN_PRIZE_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_PRIZE, Messages.GEN_PRIZE_COMMAND, GreedyArg = true)]
         public void PrizeCommand(Client player, String targetString, int prize, string contest)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -221,7 +221,7 @@ namespace WiredPlayers.weazelNews
             }
         }
 
-        [Command(Commands.COMMAND_ANNOUNCE, Messages.GEN_ANNOUCEMENT_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_ANNOUNCE, Messages.GEN_ANNOUCEMENT_COMMAND, GreedyArg = true)]
         public void AnnounceCommand(Client player, string message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -257,7 +257,7 @@ namespace WiredPlayers.weazelNews
             }
         }
 
-        [Command(Commands.COMMAND_NEWS, Messages.GEN_NEWS_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_NEWS, Messages.GEN_NEWS_COMMAND, GreedyArg = true)]
         public void NewsCommand(Client player, string message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)

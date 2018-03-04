@@ -108,7 +108,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_F, Messages.GEN_F_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_F, Messages.GEN_F_COMMAND, GreedyArg = true)]
         public void FCommand(Client player, String message)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -143,7 +143,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_R, Messages.GEN_R_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_R, Messages.GEN_R_COMMAND, GreedyArg = true)]
         public void RCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -190,7 +190,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_DP, Messages.GEN_DP_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_DP, Messages.GEN_DP_COMMAND, GreedyArg = true)]
         public void DpCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -242,7 +242,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_DE, Messages.GEN_DE_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_DE, Messages.GEN_DE_COMMAND, GreedyArg = true)]
         public void DeCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -294,7 +294,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_FR, Messages.GEN_FR_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_FR, Messages.GEN_FR_COMMAND, GreedyArg = true)]
         public void FrCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -339,7 +339,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_FREQUENCY, Messages.GEN_FREQUENCY_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_FREQUENCY, Messages.GEN_FREQUENCY_COMMAND, GreedyArg = true)]
         public void FrequencyCommand(Client player, String args)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
@@ -353,7 +353,7 @@ namespace WiredPlayers.faction
                     String[] arguments = args.Trim().Split(' ');
                     switch (arguments[0].ToLower())
                     {
-                        case Commands.ARGUMENT_CREATE:
+                        case Messages.ARG_CREATE:
                             if (arguments.Length == 2)
                             {
                                 if (ownedChannel == null)
@@ -380,7 +380,7 @@ namespace WiredPlayers.faction
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FREQUENCY_CREATE_COMMAND);
                             }
                             break;
-                        case Commands.ARGUMENT_MODIFY:
+                        case Messages.ARG_MODIFY:
                             if (arguments.Length == 2)
                             {
                                 if (ownedChannel != null)
@@ -414,7 +414,7 @@ namespace WiredPlayers.faction
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FREQUENCY_MODIFY_COMMAND);
                             }
                             break;
-                        case Commands.ARGUMENT_REMOVE:
+                        case Messages.ARG_REMOVE:
                             if (ownedChannel != null)
                             {
                                 // We kick all the players from the channel
@@ -444,7 +444,7 @@ namespace WiredPlayers.faction
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_OWNED_CHANNEL);
                             }
                             break;
-                        case Commands.ARGUMENT_CONNECT:
+                        case Messages.ARG_CONNECT:
                             if (arguments.Length == 3)
                             {
                                 if (Int32.TryParse(arguments[1], out int frequency) == true)
@@ -477,7 +477,7 @@ namespace WiredPlayers.faction
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_FREQUENCY_CONNECT_COMMAND);
                             }
                             break;
-                        case Commands.ARGUMENT_DISCONNECT:
+                        case Messages.ARG_DISCONNECT:
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_RADIO, 0);
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_CHANNEL_DISCONNECTED);
                             break;
@@ -497,7 +497,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_RECRUIT, Messages.GEN_RECRUIT_COMMAND)]
+        [Command(Messages.COM_RECRUIT, Messages.GEN_RECRUIT_COMMAND)]
         public void RecruitCommand(Client player, String targetString)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -655,7 +655,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_DISMISS, Messages.GEN_DISMISS_COMMAND)]
+        [Command(Messages.COM_DISMISS, Messages.GEN_DISMISS_COMMAND)]
         public void DismissCommand(Client player, String targetString)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -766,7 +766,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_RANK, Messages.GEN_RANK_COMMAND)]
+        [Command(Messages.COM_RANK, Messages.GEN_RANK_COMMAND)]
         public void RangoCommand(Client player, String arguments)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -875,7 +875,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_REPORTS)]
+        [Command(Messages.COM_REPORTS)]
         public void ReportsCommand(Client player)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -934,7 +934,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_ATTEND, Messages.GEN_ATTEND_COMMAND)]
+        [Command(Messages.COM_ATTEND, Messages.GEN_ATTEND_COMMAND)]
         public void AttendCommand(Client player, int warning)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -980,7 +980,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_CLEAR_REPORTS, Messages.GEN_CLEAR_REPORTS_COMMAND)]
+        [Command(Messages.COM_CLEAR_REPORTS, Messages.GEN_CLEAR_REPORTS_COMMAND)]
         public void BorraravisoCommand(Client player, int warning)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -1017,7 +1017,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_MEMBERS)]
+        [Command(Messages.COM_MEMBERS)]
         public void MiembrosCommand(Client player)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);

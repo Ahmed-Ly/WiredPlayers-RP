@@ -168,7 +168,7 @@ namespace WiredPlayers.fishing
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_FISHING_FAILED);
         }
 
-        [Command(Commands.COMMAND_FISH)]
+        [Command(Messages.COM_FISH)]
         public void FishCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_FISHING) == true)

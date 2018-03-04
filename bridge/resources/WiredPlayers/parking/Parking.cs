@@ -143,7 +143,7 @@ namespace WiredPlayers.parking
             Database.SaveVehicle(vehicleModel);
         }
 
-        [Command(Commands.COMMAND_PARK)]
+        [Command(Messages.COM_PARK)]
         public void ParkCommand(Client player)
         {
             if (NAPI.Player.GetPlayerVehicleSeat(player) != (int)VehicleSeat.Driver)
@@ -215,7 +215,7 @@ namespace WiredPlayers.parking
             }
         }
 
-        [Command(Commands.COMMAND_UNPARK, Messages.GEN_UNPARK_COMMAND)]
+        [Command(Messages.COM_UNPARK, Messages.GEN_UNPARK_COMMAND)]
         public void UnparkCommand(Client player, int vehicleId)
         {
             VehicleModel vehicle = Vehicles.GetParkedVehicleById(vehicleId);

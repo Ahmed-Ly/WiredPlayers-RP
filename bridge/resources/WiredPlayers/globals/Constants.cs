@@ -32,6 +32,7 @@ namespace WiredPlayers.globals
         public const float GAS_CAN_LITRES = 10.0f;
         public const float LEVEL_MULTIPLIER = 3.25f;
         public const int PAID_PER_LEVEL = 30;
+        public const float HOUSE_SALE_STATE = 0.7f;
 
         // Sexo
         public const int SEX_NONE = -1;

@@ -52,12 +52,12 @@ namespace WiredPlayers.faction
 
             foreach (JobPickModel job in jobList)
             {
-                NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_JOB, job.position, 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
+                NAPI.TextLabel.CreateTextLabel("/" + Messages.COM_JOB, job.position, 10.0f, 0.5f, 4, new Color(255, 255, 153), false, 0);
                 NAPI.TextLabel.CreateTextLabel(Messages.GEN_JOB_HELP, new Vector3(job.position.X, job.position.Y, job.position.Z - 0.1f), 10.0f, 0.5f, 4, new Color(0, 0, 0), false, 0);
             }
         }
 
-        [Command(Commands.COMMAND_JOB, Messages.GEN_JOB_COMMAND)]
+        [Command(Messages.COM_JOB, Messages.GEN_JOB_COMMAND)]
         public void JobCommand(Client player, String action)
         {
             int faction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
@@ -65,7 +65,7 @@ namespace WiredPlayers.faction
 
             switch (action.ToLower())
             {
-                case Commands.ARGUMENT_INFO:
+                case Messages.ARG_INFO:
                     foreach (JobPickModel jobPick in jobList)
                     {
                         if (player.Position.DistanceTo(jobPick.position) < 1.5f)
@@ -75,7 +75,7 @@ namespace WiredPlayers.faction
                         }
                     }
                     break;
-                case Commands.ARGUMENT_ACCEPT:
+                case Messages.ARG_ACCEPT:
                     if (faction > 0 && faction < Constants.LAST_STATE_FACTION)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_JOB_STATE_FACTION);
@@ -98,7 +98,7 @@ namespace WiredPlayers.faction
                         }
                     }
                     break;
-                case Commands.ARGUMENT_LEAVE:
+                case Messages.ARG_LEAVE:
                     // Get the hours spent in the current job
                     int employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
 
@@ -127,7 +127,7 @@ namespace WiredPlayers.faction
             }
         }
 
-        [Command(Commands.COMMAND_DUTY)]
+        [Command(Messages.COM_DUTY)]
         public void DutyCommand(Client player)
         {
             // We get the sex, job and faction from the player

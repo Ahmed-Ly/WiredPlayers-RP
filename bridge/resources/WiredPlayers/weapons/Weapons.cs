@@ -486,7 +486,7 @@ namespace WiredPlayers.weapons
             }
         }
 
-        [Command(Commands.COMMAND_WEAPONS_EVENT)]
+        [Command(Messages.COM_WEAPONS_EVENT)]
         public void WeaponsEventCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_S_GAME_MASTER)

@@ -41,16 +41,16 @@ namespace WiredPlayers.admin
 
         private void SendHouseInfo(Client player, HouseModel house)
         {
-            NAPI.Chat.SendChatMessageToPlayer(player, "__________Información de la casa:__________");
-            NAPI.Chat.SendChatMessageToPlayer(player, "ID: " + house.id);
-            NAPI.Chat.SendChatMessageToPlayer(player, "Nombre: " + house.name);
-            NAPI.Chat.SendChatMessageToPlayer(player, "IPL: " + house.ipl);
-            NAPI.Chat.SendChatMessageToPlayer(player, "Propietario: " + house.owner);
-            NAPI.Chat.SendChatMessageToPlayer(player, "Precio: " + house.price);
-            NAPI.Chat.SendChatMessageToPlayer(player, "Estado: " + house.status);
+            String title = String.Format(Messages.GEN_HOUSE_CHECK_TITLE, house.id);
+            NAPI.Chat.SendChatMessageToPlayer(player, title);
+            NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_NAME + house.name);
+            NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_IPL + house.ipl);
+            NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_OWNER + house.owner);
+            NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_PRICE + house.price);
+            NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_STATUS + house.status);
         }
 
-        [Command(Commands.COMMAND_SKIN, Messages.GEN_SKIN_COMMAND)]
+        [Command(Messages.COM_SKIN, Messages.GEN_SKIN_COMMAND)]
         public void SkinCommand(Client player, String pedModel)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -60,7 +60,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_ADMIN, Messages.GEN_ADMIN_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_ADMIN, Messages.GEN_ADMIN_COMMAND, GreedyArg = true)]
         public void AdminCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -84,7 +84,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_COORD, Messages.GEN_COORD_COMMAND)]
+        [Command(Messages.COM_COORD, Messages.GEN_COORD_COMMAND)]
         public void CoordCommand(Client player, float posX, float posY, float posZ)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -97,7 +97,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_TP, Messages.GEN_TP_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_TP, Messages.GEN_TP_COMMAND, GreedyArg = true)]
         public void TpCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -131,7 +131,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_BRING, Messages.GEN_BRING_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_BRING, Messages.GEN_BRING_COMMAND, GreedyArg = true)]
         public void BringCommand(Client player, String targetString)
         {
 
@@ -166,7 +166,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_GUN, Messages.GEN_GUN_COMMAND)]
+        [Command(Messages.COM_GUN, Messages.GEN_GUN_COMMAND)]
         public void GunCommand(Client player, String targetString, String weaponName, int ammo)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
@@ -194,7 +194,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_VEHICLE, Messages.GEN_VEHICLE_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_VEHICLE, Messages.GEN_VEHICLE_COMMAND, GreedyArg = true)]
         public void VehicleCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -207,7 +207,7 @@ namespace WiredPlayers.admin
                     String[] arguments = args.Split(' ');
                     switch (arguments[0].ToLower())
                     {
-                        case Commands.ARGUMENT_INFO:
+                        case Messages.ARG_INFO:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 veh = Globals.GetClosestVehicle(player);
@@ -218,15 +218,16 @@ namespace WiredPlayers.admin
                                 else
                                 {
                                     vehicleId = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_ID);
+                                    String title = String.Format(Messages.GEN_VEHICLE_CHECK_TITLE, vehicleId);
                                     String model = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_MODEL);
                                     String owner = NAPI.Data.GetEntityData(veh, EntityData.VEHICLE_OWNER);
-                                    NAPI.Chat.SendChatMessageToPlayer(player, "_________Información del vehículo con ID " + vehicleId + "_________");
-                                    NAPI.Chat.SendChatMessageToPlayer(player, "Modelo: " + model);
-                                    NAPI.Chat.SendChatMessageToPlayer(player, "Propietario: " + owner);
+                                    NAPI.Chat.SendChatMessageToPlayer(player, title);
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_VEHICLE_MODEL + model);
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_OWNER + owner);
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_CREATE:
+                        case Messages.ARG_CREATE:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 if (arguments.Length == 4)
@@ -265,12 +266,12 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_MODIFY:
+                        case Messages.ARG_MODIFY:
                             if (arguments.Length > 1)
                             {
                                 switch (arguments[1].ToLower())
                                 {
-                                    case Commands.ARGUMENT_COLOR:
+                                    case Messages.ARG_COLOR:
                                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (arguments.Length == 4)
@@ -314,7 +315,7 @@ namespace WiredPlayers.admin
                                             }
                                         }
                                         break;
-                                    case Commands.ARGUMENT_DIMENSION:
+                                    case Messages.ARG_DIMENSION:
                                         if (arguments.Length == 4)
                                         {
                                             if (Int32.TryParse(arguments[2], out vehicleId) == true)
@@ -352,7 +353,7 @@ namespace WiredPlayers.admin
                                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_VEHICLE_DIMENSION_COMMAND);
                                         }
                                         break;
-                                    case Commands.ARGUMENT_FACTION:
+                                    case Messages.ARG_FACTION:
                                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
 
@@ -386,7 +387,7 @@ namespace WiredPlayers.admin
                                             }
                                         }
                                         break;
-                                    case Commands.ARGUMENT_POSITION:
+                                    case Messages.ARG_POSITION:
                                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
@@ -406,7 +407,7 @@ namespace WiredPlayers.admin
                                             }
                                         }
                                         break;
-                                    case Commands.ARGUMENT_OWNER:
+                                    case Messages.ARG_OWNER:
                                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (arguments.Length == 4)
@@ -442,7 +443,7 @@ namespace WiredPlayers.admin
                                 NAPI.Chat.SendChatMessageToPlayer(player, Messages.GEN_VEHICLE_MODIFY_COMMAND);
                             }
                             break;
-                        case Commands.ARGUMENT_REMOVE:
+                        case Messages.ARG_REMOVE:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
@@ -460,14 +461,14 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_REPAIR:
+                        case Messages.ARG_REPAIR:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 NAPI.Vehicle.RepairVehicle(NAPI.Player.GetPlayerVehicle(player));
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + Messages.ADM_VEHICLE_REPAIRED);
                             }
                             break;
-                        case Commands.ARGUMENT_LOCK:
+                        case Messages.ARG_LOCK:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 veh = Globals.GetClosestVehicle(player);
@@ -487,7 +488,7 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_START:
+                        case Messages.ARG_START:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 if (NAPI.Player.GetPlayerVehicleSeat(player) == (int)VehicleSeat.Driver)
@@ -501,7 +502,7 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_BRING:
+                        case Messages.ARG_BRING:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
@@ -528,7 +529,7 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_TP:
+                        case Messages.ARG_TP:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 if (arguments.Length == 2 && int.TryParse(arguments[1], out vehicleId) == true)
@@ -578,74 +579,74 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_GO, Messages.GEN_GO_COMMAND)]
+        [Command(Messages.COM_GO, Messages.GEN_GO_COMMAND)]
         public void GoCommand(Client player, String location)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 switch (location.ToLower())
                 {
-                    case Commands.ARGUMENT_WORKSHOP:
+                    case Messages.ARG_WORKSHOP:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1204.13f, -1489.49f, 4.34967f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_ELECTRONICS:
+                    case Messages.ARG_ELECTRONICS:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1148.98f, -1608.94f, 4.41592f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_POLICE:
+                    case Messages.ARG_POLICE:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1111.952f, -824.9194f, 19.31578f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_TOWNHALL:
+                    case Messages.ARG_TOWNHALL:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1285.544f, -567.0439f, 31.71239f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_LICENSE:
+                    case Messages.ARG_LICENSE:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-70f, -1100f, 28f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_VANILLA:
+                    case Messages.ARG_VANILLA:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(120f, -1400f, 30f));
                         NAPI.Entity.SetEntityDimension(player, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         break;
-                    case Commands.ARGUMENT_HOSPITAL:
+                    case Messages.ARG_HOSPITAL:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1385.481f, -976.4036f, 9.273162f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_NEWS:
+                    case Messages.ARG_NEWS:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-600f, -950f, 25f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_BAHAMA:
+                    case Messages.ARG_BAHAMA:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-1400f, -590f, 30f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_MECHANIC:
+                    case Messages.ARG_MECHANIC:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(492f, -1300f, 30f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
                         NAPI.Entity.SetEntityDimension(player, 0);
                         break;
-                    case Commands.ARGUMENT_GARBAGE:
+                    case Messages.ARG_GARBAGE:
                         NAPI.Entity.SetEntityPosition(player, new Vector3(-320f, -1550f, 30f));
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED, 0);
@@ -659,10 +660,10 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_BUSINESS, Messages.GEN_BUSINESS_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_BUSINESS, Messages.GEN_BUSINESS_COMMAND, GreedyArg = true)]
         public void BusinessCommand(Client player, String args)
         {
-            if (HasUserCommandPermission(player, Commands.COMMAND_BUSINESS) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+            if (HasUserCommandPermission(player, Messages.COM_BUSINESS) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 if (args.Trim().Length > 0)
                 {
@@ -671,10 +672,10 @@ namespace WiredPlayers.admin
                     String message = String.Empty;
                     switch (arguments[0].ToLower())
                     {
-                        case Commands.ARGUMENT_INFO:
+                        case Messages.ARG_INFO:
                             break;
-                        case Commands.ARGUMENT_CREATE:
-                            if (HasUserCommandPermission(player, Commands.COMMAND_BUSINESS, Commands.ARGUMENT_CREATE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
+                        case Messages.ARG_CREATE:
+                            if (HasUserCommandPermission(player, Messages.COM_BUSINESS, Messages.ARG_CREATE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 if (arguments.Length == 2)
                                 {
@@ -710,8 +711,8 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_MODIFY:
-                            if (HasUserCommandPermission(player, Commands.COMMAND_BUSINESS, Commands.ARGUMENT_MODIFY) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                        case Messages.ARG_MODIFY:
+                            if (HasUserCommandPermission(player, Messages.COM_BUSINESS, Messages.ARG_MODIFY) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                             {
                                 business = Business.GetClosestBusiness(player);
                                 if (business != null)
@@ -720,7 +721,7 @@ namespace WiredPlayers.admin
                                     {
                                         switch (arguments[1].ToLower())
                                         {
-                                            case Commands.ARGUMENT_NAME:
+                                            case Messages.ARG_NAME:
                                                 if (arguments.Length > 2)
                                                 {
                                                     // We change business name
@@ -738,7 +739,7 @@ namespace WiredPlayers.admin
                                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BUSINESS_MODIFY_NAME_COMMAND);
                                                 }
                                                 break;
-                                            case Commands.ARGUMENT_TYPE:
+                                            case Messages.ARG_TYPE:
                                                 if (arguments.Length == 3)
                                                 {
                                                     // We get business type
@@ -781,7 +782,7 @@ namespace WiredPlayers.admin
                                 }
                             }
                             break;
-                        case Commands.ARGUMENT_REMOVE:
+                        case Messages.ARG_REMOVE:
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
                                 business = Business.GetClosestBusiness(player);
@@ -805,7 +806,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_CHARACTER, Messages.GEN_CHARACTER_COMMAND)]
+        [Command(Messages.COM_CHARACTER, Messages.GEN_CHARACTER_COMMAND)]
         public void CharacterCommand(Client player, String action, String name = "", String surname = "", String amount = "")
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -832,7 +833,7 @@ namespace WiredPlayers.admin
                         String message = String.Empty;
                         switch (action.ToLower())
                         {
-                            case Commands.ARGUMENT_BANK:
+                            case Messages.ARG_BANK:
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                                 {
                                     NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_BANK, value);
@@ -840,7 +841,7 @@ namespace WiredPlayers.admin
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                 }
                                 break;
-                            case Commands.ARGUMENT_MONEY:
+                            case Messages.ARG_MONEY:
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                                 {
                                     NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, value);
@@ -848,7 +849,7 @@ namespace WiredPlayers.admin
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                 }
                                 break;
-                            case Commands.ARGUMENT_FACTION:
+                            case Messages.ARG_FACTION:
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                 {
                                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_FACTION, value);
@@ -856,7 +857,7 @@ namespace WiredPlayers.admin
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                 }
                                 break;
-                            case Commands.ARGUMENT_JOB:
+                            case Messages.ARG_JOB:
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                 {
                                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_JOB, value);
@@ -864,7 +865,7 @@ namespace WiredPlayers.admin
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                 }
                                 break;
-                            case Commands.ARGUMENT_RANK:
+                            case Messages.ARG_RANK:
                                 if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                 {
                                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_RANK, value);
@@ -872,7 +873,7 @@ namespace WiredPlayers.admin
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                 }
                                 break;
-                            case Commands.ARGUMENT_DIMENSION:
+                            case Messages.ARG_DIMENSION:
                                 NAPI.Entity.SetEntityDimension(target, Convert.ToUInt32(value));
                                 message = String.Format(Messages.ADM_PLAYER_DIMENSION_MODIFIED, value, target.Name);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
@@ -894,16 +895,16 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_HOUSE, Messages.GEN_HOUSE_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_HOUSE, Messages.GEN_HOUSE_COMMAND, GreedyArg = true)]
         public void HouseCommand(Client player, String args)
         {
-            if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+            if (HasUserCommandPermission(player, Messages.COM_HOUSE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
             {
                 HouseModel house = House.GetClosestHouse(player);
                 String[] arguments = args.Split(' ');
                 switch (arguments[0].ToLower())
                 {
-                    case Commands.ARGUMENT_INFO:
+                    case Messages.ARG_INFO:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                         {
                             // We get house identifier
@@ -929,8 +930,8 @@ namespace WiredPlayers.admin
                             }
                         }
                         break;
-                    case Commands.ARGUMENT_CREATE:
-                        if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE, Commands.ARGUMENT_CREATE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
+                    case Messages.ARG_CREATE:
+                        if (HasUserCommandPermission(player, Messages.COM_HOUSE, Messages.ARG_CREATE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                         {
                             String houseLabel = String.Empty;
                             house = new HouseModel();
@@ -950,7 +951,7 @@ namespace WiredPlayers.admin
                             House.houseList.Add(house);
                         }
                         break;
-                    case Commands.ARGUMENT_MODIFY:
+                    case Messages.ARG_MODIFY:
                         if (arguments.Length > 2)
                         {
                             String message = String.Empty;
@@ -960,8 +961,8 @@ namespace WiredPlayers.admin
                                 // Numeric modifications
                                 switch (arguments[1].ToLower())
                                 {
-                                    case Commands.ARGUMENT_INTERIOR:
-                                        if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE, Commands.ARGUMENT_INTERIOR) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                    case Messages.ARG_INTERIOR:
+                                        if (HasUserCommandPermission(player, Messages.COM_HOUSE, Messages.ARG_INTERIOR) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (value >= 0 && value < Constants.HOUSE_IPL_LIST.Count)
                                             {
@@ -979,8 +980,8 @@ namespace WiredPlayers.admin
                                             }
                                         }
                                         break;
-                                    case Commands.ARGUMENT_PRICE:
-                                        if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE, Commands.ARGUMENT_PRICE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                    case Messages.ARG_PRICE:
+                                        if (HasUserCommandPermission(player, Messages.COM_HOUSE, Messages.ARG_PRICE) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             if (value > 0)
                                             {
@@ -999,7 +1000,7 @@ namespace WiredPlayers.admin
                                             }
                                         }
                                         break;
-                                    case Commands.ARGUMENT_STATE:
+                                    case Messages.ARG_STATE:
                                         if (value >= 0 && value < 3)
                                         {
                                             house.status = value;
@@ -1015,7 +1016,7 @@ namespace WiredPlayers.admin
                                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_HOUSE_STATUS_MODIFY);
                                         }
                                         break;
-                                    case Commands.ARGUMENT_RENT:
+                                    case Messages.ARG_RENT:
                                         if (value > 0)
                                         {
                                             house.rental = value;
@@ -1048,8 +1049,8 @@ namespace WiredPlayers.admin
                                 // Text based modifications
                                 switch (arguments[1].ToLower())
                                 {
-                                    case Commands.ARGUMENT_OWNER:
-                                        if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE, Commands.ARGUMENT_OWNER) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                    case Messages.ARG_OWNER:
+                                        if (HasUserCommandPermission(player, Messages.COM_HOUSE, Messages.ARG_OWNER) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             house.owner = name.Trim();
                                             Database.UpdateHouse(house);
@@ -1059,8 +1060,8 @@ namespace WiredPlayers.admin
                                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + message);
                                         }
                                         break;
-                                    case Commands.ARGUMENT_NAME:
-                                        if (HasUserCommandPermission(player, Commands.COMMAND_HOUSE, Commands.ARGUMENT_NAME) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
+                                    case Messages.ARG_NAME:
+                                        if (HasUserCommandPermission(player, Messages.COM_HOUSE, Messages.ARG_NAME) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                                         {
                                             house.name = name.Trim();
                                             NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
@@ -1083,7 +1084,7 @@ namespace WiredPlayers.admin
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_HOUSE_MODIFY_COMMAND);
                         }
                         break;
-                    case Commands.ARGUMENT_REMOVE:
+                    case Messages.ARG_REMOVE:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                         {
                             if (house != null)
@@ -1099,7 +1100,7 @@ namespace WiredPlayers.admin
                             }
                         }
                         break;
-                    case Commands.ARGUMENT_TP:
+                    case Messages.ARG_TP:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
                         {
                             // We get the house
@@ -1129,7 +1130,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_PARKING, Messages.GEN_PARKING_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_PARKING, Messages.GEN_PARKING_COMMAND, GreedyArg = true)]
         public void ParkingCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1138,7 +1139,7 @@ namespace WiredPlayers.admin
                 ParkingModel parking = Parking.GetClosestParking(player);
                 switch (arguments[0].ToLower())
                 {
-                    case Commands.ARGUMENT_INFO:
+                    case Messages.ARG_INFO:
                         if (parking != null)
                         {
                             int vehicles = 0;
@@ -1170,7 +1171,7 @@ namespace WiredPlayers.admin
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_PARKING_NEAR);
                         }
                         break;
-                    case Commands.ARGUMENT_CREATE:
+                    case Messages.ARG_CREATE:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                         {
                             if (arguments.Length == 2)
@@ -1204,14 +1205,14 @@ namespace WiredPlayers.admin
                             }
                         }
                         break;
-                    case Commands.ARGUMENT_MODIFY:
+                    case Messages.ARG_MODIFY:
                         if (arguments.Length == 3)
                         {
                             if (parking != null)
                             {
                                 switch (arguments[1].ToLower())
                                 {
-                                    case Commands.ARGUMENT_HOUSE:
+                                    case Messages.ARG_HOUSE:
                                         if (parking.type == Constants.PARKING_TYPE_GARAGE)
                                         {
                                             // We link the house to this parking
@@ -1234,7 +1235,7 @@ namespace WiredPlayers.admin
                                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PARKING_NOT_GARAGE);
                                         }
                                         break;
-                                    case Commands.ARGUMENT_PLACES:
+                                    case Messages.ARG_PLACES:
                                         int slots = 0;
                                         if (Int32.TryParse(arguments[2], out slots) == true)
                                         {
@@ -1251,7 +1252,7 @@ namespace WiredPlayers.admin
                                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_PARKING_MODIFY_COMMAND);
                                         }
                                         break;
-                                    case Commands.ARGUMENT_TYPE:
+                                    case Messages.ARG_TYPE:
                                         int type = 0;
                                         if (Int32.TryParse(arguments[2], out type) == true)
                                         {
@@ -1282,7 +1283,7 @@ namespace WiredPlayers.admin
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_PARKING_MODIFY_COMMAND);
                         }
                         break;
-                    case Commands.ARGUMENT_REMOVE:
+                    case Messages.ARG_REMOVE:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                         {
                             if (parking != null)
@@ -1305,7 +1306,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_POS)]
+        [Command(Messages.COM_POS)]
         public void PosCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1315,7 +1316,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_REVIVE, Messages.GEN_REVIVE_COMMAND)]
+        [Command(Messages.COM_REVIVE, Messages.GEN_REVIVE_COMMAND)]
         public void ReviveCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1345,7 +1346,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_WEATHER, Messages.GEN_WEATHER_COMMAND)]
+        [Command(Messages.COM_WEATHER, Messages.GEN_WEATHER_COMMAND)]
         public void WeatherCommand(Client player, int weather)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1364,7 +1365,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_JAIL, Messages.GEN_JAIL_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_JAIL, Messages.GEN_JAIL_COMMAND, GreedyArg = true)]
         public void JailCommand(Client player, String args)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1429,7 +1430,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_KICK, Messages.GEN_KICK_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_KICK, Messages.GEN_KICK_COMMAND, GreedyArg = true)]
         public void KickCommand(Client player, String targetString, string reason)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1448,7 +1449,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_KICKALL)]
+        [Command(Messages.COM_KICKALL)]
         public void KickAllCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1466,7 +1467,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_BAN, Messages.GEN_BAN_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_BAN, Messages.GEN_BAN_COMMAND, GreedyArg = true)]
         public void BanCommand(Client player, String targetString, string reason)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
@@ -1484,7 +1485,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_HEALTH, Messages.GEN_HEAL_COMMAND)]
+        [Command(Messages.COM_HEALTH, Messages.GEN_HEAL_COMMAND)]
         public void HealthCommand(Client player, String targetString, int health)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
@@ -1502,7 +1503,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_SAVE)]
+        [Command(Messages.COM_SAVE)]
         public void SaveCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1610,7 +1611,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_ADUTY)]
+        [Command(Messages.COM_ADUTY)]
         public void ADutyCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -1632,7 +1633,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_TICKETS)]
+        [Command(Messages.COM_TICKETS)]
         public void TicketsCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -1647,7 +1648,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_ATICKET, Messages.GEN_ANSWER_HELP_REQUEST, GreedyArg = true)]
+        [Command(Messages.COM_ATICKET, Messages.GEN_ANSWER_HELP_REQUEST, GreedyArg = true)]
         public void ATicketCommand(Client player, int ticket, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -1677,7 +1678,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_A, Messages.GEN_ADMIN_TEXT_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_A, Messages.GEN_ADMIN_TEXT_COMMAND, GreedyArg = true)]
         public void ACommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE)
@@ -1705,7 +1706,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_RECON, Messages.GEN_RECON_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_RECON, Messages.GEN_RECON_COMMAND, GreedyArg = true)]
         public void ReconCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1734,7 +1735,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_RECOFF)]
+        [Command(Messages.COM_RECOFF)]
         public void RecoffCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1751,7 +1752,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_INFO, Messages.GEN_INFO_COMMAND)]
+        [Command(Messages.COM_INFO, Messages.GEN_INFO_COMMAND)]
         public void InfoCommand(Client player, String targetString)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_SUPPORT)
@@ -1760,108 +1761,8 @@ namespace WiredPlayers.admin
 
                 if (target != null)
                 {
-                    int rolePoints = NAPI.Data.GetEntityData(target, EntityData.PLAYER_ROLE_POINTS);
-                    String sex = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
-                    String played = NAPI.Data.GetEntityData(target, EntityData.PLAYER_PLAYED) + " minutos";
-                    String age = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_AGE) + " años";
-                    String money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY) + "$";
-                    String bank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK) + "$";
-                    String job = "Sin trabajo";
-                    String faction = "Sin facción";
-                    String rank = "Sin rango";
-                    String houses = String.Empty;
-                    String ownedVehicles = String.Empty;
-                    String lentVehicles = NAPI.Data.GetEntityData(target, EntityData.PLAYER_VEHICLE_KEYS);
-
-                    // We check if the player has any job
-                    foreach (JobModel jobModel in Constants.JOB_LIST)
-                    {
-                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_JOB) == jobModel.job)
-                        {
-                            job = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
-                            break;
-                        }
-                    }
-
-                    // We check if the player is in any faction
-                    foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
-                    {
-                        if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == factionModel.faction && NAPI.Data.GetEntityData(target, EntityData.PLAYER_RANK) == factionModel.rank)
-                        {
-                            switch (factionModel.faction)
-                            {
-                                case Constants.FACTION_POLICE:
-                                    faction = "Policía";
-                                    break;
-                                case Constants.FACTION_EMERGENCY:
-                                    faction = "Emergencias";
-                                    break;
-                                case Constants.FACTION_NEWS:
-                                    faction = "Weazel News";
-                                    break;
-                                case Constants.FACTION_TOWNHALL:
-                                    faction = "Ayuntamiento";
-                                    break;
-                                case Constants.FACTION_TAXI_DRIVER:
-                                    faction = "Servicio de transportes";
-                                    break;
-                                default:
-                                    faction = "Sin facción";
-                                    break;
-                            }
-
-                            // We get the rank from the faction
-                            rank = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
-                            break;
-                        }
-                    }
-
-                    // We check if the player has any rented house
-                    if (NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE) > 0)
-                    {
-                        houses += " " + NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_RENT_HOUSE);
-                    }
-
-                    // We check if the player has any owned house
-                    foreach (HouseModel house in House.houseList)
-                    {
-                        if (house.owner == target.Name)
-                        {
-                            houses += " " + house.id;
-                        }
-                    }
-
-                    // We check if the player has any owned vehicle
-                    foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
-                    {
-                        if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == target.Name)
-                        {
-                            ownedVehicles += " " + NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                        }
-                    }
-                    
-                    foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
-                    {
-                        if (parkedVehicle.vehicle.owner == target.Name)
-                        {
-                            ownedVehicles += " " + parkedVehicle.vehicle.id;
-                        }
-                    }
-
-                    // We show the information
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos básicos:");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Nombre: " + target.Name + "; Sexo: " + sex + "; Edad: " + age + "; Dinero: " + money + "; Banco: " + bank);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos de empleo:");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Trabajo: " + job + "; Facción: " + faction + "; Rango: " + rank);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Propiedades:");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Casas: " + houses);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos propios: " + ownedVehicles);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + played + "; Puntos de rol: " + rolePoints);
+                    // Get player's basic data
+                    Globals.GetPlayerBasicData(player, target);
                 }
                 else
                 {
@@ -1870,7 +1771,7 @@ namespace WiredPlayers.admin
             }
         }
 
-        [Command(Commands.COMMAND_POINTS, Messages.GEN_POINTS_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_POINTS, Messages.GEN_POINTS_COMMAND, GreedyArg = true)]
         public void PuntosCommand(Client player, String arguments)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
@@ -1901,7 +1802,7 @@ namespace WiredPlayers.admin
 
                         switch (args[0].ToLower())
                         {
-                            case Commands.ARGUMENT_GIVE:
+                            case Messages.ARG_GIVE:
                                 // We give role points to the player
                                 NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, targetRolePoints + rolePoints);
 
@@ -1911,7 +1812,7 @@ namespace WiredPlayers.admin
                                 NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + targetMessage);
 
                                 break;
-                            case Commands.ARGUMENT_REMOVE:
+                            case Messages.ARG_REMOVE:
                                 // We remove role points to the player
                                 NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, targetRolePoints - rolePoints);
 
@@ -1920,7 +1821,7 @@ namespace WiredPlayers.admin
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ADMIN_INFO + playerMessage);
                                 NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_ADMIN_INFO + targetMessage);
                                 break;
-                            case Commands.ARGUMENT_SET:
+                            case Messages.ARG_SET:
                                 // We set player's role points
                                 NAPI.Data.SetEntityData(target, EntityData.PLAYER_ROLE_POINTS, rolePoints);
 

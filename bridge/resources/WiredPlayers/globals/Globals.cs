@@ -118,7 +118,7 @@ namespace WiredPlayers.globals
 
         private void UpdatePlayerList(object unused)
         {
-            // Actualizamos la lista de jugadores
+            // Update player list
             foreach (Client player in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
@@ -131,7 +131,7 @@ namespace WiredPlayers.globals
 
         private void OnMinuteSpent(object unused)
         {
-            // Ajustamos la hora del servidor
+            // Adjust server's time
             TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
             NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
 
@@ -143,19 +143,19 @@ namespace WiredPlayers.globals
                     int played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                     if (played > 0 && played % 60 == 0)
                     {
-                        // Reducimos el tiempo entre empleos
+                        // Reduce job cooldown
                         int employeeCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN);
                         if (employeeCooldown > 0)
                         {
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
                         }
 
-                        // Generamos la paga
+                        // Generate the payday
                         GeneratePlayerPayday(player);
                     }
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYED, played + 1);
 
-                    // Miramos si está muerto y esperando a ir al hospital
+                    // Check if the player is injured waiting for the hospital respawn
                     if (NAPI.Data.HasEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) == true)
                     {
                         if (NAPI.Data.GetEntityData(player, EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
@@ -164,20 +164,19 @@ namespace WiredPlayers.globals
                         }
                     }
 
-                    // Miramos si tiene tiempo de descanso de trabajo
+                    // Check if the player has job cooldown
                     int jobCooldown = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN);
                     if (jobCooldown > 0)
                     {
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
                     }
 
-                    // Miramos si está encarcelado
+                    // Check if the player's in jail
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_JAILED) == true)
                     {
                         int jailTime = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
                         if (jailTime == 1)
                         {
-                            // Miramos dónde spawnear
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC)
                             {
                                 NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[3]);
@@ -187,11 +186,10 @@ namespace WiredPlayers.globals
                                 NAPI.Entity.SetEntityPosition(player, Constants.JAIL_SPAWNS[4]);
                             }
 
-                            // Eliminamos la cárcel para el jugador
+                            // Remove player from jail
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAILED, 0);
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_JAIL_TYPE, 0);
-
-                            // Mandamos el mensaje al jugador
+                            
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_UNJAILED);
                         }
                         else if (jailTime > 0)
@@ -201,10 +199,9 @@ namespace WiredPlayers.globals
                         }
                     }
 
-                    // Bajamos el nivel de alcohol
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) == true)
                     {
-                        // Calculamos el nivel de alcohol
+                        // Lower alcohol level
                         float drunkLevel = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
 
                         if (drunkLevel <= 0.0f)
@@ -213,22 +210,18 @@ namespace WiredPlayers.globals
                         }
                         else
                         {
-                            // Miramos si ha bajado del límite de alcohol
                             if (drunkLevel < Constants.WASTED_LEVEL)
                             {
                                 NAPI.Data.ResetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE);
                                 NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
                             }
-
-                            // Cambiamos el nivel de alcohol
+                            
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL, drunkLevel);
                         }
                     }
 
-                    // Guardamos el personaje
                     PlayerModel character = new PlayerModel();
-
-                    // Lista de datos no sincronizados
+                    
                     character.position = NAPI.Entity.GetEntityPosition(player);
                     character.rotation = NAPI.Entity.GetEntityRotation(player);
                     character.health = NAPI.Player.GetPlayerHealth(player);
@@ -256,17 +249,16 @@ namespace WiredPlayers.globals
                     character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
                     character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                     character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-
-                    // Lista de datos sincronizados
+                    
                     character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                     character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
-                    // Guardado del personaje en base de datos
+                    // Save the player into database
                     Database.SaveCharacterInformation(character);
                 }
             }
 
-            // Generación de nuevos pedidos en los trabajos
+            // Generate new fastfood orders
             if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
             {
                 Random rnd = new Random();
@@ -285,25 +277,22 @@ namespace WiredPlayers.globals
                     fastFoodId++;
                 }
 
-                // Actualizamos la hora de generación de un nuevo pedido
+                // Update the new timer time
                 orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
             }
 
-            // Borrados de pedidos de comida rápida caducados
+            // Remove old orders
             fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
-
-            // Guardamos los vehículos
+            
             List<VehicleModel> vehicleList = new List<VehicleModel>();
 
             foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
             {
                 if (!NAPI.Data.HasEntityData(vehicle, EntityData.VEHICLE_TESTING) && NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FACTION) == 0)
                 {
-                    // Obtenemos los colores del vehículo
                     Color primaryColor = NAPI.Vehicle.GetVehicleCustomPrimaryColor(vehicle);
                     Color secondaryColor = NAPI.Vehicle.GetVehicleCustomSecondaryColor(vehicle);
-
-                    // Obtenemos los valores necesarios para recrear el vehículo
+                    
                     VehicleModel vehicleModel = new VehicleModel();
                     vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                     vehicleModel.model = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
@@ -323,12 +312,12 @@ namespace WiredPlayers.globals
                     vehicleModel.gas = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_GAS);
                     vehicleModel.kms = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_KMS);
 
-                    // Añadimos el vehículo a la lista
+                    // Add vehicle into the list
                     vehicleList.Add(vehicleModel);
                 }
             }
 
-            // Guardamos la lista de vehículos
+            // Save all the vehicles
             Database.SaveAllVehicles(vehicleList);
         }
 
@@ -339,9 +328,9 @@ namespace WiredPlayers.globals
             int playerJob = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB);
             int playerRank = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK);
             int playerFaction = NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Resumen de movimientos en la cuenta bancaria");
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PAYDAY_TITLE);
 
-            // Generación del sueldo
+            // Generate the salary
             if (playerFaction > 0 && playerFaction <= Constants.LAST_STATE_FACTION)
             {
                 foreach (FactionModel faction in Constants.FACTION_RANK_LIST)
@@ -364,22 +353,22 @@ namespace WiredPlayers.globals
                     }
                 }
             }
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Sueldo: " + total + "$");
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_SALARY + total + "$");
 
-            // Ingresos extra por nivel
+            // Extra income from the level
             int levelEarnings = GetPlayerLevel(player) * Constants.PAID_PER_LEVEL;
             total += levelEarnings;
             if (levelEarnings > 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Ingresos extra: " + levelEarnings + "$");
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_EXTRA_INCOME + levelEarnings + "$");
             }
 
-            // Los bancos nos regalan dinerico
+            // Bank interest
             int bankInterest = (int)Math.Round(bank * 0.001);
             total += bankInterest;
             if (bankInterest > 0)
             {
-                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Intereses bancarios: " + bankInterest + "$");
+                NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_BANK_INTEREST + bankInterest + "$");
             }
 
             // Generación de impuestos por vehículos
@@ -397,7 +386,7 @@ namespace WiredPlayers.globals
                 }
             }
 
-            // Generación de impuestos por vehículos
+            // Vehicle taxes
             foreach (ParkedCarModel parkedCar in Parking.parkedCars)
             {
                 VehicleHash vehicleHass = NAPI.Util.VehicleNameToModel(parkedCar.vehicle.model);
@@ -405,28 +394,28 @@ namespace WiredPlayers.globals
                 {
                     int vehicleTaxes = (int)Math.Round(parkedCar.vehicle.price * Constants.TAXES_VEHICLE);
                     String vehiclePlate = parkedCar.vehicle.plate == String.Empty ? "LS " + (1000 + parkedCar.vehicle.id) : parkedCar.vehicle.plate;
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Impuestos de " + parkedCar.vehicle.model + " (" + vehiclePlate + "): -" + vehicleTaxes + "$");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_VEHICLE_TAXES_FROM + parkedCar.vehicle.model + " (" + vehiclePlate + "): -" + vehicleTaxes + "$");
                     total -= vehicleTaxes;
                 }
             }
 
-            // Generación de impuestos por viviendas
+            // House taxes
             foreach (HouseModel house in House.houseList)
             {
                 if (house.owner == player.Name)
                 {
                     int houseTaxes = (int)Math.Round(house.price * Constants.TAXES_HOUSE);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Impuestos de la vivienda " + house.name + ": -" + houseTaxes + "$");
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_HOUSE_TAXES_FROM + house.name + ": -" + houseTaxes + "$");
                     total -= houseTaxes;
                 }
             }
 
-            // Sumamos o descontamos el dinero total
+            // Calculate the total balance
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "=====================");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Total: " + total + "$");
+            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_TOTAL + total + "$");
             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, bank + total);
 
-            // Añadimos el log de pago
+            // Add the payment log
             Database.LogPayment("Payday", player.Name, "Payday", total);
         }
 
@@ -512,7 +501,6 @@ namespace WiredPlayers.globals
             item.amount -= amount;
             if (item.amount == 0)
             {
-                // Eliminamos el objeto del jugador
                 Database.RemoveItem(item.id);
                 itemList.Remove(item);
             }
@@ -542,7 +530,7 @@ namespace WiredPlayers.globals
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                     if (businessItem != null && businessItem.type != Constants.ITEM_TYPE_WEAPON)
                     {
-                        // Creamos el objeto del inventario
+                        // Create the item into the inventory
                         InventoryModel inventoryItem = new InventoryModel();
                         inventoryItem.id = item.id;
                         inventoryItem.hash = item.hash;
@@ -550,7 +538,7 @@ namespace WiredPlayers.globals
                         inventoryItem.type = businessItem.type;
                         inventoryItem.amount = item.amount;
 
-                        // Añadimos el objeto al inventario
+                        // Add the item to the inventory
                         inventory.Add(inventoryItem);
                     }
                 }
@@ -569,7 +557,7 @@ namespace WiredPlayers.globals
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                     if (businessItem != null)
                     {
-                        // Creamos el objeto del inventario
+                        // Create the item into the inventory
                         InventoryModel inventoryItem = new InventoryModel();
                         inventoryItem.id = item.id;
                         inventoryItem.hash = item.hash;
@@ -577,7 +565,7 @@ namespace WiredPlayers.globals
                         inventoryItem.type = businessItem.type;
                         inventoryItem.amount = item.amount;
 
-                        // Añadimos el objeto al inventario
+                        // Add the item to the inventory
                         inventory.Add(inventoryItem);
                     }
                 }
@@ -593,7 +581,7 @@ namespace WiredPlayers.globals
             {
                 if (item.ownerEntity == Constants.ITEM_ENTITY_VEHICLE && item.ownerIdentifier == vehicleId)
                 {
-                    // Miramos si es un objeto o un arma
+                    // Check whether is a common item or a weapon
                     InventoryModel inventoryItem = new InventoryModel();
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
@@ -608,12 +596,12 @@ namespace WiredPlayers.globals
                         inventoryItem.type = Constants.ITEM_TYPE_WEAPON;
                     }
 
-                    // Actualizamos el resto de valores
+                    // Update the values
                     inventoryItem.id = item.id;
                     inventoryItem.hash = item.hash;
                     inventoryItem.amount = item.amount;
 
-                    // Añadimos el objeto al inventario
+                    // Add the item to the inventory
                     inventory.Add(inventoryItem);
                 }
             }
@@ -709,6 +697,109 @@ namespace WiredPlayers.globals
             return tattooModelList;
         }
 
+        public static void GetPlayerBasicData(Client asker, Client player)
+        {
+            int rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
+            String sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? Messages.GEN_SEX_MALE : Messages.GEN_SEX_FEMALE;
+            String age = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_AGE) + Messages.GEN_YEARS;
+            String money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY) + "$";
+            String bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) + "$";
+            String job = Messages.GEN_UNEMPLOYED;
+            String faction = Messages.GEN_NO_FACTION;
+            String rank = Messages.GEN_NO_RANK;
+            String houses = String.Empty;
+            String ownedVehicles = String.Empty;
+            String lentVehicles = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
+            TimeSpan played = TimeSpan.FromMinutes(NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED));
+
+            // Check if the player has a job
+            foreach (JobModel jobModel in Constants.JOB_LIST)
+            {
+                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == jobModel.job)
+                {
+                    job = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
+                    break;
+                }
+            }
+
+            // Check if the player is in any faction
+            foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
+            {
+                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == factionModel.faction && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) == factionModel.rank)
+                {
+                    switch (factionModel.faction)
+                    {
+                        case Constants.FACTION_POLICE:
+                            faction = Messages.GEN_POLICE_FACTION;
+                            break;
+                        case Constants.FACTION_EMERGENCY:
+                            faction = Messages.GEN_EMERGENCY_FACTION;
+                            break;
+                        case Constants.FACTION_NEWS:
+                            faction = Messages.GEN_NEWS_FACTION;
+                            break;
+                        case Constants.FACTION_TOWNHALL:
+                            faction = Messages.GEN_TOWNHALL_FACTION;
+                            break;
+                        case Constants.FACTION_TAXI_DRIVER:
+                            faction = Messages.GEN_TRANSPORT_FACTION;
+                            break;
+                    }
+
+                    // Set player's rank
+                    rank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
+                    break;
+                }
+            }
+
+            // Check if the player has any rented house
+            if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_RENT_HOUSE) > 0)
+            {
+                houses += " " + NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_RENT_HOUSE);
+            }
+
+            // Get player's owned houses
+            foreach (HouseModel house in House.houseList)
+            {
+                if (house.owner == player.Name)
+                {
+                    houses += " " + house.id;
+                }
+            }
+
+            // Check for the player's owned vehicles
+            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
+            {
+                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == player.Name)
+                {
+                    ownedVehicles += " " + NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
+                }
+            }
+            
+            foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
+            {
+                if (parkedVehicle.vehicle.owner == player.Name)
+                {
+                    ownedVehicles += " " + parkedVehicle.vehicle.id;
+                }
+            }
+
+            // Show all the information
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + Messages.INF_BASIC_DATA);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_NAME + player.Name + "; " + Messages.GEN_SEX + sex + "; " + Messages.GEN_AGE + age + "; " + Messages.GEN_MONEY + money + "; " + Messages.GEN_BANK + bank);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + " ");
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + Messages.INF_JOB_DATA);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_JOB + job + "; " + Messages.GEN_FACTION + faction + "; " + Messages.GEN_RANK + rank);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + " ");
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + Messages.INF_PROPERTIES);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_HOUSES + houses);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_OWNED_VEHICLES + ownedVehicles);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_LENT_VEHICLES + lentVehicles);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + " ");
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_INFO + Messages.INF_ADDITIONAL_DATA);
+            NAPI.Chat.SendChatMessageToPlayer(asker, Constants.COLOR_HELP + Messages.GEN_PLAYED_TIME + (int)played.TotalHours + "h " + played.Minutes + "m; " + Messages.GEN_ROLE_POINTS + rolePoints);
+        }
+
         private int GetPlayerLevel(Client player)
         {
             float playedHours = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED) / 100;
@@ -728,10 +819,10 @@ namespace WiredPlayers.globals
             adminTicketList = new List<AdminTicketModel>();
             fastFoodOrderList = new List<FastFoodOrderModel>();
 
-            // Área para cambiar de personaje en el lobby
-            NAPI.TextLabel.CreateTextLabel("Pulsa F para cambiar de personaje", new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false);
+            // Area in the lobby to change the character
+            NAPI.TextLabel.CreateTextLabel(Messages.GEN_CHARACTER_HELP, new Vector3(152.2911f, -1001.088f, -99f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false);
 
-            // Añadimos el interior del concesionario
+            // Add car dealer's interior
             NAPI.World.RequestIpl("shr_int");
             NAPI.World.RequestIpl("shr_int_lod");
             NAPI.World.RemoveIpl("fakeint");
@@ -740,14 +831,14 @@ namespace WiredPlayers.globals
             NAPI.World.RemoveIpl("fakeint_boards_lod");
             NAPI.World.RemoveIpl("shutter_closed");
 
-            // Añadimos la puerta del clubhouse para evitar que caigan players al vacío
+            // Add clubhouse's door
             NAPI.World.RequestIpl("hei_bi_hw1_13_door");
 
-            // Evitamos que el personaje reaparezca tras morir
+            // Avoid player's respawn
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetAutoSpawnOnConnect(false);
 
-            // Deshabilitamos el chat global
+            // Disable global server chat
             NAPI.Server.SetGlobalServerChat(false);
 
             foreach (InteriorModel interior in Constants.INTERIOR_LIST)
@@ -765,12 +856,12 @@ namespace WiredPlayers.globals
                     interior.textLabel = NAPI.TextLabel.CreateTextLabel(interior.captionMessage, interior.entrancePosition, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
                 }
             }
-
-            // Definimos variables globales del servidor
+            
+            // Fastfood orders
             Random rnd = new Random();
             orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
 
-            // Creamos los timers cíclicos
+            // Permanent timers
             playersCheckTimer = new Timer(UpdatePlayerList, null, 500, 500);
             minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
         }
@@ -778,21 +869,20 @@ namespace WiredPlayers.globals
         [ServerEvent(Event.PlayerDisconnected)]
         public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
-            // Eliminamos el timer de spawn si existe
             Login.OnPlayerDisconnected(player, type, reason);
 
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Eliminamos el estado de conexión
+                // Disconnect from the server
                 NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PLAYING);
 
-                // Se elimina el personaje de la lista de conectados
+                // Remove player from players list
                 scoreList.RemoveAll(score => score.playerId == player.Value);
 
-                // Borramos la duda que tenga abierta
+                // Remove opened ticket
                 adminTicketList.RemoveAll(ticket => ticket.playerId == player.Value);
 
-                // Llamamos a todos los eventos de las otras clases
+                // Other classes' disconnect function
                 Chat.OnPlayerDisconnected(player, type, reason);
                 DrivingSchool.OnPlayerDisconnected(player, type, reason);
                 Emergency.OnPlayerDisconnected(player, type, reason);
@@ -805,7 +895,7 @@ namespace WiredPlayers.globals
                 Vehicles.OnPlayerDisconnected(player, type, reason);
                 Weapons.OnPlayerDisconnected(player, type, reason);
 
-                // Si lleva algo en la mano, lo borramos
+                // Delete items in the hand
                 if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                 {
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
@@ -817,10 +907,8 @@ namespace WiredPlayers.globals
                     }
                 }
 
-                // Guardamos los datos del personaje
                 PlayerModel character = new PlayerModel();
-
-                // Datos no sincronizados
+                
                 character.position = NAPI.Entity.GetEntityPosition(player);
                 character.rotation = NAPI.Entity.GetEntityRotation(player);
                 character.health = NAPI.Player.GetPlayerHealth(player);
@@ -848,16 +936,16 @@ namespace WiredPlayers.globals
                 character.rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
                 character.played = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED);
                 character.jailed = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAIL_TYPE) + "," + NAPI.Data.GetEntityData(player, EntityData.PLAYER_JAILED);
-
-                // Datos sincronizados
+                
                 character.money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                 character.bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
-                // Guardamos en la base de datos
+                // Save player into database
                 Database.SaveCharacterInformation(character);
 
                 // Avisamos a los jugadores cercanos de la desconexión
-                Chat.SendMessageToNearbyPlayers(player, player.Name + " se ha desconectado. (" + reason + ")", Constants.MESSAGE_DISCONNECT, 10.0f);
+                String message = String.Format(Messages.INF_PLAYER_DISCONNECTED, player.Name, reason);
+                Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DISCONNECT, 10.0f);
             }
         }
 
@@ -889,7 +977,7 @@ namespace WiredPlayers.globals
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
             {
-                // Hay que comprobar si está cerca de un cajero ATM
+                // Check if the player's close to an ATM
                 for (int i = 0; i < Constants.ATM_LIST.Count; i++)
                 {
                     if (player.Position.DistanceTo(Constants.ATM_LIST[i]) <= 1.5f)
@@ -899,7 +987,7 @@ namespace WiredPlayers.globals
                     }
                 }
 
-                // Recorremos la lista de negocios
+                // Check if the player's in any business
                 foreach (BusinessModel business in Business.businessList)
                 {
                     if (player.Position.DistanceTo(business.position) <= 1.5f && player.Dimension == business.dimension)
@@ -955,7 +1043,7 @@ namespace WiredPlayers.globals
                     }
                 }
 
-                // Recorremos la lista de casas
+                // Check if the player's in any house
                 foreach (HouseModel house in House.houseList)
                 {
                     if (player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension)
@@ -1011,7 +1099,7 @@ namespace WiredPlayers.globals
                     }
                 }
 
-                // Recorremos la lista de interiores
+                // Check if the player's in any interior
                 foreach (InteriorModel interior in Constants.INTERIOR_LIST)
                 {
                     if (player.Position.DistanceTo(interior.entrancePosition) < 1.5f)
@@ -1029,19 +1117,17 @@ namespace WiredPlayers.globals
             }
             else
             {
-                // Miramos si está cerca de la puerta de salida
                 Vector3 lobbyExit = new Vector3(151.3791f, -1007.905f, -99f);
 
                 if (lobbyExit.DistanceTo(player.Position) < 1.25f)
                 {
-                    // Comprobamos que tenga un personaje seleccionado
+                    // Player must have a character selected
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_SQL_ID) == false)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NO_CHARACTER_SELECTED);
                     }
                     else
                     {
-                        // Sacamos las variables necesarias para spawnear al jugador
                         int playerSqlId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                         int playerHealth = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HEALTH);
                         int playerArmor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ARMOR);
@@ -1051,10 +1137,9 @@ namespace WiredPlayers.globals
                         ItemModel rightHand = GetItemInEntity(playerSqlId, Constants.ITEM_ENTITY_RIGHT_HAND);
                         ItemModel leftHand = GetItemInEntity(playerSqlId, Constants.ITEM_ENTITY_LEFT_HAND);
 
-                        // Armamos al personaje
+                        // Give the weapons to the player
                         Weapons.GivePlayerWeaponItems(player);
-
-                        // Añadimos el objeto que tenga en la mano derecha
+                        
                         if (rightHand != null)
                         {
                             BusinessItemModel businessItem = Business.GetBusinessItemFromHash(rightHand.hash);
@@ -1072,8 +1157,7 @@ namespace WiredPlayers.globals
                             }
                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, rightHand.id);
                         }
-
-                        // Añadimos el objeto que tenga en la mano izquierda
+                        
                         if (leftHand != null)
                         {
                             BusinessItemModel businessItem = Business.GetBusinessItemFromHash(leftHand.hash);
@@ -1082,7 +1166,7 @@ namespace WiredPlayers.globals
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_LEFT_HAND, leftHand.id);
                         }
 
-                        // Añadimos la dimensión de inicio
+                        // Calculate spawn dimension
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
                         {
                             int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
@@ -1102,26 +1186,23 @@ namespace WiredPlayers.globals
                             NAPI.Entity.SetEntityDimension(player, 0);
                         }
 
-                        // Añadimos el jugador a la lista
+                        // Add player into connected list
                         ScoreModel scoreModel = new ScoreModel(player.Value, player.Name, player.Ping);
                         scoreList.Add(scoreModel);
 
-                        // Spawneamos al jugador en el mundo
+                        // Spawn the player into the world
                         NAPI.Player.SetPlayerName(player, realName);
                         NAPI.Entity.SetEntityPosition(player, spawnPosition);
                         NAPI.Entity.SetEntityRotation(player, spawnRotation);
                         NAPI.Player.SetPlayerHealth(player, playerHealth);
                         NAPI.Player.SetPlayerArmor(player, playerArmor);
-
-                        // Comprobamos si está muerto
+                        
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
                         {
-                            // Creamos las variables para dar el aviso
                             Vector3 deathPosition = null;
                             String deathPlace = String.Empty;
                             String deathHour = DateTime.Now.ToString("h:mm:ss tt");
-
-                            // Miramos el lugar donde ha muerto
+                            
                             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) > 0)
                             {
                                 int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);
@@ -1141,14 +1222,12 @@ namespace WiredPlayers.globals
                                 deathPosition = NAPI.Entity.GetEntityPosition(player);
                             }
 
-                            // Creamos el aviso y lo añadimos a la lista
+                            // Creamos the report for the emergency department
                             FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, player.Value, deathPlace, deathPosition, -1, deathHour);
                             Faction.factionWarningList.Add(factionWarning);
-
-                            // Creamos el mensaje de aviso
+                            
                             String warnMessage = String.Format(Messages.INF_EMERGENCY_WARNING, Faction.factionWarningList.Count - 1);
-
-                            // Damos el aviso a todos los médicos de servicio
+                            
                             foreach (Client target in NAPI.Pools.GetAllPlayers())
                             {
                                 if (NAPI.Data.GetEntityData(target, EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ON_DUTY) == 0)
@@ -1162,13 +1241,13 @@ namespace WiredPlayers.globals
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_EMERGENCY_WARN);
                         }
 
-                        // Activamos el flag de jugador conectado
+                        // Toggle connection flag
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_PLAYING, true);
                     }
                 }
                 else if (player.Position.DistanceTo(new Vector3(152.2911f, -1001.088f, -99f)) < 1.5f)
                 {
-                    // Mostramos el menú de personajes
+                    // Show character menu
                     List<String> playerList = Database.GetAccountCharacters(player.SocialClubName);
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerCharacters", NAPI.Util.ToJson(playerList));
                 }
@@ -1184,13 +1263,13 @@ namespace WiredPlayers.globals
 
             switch (action)
             {
-                case "consumir":
+                case Messages.COM_CONSUME:
                     item.amount--;
                     Database.UpdateItem(item);
                     message = String.Format(Messages.INF_PLAYER_INVENTORY_CONSUME, businessItem.description.ToLower());
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
-                    // Miramos si sube el nivel de alcohol
+                    // Check if it grows alcohol level
                     if (businessItem.alcoholLevel > 0)
                     {
                         float currentAlcohol = 0;
@@ -1199,8 +1278,7 @@ namespace WiredPlayers.globals
                             currentAlcohol = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL);
                         }
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL, currentAlcohol + businessItem.alcoholLevel);
-
-                        // Miramos si ha excedido el nivel de alcohol
+                        
                         if (currentAlcohol + businessItem.alcoholLevel > Constants.WASTED_LEVEL)
                         {
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE, "move_m@drunk@verydrunk");
@@ -1208,33 +1286,32 @@ namespace WiredPlayers.globals
                         }
                     }
 
-                    // Miramos si cambia la vida
+                    // Check if it changes the health
                     if (businessItem.health != 0)
                     {
                         int health = NAPI.Player.GetPlayerHealth(player);
                         NAPI.Player.SetPlayerHealth(player, health + businessItem.health);
                     }
 
-                    // Comprobamos si era el último
+                    // Check if it was the last one remaining
                     if (item.amount == 0)
                     {
                         Database.RemoveItem(item.id);
                         itemList.Remove(item);
                     }
 
-                    // Actualizamos el inventario
+                    // Update the inventory
                     List<InventoryModel> inventory = GetPlayerInventory(player);
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                     break;
-                case "abrir":
-                    // Miramos qué objeto hemos abierto
+                case Messages.ARG_OPEN:
                     switch (item.hash)
                     {
                         case Constants.ITEM_HASH_PACK_BEER_AM:
                             ItemModel itemModel = GetPlayerItemModelFromHash(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID), Constants.ITEM_HASH_BOTTLE_BEER_AM);
                             if (itemModel == null)
                             {
-                                // El jugador no tiene el objeto, lo creamos
+                                // Create the item
                                 itemModel = new ItemModel();
                                 itemModel.hash = Constants.ITEM_HASH_BOTTLE_BEER_AM;
                                 itemModel.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
@@ -1243,55 +1320,52 @@ namespace WiredPlayers.globals
                                 itemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
                                 itemModel.dimension = player.Dimension;
                                 itemModel.id = Database.AddNewItem(itemModel);
-
-                                // Añadimos el objeto a la lista
+                                
                                 itemList.Add(itemModel);
                             }
                             else
                             {
-                                // El jugador ya tiene el objeto, le añadimos la cantidad
+                                // Add the amount to the current item
                                 itemModel.amount += Constants.ITEM_OPEN_BEER_AMOUNT;
                                 Database.UpdateItem(item);
                             }
                             break;
                     }
 
-                    // Restamos uno a la cantidad de objetos contenedores
+                    // Substract container amount
                     SubstractPlayerItems(item);
-
-                    // Mandamos el aviso al jugador
+                    
                     message = String.Format(Messages.INF_PLAYER_INVENTORY_OPEN, businessItem.description.ToLower());
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
-                    // Actualizamos el inventario
+                    // Update the inventory
                     inventory = GetPlayerInventory(player);
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                     break;
-                case "equipar":
+                case Messages.ARG_EQUIP:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
                     {
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_RIGHT_HAND_OCCUPIED);
                     }
                     else
                     {
-                        // Establecemos el objeto en la mano
+                        // Set the item into the hand
                         item.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
                         item.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(item.hash), item.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)player.Dimension);
                         NAPI.Entity.AttachEntityToEntity(item.objectHandle, player, "PH_R_Hand", businessItem.position, businessItem.rotation);
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, itemId);
-
-                        // Mandamos el mensaje
+                        
                         message = String.Format(Messages.INF_PLAYER_INVENTORY_EQUIP, businessItem.description.ToLower());
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                     }
                     break;
-                case "tirar":
-                    // Quitamos una unidad del inventario
+                case Messages.COM_DROP:
                     item.amount--;
                     Database.UpdateItem(item);
 
-                    // Miramos si hay más objetos en el suelo
+                    // Check if there are items of the same type near
                     ItemModel closestItem = GetClosestItemWithHash(player, item.hash);
+
                     if (closestItem != null)
                     {
                         closestItem.amount++;
@@ -1309,50 +1383,46 @@ namespace WiredPlayers.globals
                         itemList.Add(closestItem);
                     }
 
-                    // Comprobamos si era el último
+                    // Check if it was the last one
                     if (item.amount == 0)
                     {
                         Database.RemoveItem(item.id);
                         itemList.Remove(item);
                     }
-
-                    // Mandamos el mensaje
+                    
                     message = String.Format(Messages.INF_PLAYER_INVENTORY_DROP, businessItem.description.ToLower());
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
 
-                    // Actualizamos el inventario
+                    // Update the inventory
                     inventory = GetPlayerInventory(player);
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_SELF);
                     break;
-                case "requisar":
-                    // Obtenemos el jugador objetivo
+                case Messages.ARG_CONFISCATE:
                     Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SEARCHED_TARGET);
 
-                    // Traspasamos el objeto al jugador
+                    // Transfer the item from the target to the player
                     item.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
                     item.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                     Database.UpdateItem(item);
-
-                    // Actualizamos el inventario
-                    inventory = GetPlayerInventoryAndWeapons(target);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_PLAYER);
-
-                    // Enviamos el mensaje
+                    
                     String playerMessage = String.Format(Messages.INF_POLICE_RETIRED_ITEMS_TO, target.Name);
                     String targetMessage = String.Format(Messages.INF_POLICE_RETIRED_ITEMS_FROM, player.Name);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                     NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
+
+                    // Update the inventory
+                    inventory = GetPlayerInventoryAndWeapons(target);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_PLAYER);
                     break;
-                case "guardar":
-                    // Obtenemos el vehículo objetivo
+                case Messages.ARG_STORE:
                     Vehicle targetVehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
 
-                    // Traspasamos el objeto al jugador
+                    // Transfer the item from the player to the vehicle
                     item.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
                     item.ownerIdentifier = NAPI.Data.GetEntityData(targetVehicle, EntityData.VEHICLE_ID);
                     Database.UpdateItem(item);
 
-                    // Si tiene un arma, se la quitamos
+                    // Remove the weapon if it's a weapon
                     foreach (WeaponHash weapon in NAPI.Player.GetPlayerWeapons(player))
                     {
                         if (weapon.ToString() == item.hash)
@@ -1362,42 +1432,40 @@ namespace WiredPlayers.globals
                         }
                     }
 
-                    // Actualizamos el inventario
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_STORED_ITEMS);
+
+                    // Update the inventory
                     inventory = GetPlayerInventoryAndWeapons(player);
                     NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_PLAYER);
-
-                    // Enviamos el mensaje
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_STORED_ITEMS);
                     break;
-                case "sacar":
-                    // Obtenemos el vehículo objetivo
+                case Messages.ARG_WITHDRAW:
                     Vehicle sourceVehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
 
-                    // Traspasamos el objeto al jugador
                     WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(item.hash);
+
                     if (weaponHash != 0)
                     {
-                        // Es un arma, se la damos al jugador
+                        // Give the weapon to the player
                         item.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
                         NAPI.Player.GivePlayerWeapon(player, weaponHash, 0);
                         NAPI.Player.SetPlayerWeaponAmmo(player, weaponHash, item.amount);
                     }
                     else
                     {
-                        // Es un objeto, lo colocamos en el inventario
+                        // Place the item into the inventory
                         item.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
                     }
 
+                    // Transfer the item from the vehicle to the player
                     item.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                     Database.UpdateItem(item);
 
-                    // Actualizamos el inventario
-                    inventory = GetVehicleTrunkInventory(sourceVehicle);
-                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_TRUNK);
-
-                    // Enviamos el mensaje
                     Chat.SendMessageToNearbyPlayers(player, Messages.INF_TRUNK_ITEM_WITHDRAW, Constants.MESSAGE_ME, 20.0f);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_TRUNK_WITHDRAW_ITEMS);
+
+                    // Update the inventory
+                    inventory = GetVehicleTrunkInventory(sourceVehicle);
+                    NAPI.ClientEvent.TriggerClientEvent(player, "showPlayerInventory", NAPI.Util.ToJson(inventory), Constants.INVENTORY_TARGET_VEHICLE_TRUNK);
                     break;
             }
         }
@@ -1405,11 +1473,8 @@ namespace WiredPlayers.globals
         [RemoteEvent("closeVehicleTrunk")]
         public void CloseVehicleTrunkEvent(Client player)
         {
-            // Cerramos el maletero del vehículo
             Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
-            NAPI.Vehicle.SetVehicleDoorState(vehicle, Constants.VEHICLE_TRUNK, false);
-
-            // Quitamos el link con el vehículo
+            NAPI.Vehicle.SetVehicleDoorState(vehicle, Constants.VEHICLE_TRUNK, false);            
             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_OPENED_TRUNK);
         }
 
@@ -1421,8 +1486,8 @@ namespace WiredPlayers.globals
             NAPI.ClientEvent.TriggerClientEvent(player, "updatePlayerTattoos", NAPI.Util.ToJson(playerTattooList), targetPlayer);
         }
 
-        [Command("guardar")]
-        public void GuardarCommand(Client player)
+        [Command(Messages.COM_STORE)]
+        public void StoreCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
@@ -1447,33 +1512,30 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("consumir")]
-        public void ConsumirCommand(Client player)
+        [Command(Messages.COM_CONSUME)]
+        public void ConsumeCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
-                // Obtenemos el objeto de la mano
+                // Get the item in the right hand
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                 ItemModel item = GetItemModelFromId(itemId);
                 BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
 
-                // Miramos si es un consumible
+                // Check if it's consumable
                 if (businessItem.type == Constants.ITEM_TYPE_CONSUMABLE)
                 {
                     String message = String.Format(Messages.INF_PLAYER_INVENTORY_CONSUME, businessItem.description.ToLower());
-
-                    // Consumimos una unidad
+                    
                     item.amount--;
                     Database.UpdateItem(item);
-
-                    // Miramos si cambia la vida
+                    
                     if (businessItem.health != 0)
                     {
                         int health = NAPI.Player.GetPlayerHealth(player);
                         NAPI.Player.SetPlayerHealth(player, health + businessItem.health);
                     }
-
-                    // Miramos si sube el nivel de alcohol
+                    
                     if (businessItem.alcoholLevel > 0)
                     {
                         float currentAlcohol = 0;
@@ -1482,16 +1544,14 @@ namespace WiredPlayers.globals
                             currentAlcohol = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL);
                         }
                         NAPI.Data.SetEntityData(player, EntityData.PLAYER_DRUNK_LEVEL, currentAlcohol + businessItem.alcoholLevel);
-
-                        // Miramos si ha excedido el nivel de alcohol
+                        
                         if (currentAlcohol + businessItem.alcoholLevel > Constants.WASTED_LEVEL)
                         {
                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_WALKING_STYLE, "move_m@drunk@verydrunk");
                             NAPI.ClientEvent.TriggerClientEventForAll("changePlayerWalkingStyle", player.Handle, "move_m@drunk@verydrunk");
                         }
                     }
-
-                    // Comprobamos si era el último
+                    
                     if (item.amount == 0)
                     {
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
@@ -1500,8 +1560,7 @@ namespace WiredPlayers.globals
                         Database.RemoveItem(item.id);
                         itemList.Remove(item);
                     }
-
-                    // Mandamos el mensaje al jugador
+                    
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                 }
                 else
@@ -1515,8 +1574,8 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("inventario")]
-        public void InventarioCommand(Client player)
+        [Command(Messages.COM_INVENTORY)]
+        public void InventoryCommand(Client player)
         {
             if (GetPlayerInventoryTotal(player) > 0)
             {
@@ -1529,16 +1588,15 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("comprar")]
-        public void ComprarCommand(Client player, int amount = 0)
+        [Command(Messages.COM_PURCHASE)]
+        public void PurchaseCommand(Client player, int amount = 0)
         {
-            // Miramos si el jugador está dentro de un negocio
+            // Check if the player is inside a business
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
             {
                 int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
                 BusinessModel business = Business.GetBusinessById(businessId);
-
-                // Mostramos el menú en función de la tienda
+                
                 switch (business.type)
                 {
                     case Constants.BUSINESS_TYPE_CLOTHES:
@@ -1554,12 +1612,11 @@ namespace WiredPlayers.globals
                         int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                         int playerSex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX);
 
-                        // Eliminamos la ropa del personaje
+                        // Remove player's clothes
                         NAPI.Player.SetPlayerClothes(player, 11, 15, 0);
                         NAPI.Player.SetPlayerClothes(player, 3, 15, 0);
                         NAPI.Player.SetPlayerClothes(player, 8, 15, 0);
-
-                        // Ropa dependiente del sexo
+                        
                         if (playerSex == 0)
                         {
                             NAPI.Player.SetPlayerClothes(player, 4, 61, 0);
@@ -1571,7 +1628,7 @@ namespace WiredPlayers.globals
                             NAPI.Player.SetPlayerClothes(player, 6, 35, 0);
                         }
 
-                        // Cargamos la lista de tatuajes
+                        // Load tattoo list
                         List<TattooModel> tattooList = GetPlayerTattoos(playerId);
 
                         NAPI.ClientEvent.TriggerClientEvent(player, "showTattooMenu", NAPI.Util.ToJson(tattooList), NAPI.Util.ToJson(Constants.TATTOO_LIST), business.name, business.multiplier);
@@ -1584,7 +1641,7 @@ namespace WiredPlayers.globals
             }
             else
             {
-                // Recorremos la lista de casas
+                // Get all the houses
                 foreach (HouseModel house in House.houseList)
                 {
                     if (player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension)
@@ -1594,7 +1651,7 @@ namespace WiredPlayers.globals
                     }
                 }
 
-                // Recorremos la lista de parkings
+                // Check if the player's in the scrapyard
                 foreach (ParkingModel parking in Parking.parkingList)
                 {
                     if (player.Position.DistanceTo(parking.position) < 2.5f && parking.type == Constants.PARKING_TYPE_SCRAPYARD)
@@ -1625,11 +1682,9 @@ namespace WiredPlayers.globals
                                     item.amount += amount;
                                     Database.UpdateItem(item);
                                 }
-
-                                // Restamos el dinero al jugador
+                                
                                 NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - amount);
-
-                                // Mandamos el mensaje al jugador
+                                
                                 String message = String.Format(Messages.INF_PRODUCTS_BOUGHT, amount, amount);
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                             }
@@ -1649,8 +1704,8 @@ namespace WiredPlayers.globals
 
         }
 
-        [Command("vender", Messages.GEN_SELL_COMMAND, GreedyArg = true)]
-        public void VenderCommand(Client player, String args) // /vender vehiculo id id/persona precio
+        [Command(Messages.COM_SELL, Messages.GEN_SELL_COMMAND, GreedyArg = true)]
+        public void SellCommand(Client player, String args)
         {
             String[] arguments = args.Split(' ');
             int price = 0;
@@ -1662,10 +1717,9 @@ namespace WiredPlayers.globals
             {
                 switch (arguments[0].ToLower())
                 {
-                    case "vehiculo":
+                    case Messages.ARG_VEHICLE:
                         if (arguments.Length > 3)
                         {
-                            // Miramos si viene un id o un nombre
                             if (Int32.TryParse(arguments[2], out targetId) == true)
                             {
                                 target = GetPlayerById(targetId);
@@ -1681,8 +1735,7 @@ namespace WiredPlayers.globals
                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_SELL_VEH_COMMAND);
                                 return;
                             }
-
-                            // Comprobamos el precio
+                            
                             if (Int32.TryParse(priceString, out price) == true)
                             {
                                 if (price > 0)
@@ -1690,11 +1743,9 @@ namespace WiredPlayers.globals
                                     if (Int32.TryParse(arguments[1], out objectId) == true)
                                     {
                                         Vehicle vehicle = Vehicles.GetVehicleById(objectId);
-
-                                        // Miramos si está en un parking
+                                        
                                         if (vehicle == null)
                                         {
-                                            // Miramos si está aparcado
                                             VehicleModel vehModel = Vehicles.GetParkedVehicleById(objectId);
 
                                             if (vehModel != null)
@@ -1769,7 +1820,7 @@ namespace WiredPlayers.globals
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_SELL_VEH_COMMAND);
                         }
                         break;
-                    case "casa": // /vender casa id
+                    case Messages.ARG_HOUSE:
                         if (arguments.Length < 2)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.GEN_SELL_HOUSE_COMMAND);
@@ -1783,7 +1834,7 @@ namespace WiredPlayers.globals
                                 {
                                     if (house.owner == player.Name)
                                     {
-                                        foreach (Client rndPlayer in NAPI.Pools.GetAllPlayers()) // Si hay jugadores dentro no se puede vender.
+                                        foreach (Client rndPlayer in NAPI.Pools.GetAllPlayers())
                                         {
                                             if (NAPI.Data.HasEntityData(rndPlayer, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(rndPlayer, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
                                             {
@@ -1800,9 +1851,6 @@ namespace WiredPlayers.globals
                                         }
                                         else
                                         {
-                                            //vender casa id jugador precio
-
-                                            // Miramos si viene un id o un nombre
                                             if (Int32.TryParse(arguments[2], out targetId) == true)
                                             {
                                                 target = GetPlayerById(targetId);
@@ -1818,7 +1866,7 @@ namespace WiredPlayers.globals
                                                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + Messages.GEN_SELL_HOUSE_COMMAND);
                                                 return;
                                             }
-                                            //
+
                                             if (Int32.TryParse(priceString, out price) == true)
                                             {
                                                 if (price > 0)
@@ -1861,11 +1909,10 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "arma":
-                        // Por hacer
+                    case Messages.ARG_WEAPON:
+                        // Pending TODO
                         break;
-                    case "pescado":
-                        // Miramos si el jugador está dentro de un negocio
+                    case Messages.ARG_FISH:
                         if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) > 0)
                         {
                             int businessId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED);
@@ -1882,18 +1929,14 @@ namespace WiredPlayers.globals
                                 }
                                 else
                                 {
-                                    // Obtenemos el dinero y las ganancias
                                     int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                                     int amount = (int)Math.Round(fishModel.amount * Constants.PRICE_FISH / 1000.0);
-
-                                    // Eliminamos el objeto al jugador
+                                    
                                     Database.RemoveItem(fishModel.id);
                                     itemList.Remove(fishModel);
-
-                                    // Le damos el dinero en mano al jugador
+                                    
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney + amount);
-
-                                    // Mandamos el mensaje al jugador
+                                    
                                     String message = String.Format(Messages.INF_FISHING_WON, amount);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                                 }
@@ -1919,20 +1962,20 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("ayuda")]
-        public void AyudaCommand(Client player)
+        [Command(Messages.COM_HELP)]
+        public void HelpCommand(Client player)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "helptext");
         }
 
-        [Command("bienvenida")]
-        public void BienvenidaCommand(Client player)
+        [Command(Messages.COM_WELCOME)]
+        public void WelcomeCommand(Client player)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "welcomeHelp");
         }
 
-        [Command("mostrar", Messages.GEN_SHOW_DOC_COMMAND)]
-        public void MostrarCommand(Client player, String targetString, String documentation)
+        [Command(Messages.COM_SHOW, Messages.GEN_SHOW_DOC_COMMAND)]
+        public void ShowCommand(Client player, String targetString, String documentation)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -1940,20 +1983,24 @@ namespace WiredPlayers.globals
             }
             else
             {
-                String nameChar = NAPI.Data.GetEntityData(player, "PLAYER_NAME");
-                int age = NAPI.Data.GetEntitySharedData(player, "PLAYER_AGE");
-                String sexDescription = NAPI.Data.GetEntitySharedData(player, "PLAYER_SEX") == Constants.SEX_MALE ? "Hombre" : "Mujer";
                 int currentLicense = 0;
+                String message = String.Empty;
+                String nameChar = NAPI.Data.GetEntityData(player, EntityData.PLAYER_NAME);
+                int age = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_AGE);
+                String sexDescription = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? Messages.GEN_SEX_MALE : Messages.GEN_SEX_FEMALE;
 
                 Client target = Int32.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
                 switch (documentation.ToLower())
                 {
-                    case "licencias":
+                    case Messages.ARG_LICENSES:
+                        String licenseMessage = String.Empty;
                         String playerLicenses = NAPI.Data.GetEntityData(player, EntityData.PLAYER_LICENSES);
                         String[] playerLicensesArray = playerLicenses.Split(',');
-                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_ME + player.Name + " muestra sus licencias a " + target.Name);
-                        NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_CHAT_ME + "Has mostrado tus licencias a " + target.Name);
+
+                        message = String.Format(Messages.INF_LICENSES_SHOW, target.Name);
+                        Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, 20.0f);
+
                         foreach (String license in playerLicensesArray)
                         {
                             int currentLicenseStatus = Int32.Parse(license);
@@ -1963,13 +2010,14 @@ namespace WiredPlayers.globals
                                     switch (currentLicenseStatus)
                                     {
                                         case -1:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Turismo: No disponible");
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_CAR_LICENSE_NOT_AVAILABLE);
                                             break;
                                         case 0:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Turismo: Pendiente del examen práctico");
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_CAR_LICENSE_PRACTICAL_PENDING);
                                             break;
                                         default:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Turismo: " + currentLicenseStatus + " puntos");
+                                            licenseMessage = String.Format(Messages.INF_CAR_LICENSE_POINTS, currentLicenseStatus);
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + licenseMessage);
                                             break;
                                     }
                                     break;
@@ -1977,60 +2025,62 @@ namespace WiredPlayers.globals
                                     switch (currentLicenseStatus)
                                     {
                                         case -1:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Motocicleta: No disponible");
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_MOTORCYCLE_LICENSE_NOT_AVAILABLE);
                                             break;
                                         case 0:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Motocicleta: Pendiente del examen práctico");
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_MOTORCYCLE_LICENSE_PRACTICAL_PENDING);
                                             break;
                                         default:
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Motocicleta: " + currentLicenseStatus + " puntos");
+                                            licenseMessage = String.Format(Messages.INF_MOTORCYCLE_LICENSE_POINTS, currentLicenseStatus);
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + licenseMessage);
                                             break;
                                     }
                                     break;
                                 case Constants.LICENSE_TAXI:
                                     if (currentLicenseStatus == -1)
                                     {
-                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Taxi: No disponible");
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_TAXI_LICENSE_NOT_AVAILABLE);
                                     }
                                     else
                                     {
-                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + "Taxi: Vigente");
+                                        NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_HELP + Messages.INF_TAXI_LICENSE_UP_TO_DATE);
                                     }
                                     break;
                             }
                             currentLicense++;
                         }
                         break;
-                    case "seguro":
+                    case Messages.ARG_INSURANCE:
                         int playerMedicalInsurance = NAPI.Data.GetEntityData(player, EntityData.PLAYER_MEDICAL_INSURANCE);
-                        // Hacemos la conversión del timestamp a fecha
-                        System.DateTime dateTime = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+                        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                         dateTime = dateTime.AddSeconds(playerMedicalInsurance);
 
                         if (playerMedicalInsurance > 0)
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_CHAT_ME + "Has mostrado tu seguro médico a " + target.Name);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_ME + player.Name + " muestra el seguro médico a " + target.Name);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Nombre: " + nameChar);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Edad: " + age);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Sexo: " + sexDescription);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Fecha de expiración: " + dateTime.ToShortDateString());
+                            message = String.Format(Messages.INF_INSURANCE_SHOW, target.Name);
+                            Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, 20.0f);
+                            
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_NAME + nameChar);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_AGE + age);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_SEX + sexDescription);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_EXPIRY + dateTime.ToShortDateString());
                         }
                         else
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + "No tienes seguro médico o ya ha caducado.");
+                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_PLAYER_NOT_MEDICAL_INSURANCE);
                         }
 
                         break;
-                    case "documentacion":
+                    case Messages.ARG_IDENTIFICATION:
                         int playerDocumentation = NAPI.Data.GetEntityData(player, EntityData.PLAYER_DOCUMENTATION);
                         if (playerDocumentation > 0)
                         {
-                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_CHAT_ME + "Has mostrado tu documentación a " + target.Name);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_CHAT_ME + player.Name + " muestra su documentación a " + target.Name);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Nombre: " + nameChar);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Edad: " + age);
-                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Sexo: " + sexDescription);
+                            message = String.Format(Messages.INF_IDENTIFICATION_SHOW, target.Name);
+                            Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, 20.0f);
+
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_NAME + nameChar);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_AGE + age);
+                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + Messages.GEN_SEX + sexDescription);
                         }
                         else
                         {
@@ -2041,8 +2091,8 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("pagar", Messages.GEN_PAY_COMMAND)]
-        public void PagarCommand(Client player, String targetString, int price)
+        [Command(Messages.COM_PAY, Messages.GEN_PAY_COMMAND)]
+        public void PayCommand(Client player, String targetString, int price)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -2059,14 +2109,17 @@ namespace WiredPlayers.globals
                 {
                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_PAYMENT, player);
                     NAPI.Data.SetEntityData(target, EntityData.JOB_OFFER_PRICE, price);
-                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Has ofrecido un pago de " + price + "$ a " + target.Name + ".");
-                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + player.Name + " te ha ofrecido un pago de " + price + "$. Escribe /aceptar dinero o /cancelar dinero.");
+
+                    String playerMessage = String.Format(Messages.INF_PAYMENT_OFFER, price, target.Name);
+                    String targetMessage = String.Format(Messages.INF_PAYMENT_RECEIVED, player.Name, price);
+                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                 }
             }
         }
 
-        [Command("ceder", Messages.GEN_GIVE_COMMAND)]
-        public void CederCommand(Client player, String targetString)
+        [Command(Messages.COM_GIVE, Messages.GEN_GIVE_COMMAND)]
+        public void GiveCommand(Client player, String targetString)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
@@ -2092,7 +2145,7 @@ namespace WiredPlayers.globals
                     int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                     ItemModel item = GetItemModelFromId(itemId);
 
-                    // Miramos si es un arma
+                    // Check if it's a weapon
                     WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(item.hash);
 
                     if (weaponHash != 0)
@@ -2100,8 +2153,7 @@ namespace WiredPlayers.globals
                         NAPI.Player.GivePlayerWeapon(target, weaponHash, 0);
                         NAPI.Player.SetPlayerWeaponAmmo(target, weaponHash, item.amount);
                         NAPI.Player.RemovePlayerWeapon(player, weaponHash);
-
-                        // Creamos los mensajes para los usuarios
+                        
                         playerMessage = String.Format(Messages.INF_ITEM_GIVEN, item.hash.ToLower(), target.Name);
                         targetMessage = String.Format(Messages.INF_ITEM_RECEIVED, player.Name, item.hash.ToLower());
                     }
@@ -2110,19 +2162,17 @@ namespace WiredPlayers.globals
                         BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
                         NAPI.Entity.DetachEntity(item.objectHandle);
                         NAPI.Entity.AttachEntityToEntity(item.objectHandle, target, "PH_R_Hand", businessItem.position, businessItem.rotation);
-
-                        // Creamos los mensajes para los usuarios
+                        
                         playerMessage = String.Format(Messages.INF_ITEM_GIVEN, businessItem.description.ToLower(), target.Name);
                         targetMessage = String.Format(Messages.INF_ITEM_RECEIVED, player.Name, businessItem.description.ToLower());
                     }
 
-                    // Cambiamos el objeto de dueño
+                    // Change item's owner
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                     NAPI.Data.SetEntityData(target, EntityData.PLAYER_RIGHT_HAND, item.id);
                     item.ownerIdentifier = NAPI.Data.GetEntityData(target, EntityData.PLAYER_SQL_ID);
                     Database.UpdateItem(item);
-
-                    // Mandamos los mensajes a los jugadores
+                    
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                     NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
                 }
@@ -2133,19 +2183,19 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("cancelar", Messages.GEN_GLOBALS_CANCEL_COMMAND)]
-        public void CancelarCommand(Client player, String cancel)
+        [Command(Messages.COM_CANCEL, Messages.GEN_GLOBALS_CANCEL_COMMAND)]
+        public void CancelCommand(Client player, String cancel)
         {
             switch (cancel.ToLower())
             {
-                case "directo":
+                case Messages.ARG_INTERVIEW:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ON_AIR) == true)
                     {
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ON_AIR);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_ON_AIR_CANCELED);
                     }
                     break;
-                case "servicio":
+                case Messages.ARG_SERVICE:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ALREADY_FUCKING) == false)
                     {
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING);
@@ -2154,7 +2204,7 @@ namespace WiredPlayers.globals
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_HOOKER_SERVICE_CANCELED);
                     }
                     break;
-                case "dinero":
+                case Messages.ARG_MONEY:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PAYMENT) == true)
                     {
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PAYMENT);
@@ -2162,7 +2212,7 @@ namespace WiredPlayers.globals
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PAYMENT_CANCELED);
                     }
                     break;
-                case "pedidos":
+                case Messages.ARG_ORDER:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_DELIVER_ORDER) == true)
                     {
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_DELIVER_ORDER);
@@ -2170,19 +2220,20 @@ namespace WiredPlayers.globals
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_VEHICLE);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_WON);
 
-                        // Quitamos los checkpoints
+                        // Remove the checkpoints
                         NAPI.ClientEvent.TriggerClientEvent(player, "fastFoodDeliverFinished");
+
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_DELIVERER_ORDER_CANCELED);
                     }
                     break;
-                case "pintura":
+                case Messages.ARG_REPAINT:
                     if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE) == true)
                     {
-                        // Obtenemos el mecánico y vehículo
+                        // Get the mechanic and the vehicle
                         Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                         Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE);
 
-                        // Obtenemos los antiguos colores
+                        // Get old colors
                         int vehicleColorType = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE);
                         String primaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR);
                         String secondaryVehicleColor = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR);
@@ -2201,8 +2252,7 @@ namespace WiredPlayers.globals
                             NAPI.Vehicle.SetVehicleCustomPrimaryColor(vehicle, Int32.Parse(primaryColor[0]), Int32.Parse(primaryColor[1]), Int32.Parse(primaryColor[2]));
                             NAPI.Vehicle.SetVehicleCustomSecondaryColor(vehicle, Int32.Parse(secondaryColor[0]), Int32.Parse(secondaryColor[1]), Int32.Parse(secondaryColor[2]));
                         }
-
-                        // Reseteamos las variables
+                        
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE);
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_COLOR_TYPE);
@@ -2210,10 +2260,9 @@ namespace WiredPlayers.globals
                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_SECOND_COLOR);
                         NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRICE);
 
-                        // Cerramos el navegador de repintado
+                        // Remove repaint window
                         NAPI.ClientEvent.TriggerClientEvent(target, "closeRepaintWindow");
-
-                        // Mandamos el mensaje al jugador
+                        
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_REPAINT_CANCELED);
                     }
                     break;
@@ -2223,8 +2272,8 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("aceptar", Messages.GEN_GLOBALS_ACCEPT_COMMAND)]
-        public void AceptarCommand(Client player, String accept)
+        [Command(Messages.COM_ACCEPT, Messages.GEN_GLOBALS_ACCEPT_COMMAND)]
+        public void AcceptCommand(Client player, String accept)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
             {
@@ -2234,10 +2283,9 @@ namespace WiredPlayers.globals
             {
                 switch (accept.ToLower())
                 {
-                    case "reparacion":
+                    case Messages.ARG_REPAIR:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE) == true)
                         {
-                            // Obtenemos el mecánico
                             Client mechanic = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
                             if (mechanic != null && mechanic.Position.DistanceTo(player.Position) < 5.0f)
@@ -2247,21 +2295,20 @@ namespace WiredPlayers.globals
 
                                 if (playerMoney >= price)
                                 {
-                                    // Obtenemos el vehículo a reparar y la parte
+                                    // Get the vehicle to repair and the broken part
                                     String type = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAIR_TYPE);
                                     Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE);
-
-                                    // Obtenemos el dinero y productos del mecánico
+                                    
                                     int mechanicId = NAPI.Data.GetEntityData(mechanic, EntityData.PLAYER_SQL_ID);
                                     int mechanicMoney = NAPI.Data.GetEntitySharedData(mechanic, EntityData.PLAYER_MONEY);
                                     ItemModel item = GetPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
                                     switch (type.ToLower())
                                     {
-                                        case "chasis":
+                                        case Messages.ARG_CHASSIS:
                                             NAPI.Vehicle.RepairVehicle(vehicle);
                                             break;
-                                        case "puertas":
+                                        case Messages.ARG_DOORS:
                                             for (int i = 0; i < 6; i++)
                                             {
                                                 if (NAPI.Vehicle.IsVehicleDoorBroken(vehicle, i) == true)
@@ -2270,7 +2317,7 @@ namespace WiredPlayers.globals
                                                 }
                                             }
                                             break;
-                                        case "ruedas":
+                                        case Messages.ARG_TYRES:
                                             for (int i = 0; i < 4; i++)
                                             {
                                                 if (NAPI.Vehicle.IsVehicleTyrePopped(vehicle, i) == true)
@@ -2279,7 +2326,7 @@ namespace WiredPlayers.globals
                                                 }
                                             }
                                             break;
-                                        case "lunas":
+                                        case Messages.ARG_WINDOWS:
                                             for (int i = 0; i < 4; i++)
                                             {
                                                 if (NAPI.Vehicle.IsVehicleWindowBroken(vehicle, i) == true)
@@ -2289,8 +2336,7 @@ namespace WiredPlayers.globals
                                             }
                                             break;
                                     }
-
-                                    // Descontamos los productos y pagamos
+                                    
                                     if (player != mechanic)
                                     {
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
@@ -2298,22 +2344,20 @@ namespace WiredPlayers.globals
                                     }
                                     item.amount -= NAPI.Data.GetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
                                     Database.UpdateItem(item);
-
-                                    // Limpiamos las variables
+                                    
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAIR_VEHICLE);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAIR_TYPE);
                                     NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
                                     NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRICE);
-
-                                    // Mandamos el mensaje
+                                    
                                     String playerMessage = String.Format(Messages.INF_VEHICLE_REPAIRED_BY, mechanic.Name, price);
                                     String mechanicMessage = String.Format(Messages.INF_VEHICLE_REPAIRED_BY, player.Name, price);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                                     NAPI.Chat.SendChatMessageToPlayer(mechanic, Constants.COLOR_INFO + mechanicMessage);
 
-                                    // Guardamos el registro en base de datos
-                                    Database.LogPayment(player.Name, mechanic.Name, "Reparación", price);
+                                    // Save the log into the database
+                                    Database.LogPayment(player.Name, mechanic.Name, Messages.COM_REPAIR, price);
                                 }
                                 else
                                 {
@@ -2331,10 +2375,9 @@ namespace WiredPlayers.globals
 
                         }
                         break;
-                    case "pintura":
+                    case Messages.ARG_REPAINT:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE) == true)
                         {
-                            // Obtenemos el mecánico
                             Client mechanic = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
                             if (mechanic != null && mechanic.Position.DistanceTo(player.Position) < 5.0f)
@@ -2344,25 +2387,23 @@ namespace WiredPlayers.globals
 
                                 if (playerMoney >= price)
                                 {
-                                    // Obtenemos el vehículo a repintar y los colores
                                     Vehicle vehicle = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE);
                                     int colorType = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_COLOR_TYPE);
                                     String firstColor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_FIRST_COLOR);
                                     String secondColor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_SECOND_COLOR);
                                     int pearlescentColor = NAPI.Data.GetEntityData(player, EntityData.PLAYER_REPAINT_PEARLESCENT);
-
-                                    // Obtenemos el dinero y productos del mecánico
+                                    
                                     int mechanicId = NAPI.Data.GetEntityData(mechanic, EntityData.PLAYER_SQL_ID);
                                     int mechanicMoney = NAPI.Data.GetEntitySharedData(mechanic, EntityData.PLAYER_MONEY);
                                     ItemModel item = GetPlayerItemModelFromHash(mechanicId, Constants.ITEM_HASH_BUSINESS_PRODUCTS);
 
-                                    // Repintamos el vehículo
+                                    // Repaint the vehicle
                                     NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_COLOR_TYPE, colorType);
                                     NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_FIRST_COLOR, firstColor);
                                     NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_SECOND_COLOR, secondColor);
                                     NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_PEARLESCENT_COLOR, pearlescentColor);
 
-                                    // Actualizamos el color en base de datos
+                                    // Update the vehicle's color
                                     VehicleModel vehicleModel = new VehicleModel();
                                     vehicleModel.id = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
                                     vehicleModel.colorType = colorType;
@@ -2370,8 +2411,7 @@ namespace WiredPlayers.globals
                                     vehicleModel.secondColor = secondColor;
                                     vehicleModel.pearlescent = pearlescentColor;
                                     Database.UpdateVehicleColor(vehicleModel);
-
-                                    // Descontamos los productos y pagamos
+                                    
                                     if (player != mechanic)
                                     {
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney - price);
@@ -2379,8 +2419,7 @@ namespace WiredPlayers.globals
                                     }
                                     item.amount -= NAPI.Data.GetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
                                     Database.UpdateItem(item);
-
-                                    // Limpiamos las variables
+                                    
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_VEHICLE);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_COLOR_TYPE);
@@ -2388,18 +2427,17 @@ namespace WiredPlayers.globals
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_REPAINT_SECOND_COLOR);
                                     NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRODUCTS);
                                     NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRICE);
-
-                                    // Mandamos el mensaje
+                                    
                                     String playerMessage = String.Format(Messages.INF_VEHICLE_REPAINTED_BY, mechanic.Name, price);
                                     String mechanicMessage = String.Format(Messages.INF_VEHICLE_REPAINTED_TO, player.Name, price);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
                                     NAPI.Chat.SendChatMessageToPlayer(mechanic, Constants.COLOR_INFO + mechanicMessage);
 
-                                    // Cerramos el navegador de repintado
+                                    // Remove repaint menu
                                     NAPI.ClientEvent.TriggerClientEvent(mechanic, "closeRepaintWindow");
 
-                                    // Guardamos el registro en base de datos
-                                    Database.LogPayment(player.Name, mechanic.Name, "Pintura", price);
+                                    // Save the log into the database
+                                    Database.LogPayment(player.Name, mechanic.Name, Messages.COM_REPAINT, price);
                                 }
                                 else
                                 {
@@ -2417,7 +2455,7 @@ namespace WiredPlayers.globals
                         }
 
                         break;
-                    case "servicio":
+                    case Messages.ARG_SERVICE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_ALREADY_FUCKING) == true)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ALREADY_FUCKING);
@@ -2428,7 +2466,6 @@ namespace WiredPlayers.globals
                         }
                         else
                         {
-                            // Obtenemos el vehículo
                             NetHandle vehicle = NAPI.Player.GetPlayerVehicle(player);
 
                             if (NAPI.Vehicle.GetVehicleEngineStatus(vehicle) == true)
@@ -2455,25 +2492,26 @@ namespace WiredPlayers.globals
                                             NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, money - amount);
                                             NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, targetMoney + amount);
 
-                                            // Avisamos del pago
-                                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Has pagado un servicio de " + amount + "$.");
-                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "El cliente te ha pagado " + amount + "$ por el servicio.");
+                                            String playerMessage = String.Format(Messages.INF_SERVICE_PAID, amount);
+                                            String targetMessage = String.Format(Messages.INF_SERVICE_RECEIVED, amount);
+                                            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                                            NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
 
                                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ANIMATION, target);
                                             NAPI.Data.SetEntityData(player, EntityData.PLAYER_ALREADY_FUCKING, target);
                                             NAPI.Data.SetEntityData(target, EntityData.PLAYER_ALREADY_FUCKING, player);
 
-                                            // Reseteamos las variables
+                                            // Reset the entity data
                                             NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRICE);
                                             NAPI.Data.ResetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
 
-                                            // Comprobamos el tipo de servicio
+                                            // Check the type of the service
                                             if (NAPI.Data.GetEntityData(player, EntityData.HOOKER_TYPE_SERVICE) == Constants.HOOKER_SERVICE_BASIC)
                                             {
                                                 NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "mini@prostitutes@sexlow_veh", "low_car_bj_loop_player");
                                                 NAPI.Player.PlayPlayerAnimation(target, (int)(Constants.AnimationFlags.Loop), "mini@prostitutes@sexlow_veh", "low_car_bj_loop_female");
 
-                                                // Creamos el timer para acabar el servicio
+                                                // Timer to finish the service
                                                 Timer sexTimer = new Timer(Hooker.OnSexServiceTimer, player, 120000, Timeout.Infinite);
                                                 Hooker.sexTimerList.Add(player.Value, sexTimer);
                                             }
@@ -2482,13 +2520,13 @@ namespace WiredPlayers.globals
                                                 NAPI.Player.PlayPlayerAnimation(player, (int)(Constants.AnimationFlags.Loop), "mini@prostitutes@sexlow_veh", "low_car_sex_loop_player");
                                                 NAPI.Player.PlayPlayerAnimation(target, (int)(Constants.AnimationFlags.Loop), "mini@prostitutes@sexlow_veh", "low_car_sex_loop_female");
 
-                                                // Creamos el timer para acabar el servicio
+                                                // Timer to finish the service
                                                 Timer sexTimer = new Timer(Hooker.OnSexServiceTimer, player, 180000, Timeout.Infinite);
                                                 Hooker.sexTimerList.Add(player.Value, sexTimer);
                                             }
 
-                                            // Añadimos el log del pago
-                                            Database.LogPayment(player.Name, target.Name, "Servicio de prostitución", amount);
+                                            // Save payment log
+                                            Database.LogPayment(player.Name, target.Name, Messages.GEN_HOOKER, amount);
                                         }
                                     }
                                     else
@@ -2499,9 +2537,7 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-
-                    // Acaba el aceptar servicio y empieza el aceptar directo.
-                    case "directo":
+                    case Messages.ARG_INTERVIEW:
                         if (NAPI.Player.IsPlayerInAnyVehicle(player) == false)
                         {
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_IN_VEHICLE);
@@ -2522,9 +2558,7 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-
-                    // Acaba el aceptar directo y empieza el aceptar dinero.
-                    case "dinero":
+                    case Messages.ARG_MONEY:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PAYMENT) == true)
                         {
                             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_PAYMENT);
@@ -2532,26 +2566,26 @@ namespace WiredPlayers.globals
 
                             if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                             {
-                                // Calculamos el dinero del pagador
                                 int money = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_MONEY);
 
                                 if (amount > 0 && money >= amount)
                                 {
-                                    // Cambiamos el dinero de manos
                                     int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_MONEY, playerMoney + amount);
                                     NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_MONEY, money - amount);
 
-                                    // Reseteamos las variables
+                                    // Reset the entity data
                                     NAPI.Data.ResetEntityData(player, EntityData.JOB_OFFER_PRICE);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_PAYMENT);
 
-                                    // Enviamos el mensaje
-                                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + "Has dado " + amount + "$ a " + player.Name + ".");
-                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + target.Name + " te ha pagado " + amount + "$.");
+                                    // Send the messages to both players
+                                    String playerMessage = String.Format(Messages.INF_PLAYER_PAID, target.Name, amount);
+                                    String targetMessage = String.Format(Messages.INF_TARGET_PAID, amount, player.Name);
+                                    NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerMessage);
+                                    NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetMessage);
 
-                                    // Logeamos el pago en base de datos
-                                    Database.LogPayment(target.Name, player.Name, "Pago entre jugadores", amount);
+                                    // Save the logs into database
+                                    Database.LogPayment(target.Name, player.Name, Messages.GEN_PAYMENT_PLAYERS, amount);
                                 }
                                 else
                                 {
@@ -2564,9 +2598,7 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-
-                    // Acepta el vehículo del otro jugador
-                    case "vehiculo":
+                    case Messages.ARG_VEHICLE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_SELLING_VEHICLE) == true)
                         {
                             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
@@ -2575,17 +2607,13 @@ namespace WiredPlayers.globals
 
                             if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                             {
-                                // Calculamos el dinero del pagador
                                 int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
                                 if (money >= amount)
                                 {
-
-                                    // Obtenemos el vehículo
                                     String vehicleModel = String.Empty;
                                     Vehicle vehicle = Vehicles.GetVehicleById(vehicleId);
-
-                                    // Cambiamos el dueño del vehículo
+                                    
                                     if (vehicle == null)
                                     {
                                         VehicleModel vehModel = Vehicles.GetParkedVehicleById(vehicleId);
@@ -2597,26 +2625,21 @@ namespace WiredPlayers.globals
                                         NAPI.Data.SetEntityData(vehicle, EntityData.VEHICLE_OWNER, player.Name);
                                         vehicleModel = NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_MODEL);
                                     }
-
-                                    // Creamos los mensajes de venta
-                                    String playerString = String.Format(Messages.INF_VEHICLE_BUY, target.Name, vehicleModel, amount);
-                                    String targetString = String.Format(Messages.INF_VEHICLE_BOUGHT, player.Name, vehicleModel, amount);
-
-                                    // Cambiamos el dinero de manos
+                                    
                                     int targetMoney = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, money - amount);
                                     NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_BANK, targetMoney + amount);
-
-                                    // Reseteamos las variables
+                                    
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_SELLING_VEHICLE);
                                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_SELLING_PRICE);
 
-                                    // Enviamos el mensaje
+                                    String playerString = String.Format(Messages.INF_VEHICLE_BUY, target.Name, vehicleModel, amount);
+                                    String targetString = String.Format(Messages.INF_VEHICLE_BOUGHT, player.Name, vehicleModel, amount);
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerString);
                                     NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetString);
 
                                     // Logeamos el pago en base de datos
-                                    Database.LogPayment(target.Name, player.Name, "Venta de vehículo", amount);
+                                    Database.LogPayment(target.Name, player.Name, Messages.GEN_VEHICLE_SALE, amount);
                                 }
                                 else
                                 {
@@ -2630,7 +2653,7 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "casa":
+                    case Messages.ARG_HOUSE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_SELLING_HOUSE) == true)
                         {
                             Client target = NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB_PARTNER);
@@ -2639,43 +2662,33 @@ namespace WiredPlayers.globals
 
                             if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) == true)
                             {
-                                // Calculamos el dinero del pagador
                                 int money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
 
                                 if (money >= amount)
                                 {
-
-                                    // Obtenemos la casa
                                     HouseModel house = House.GetHouseById(houseId);
-
-                                    //SEGURIDAD ADICIONAL: Se podría abusar de vender a la vez la casa al estado y a una persona.
+                                    
                                     if (house.owner == target.Name)
                                     {
-                                        // Cambiamos el dueño de la casa
                                         house.owner = player.Name;
                                         Database.KickTenantsOut(house.id);
                                         house.tenants = 2;
                                         Database.UpdateHouse(house);
-
-                                        // Creamos los mensajes de venta
-                                        String playerString = String.Format(Messages.INF_HOUSE_BUYTO, target.Name, amount);
-                                        String targetString = String.Format(Messages.INF_HOUSE_BOUGHT, player.Name, amount);
-
-                                        // Cambiamos el dinero de manos
+                                        
                                         int targetMoney = NAPI.Data.GetEntitySharedData(target, EntityData.PLAYER_BANK);
                                         NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, money - amount);
                                         NAPI.Data.SetEntitySharedData(target, EntityData.PLAYER_BANK, targetMoney + amount);
-
-                                        // Reseteamos las variables
+                                        
                                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_SELLING_HOUSE);
                                         NAPI.Data.ResetEntityData(player, EntityData.PLAYER_SELLING_PRICE);
-
-                                        // Enviamos el mensaje
+                                        
+                                        String playerString = String.Format(Messages.INF_HOUSE_BUYTO, target.Name, amount);
+                                        String targetString = String.Format(Messages.INF_HOUSE_BOUGHT, player.Name, amount);
                                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + playerString);
                                         NAPI.Chat.SendChatMessageToPlayer(target, Constants.COLOR_INFO + targetString);
 
-                                        // Logeamos el pago en base de datos
-                                        Database.LogPayment(target.Name, player.Name, "Venta de casa", amount);
+                                        // Log the payment into database
+                                        Database.LogPayment(target.Name, player.Name, Messages.GEN_HOUSE_SALE, amount);
                                     }
                                     else
                                     {
@@ -2691,37 +2704,32 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "casaestado":
+                    case Messages.ARG_STATE_HOUSE:
                         if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_SELLING_HOUSE_STATE) == true)
                         {
                             HouseModel house = House.GetHouseById(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SELLING_HOUSE_STATE));
-                            int amount = (int)Math.Round(house.price * 0.7);
+                            int amount = (int)Math.Round(house.price * Constants.HOUSE_SALE_STATE);
 
                             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PLAYING) == true)
                             {
-
-                                //SEGURIDAD ADICIONAL: Que la casa siga siendo mía.
                                 if (house.owner == player.Name)
                                 {
-                                    //Vendemos la casa
-                                    house.status = Constants.HOUSE_STATE_BUYABLE;
-                                    house.owner = "";
                                     house.locked = true;
+                                    house.owner = String.Empty;
+                                    house.status = Constants.HOUSE_STATE_BUYABLE;
                                     NAPI.TextLabel.SetTextLabelText(house.houseLabel, House.GetHouseLabelText(house));
                                     NAPI.World.RemoveIpl(house.ipl);
                                     Database.KickTenantsOut(house.id);
                                     house.tenants = 2;
                                     Database.UpdateHouse(house);
-
-                                    //Metemos el dinero al jugador
+                                    
                                     int playerMoney = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK);
                                     NAPI.Data.SetEntitySharedData(player, EntityData.PLAYER_BANK, playerMoney + amount);
-
-                                    //Registramos la venta
-                                    Database.LogPayment(player.Name, "El estado", "Venta de casa", amount);
-
-                                    //Se lo contamos
+                                    
                                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_SUCCESS + String.Format(Messages.SUC_HOUSE_SOLD, amount));
+
+                                    // Log the payment into the database
+                                    Database.LogPayment(player.Name, Messages.GEN_STATE, Messages.GEN_HOUSE_SALE, amount);
                                 }
                                 else
                                 {
@@ -2737,8 +2745,8 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("recoger")]
-        public void RecogerCommand(Client player)
+        [Command(Messages.COM_PICK_UP)]
+        public void PickUpCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
@@ -2753,10 +2761,9 @@ namespace WiredPlayers.globals
                 ItemModel item = GetClosestItem(player);
                 if (item != null)
                 {
-                    // Obtenemos el objeto del suelo
+                    // Get the item on the ground
                     ItemModel playerItem = GetPlayerItemModelFromHash(player.Value, item.hash);
-
-                    // Borramos el objeto
+                    
                     NAPI.Entity.DeleteEntity(item.objectHandle);
 
                     if (playerItem != null)
@@ -2771,19 +2778,19 @@ namespace WiredPlayers.globals
                         playerItem = item;
                     }
 
-                    // Cambiamos los datos del objeto
+                    // Get the new owner of the item
                     playerItem.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
                     playerItem.ownerIdentifier = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
                     Database.UpdateItem(playerItem);
-
-                    // Ejecutamos la animación de recoger objetos
+                    
+                    // Play the animation
                     NAPI.Player.PlayPlayerAnimation(player, 0, "random@domestic", "pickup_low");
-
-                    // Añadimos el objeto a la mano del personaje
+                    
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(playerItem.hash);
                     playerItem.objectHandle = NAPI.Object.CreateObject(UInt32.Parse(playerItem.hash), playerItem.position, new Vector3(0.0f, 0.0f, 0.0f), (byte)playerItem.dimension);
                     NAPI.Entity.AttachEntityToEntity(playerItem.objectHandle, player, "PH_R_Hand", businessItem.position, businessItem.rotation);
                     NAPI.Data.SetEntityData(player, EntityData.PLAYER_RIGHT_HAND, playerItem.id);
+
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_PICKED_ITEM);
                 }
                 else
@@ -2806,21 +2813,20 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("tirar")]
-        public void TirarCommand(Client player)
+        [Command(Messages.COM_DROP)]
+        public void DropCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_RIGHT_HAND) == true)
             {
                 int itemId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
                 ItemModel item = GetItemModelFromId(itemId);
                 BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
-
-                // Quitamos una unidad del inventario
+                
                 item.amount--;
                 Database.UpdateItem(item);
-
-                // Miramos si hay más objetos en el suelo
+                
                 ItemModel closestItem = GetClosestItemWithHash(player, item.hash);
+
                 if (closestItem != null)
                 {
                     closestItem.amount++;
@@ -2837,27 +2843,24 @@ namespace WiredPlayers.globals
                     closestItem.id = Database.AddNewItem(closestItem);
                     itemList.Add(closestItem);
                 }
-
-                // Comprobamos si era el último
+                
                 if (item.amount == 0)
                 {
-                    // Quitamos el objeto de la mano
+                    // Remove the item from the hand
                     NAPI.Entity.DetachEntity(item.objectHandle);
                     NAPI.Entity.DeleteEntity(item.objectHandle);
                     NAPI.Data.ResetEntityData(player, EntityData.PLAYER_RIGHT_HAND);
-
-                    // Actualizamos la lista
+                    
+                    // Remove the item
                     Database.RemoveItem(item.id);
                     itemList.Remove(item);
                 }
-
-                // Mandamos el mensaje
+                
                 String message = String.Format(Messages.INF_PLAYER_INVENTORY_DROP, businessItem.description.ToLower());
                 NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
             }
             else if (NAPI.Data.HasEntitySharedData(player, EntityData.PLAYER_WEAPON_CRATE) == true)
             {
-                // Obtenemos el la caja del personaje
                 WeaponCrateModel weaponCrate = Weapons.GetPlayerCarriedWeaponCrate(player.Value);
 
                 if (weaponCrate != null)
@@ -2866,12 +2869,11 @@ namespace WiredPlayers.globals
                     weaponCrate.carriedEntity = String.Empty;
                     weaponCrate.carriedIdentifier = 0;
 
-                    // Colocamos el objeto en su posición
+                    // Place the crate on the ground
                     NAPI.Entity.DetachEntity(weaponCrate.crateObject);
                     NAPI.Entity.SetEntityPosition(weaponCrate.crateObject, weaponCrate.position);
-
-                    // Mandamos el mensaje al jugador
-                    String message = String.Format(Messages.INF_PLAYER_INVENTORY_DROP, "caja de armas");
+                    
+                    String message = String.Format(Messages.INF_PLAYER_INVENTORY_DROP, Messages.GEN_WEAPON_CRATE);
                     NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                 }
             }
@@ -2881,10 +2883,9 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("duda", Messages.GEN_HELP_REQUEST, GreedyArg = true)]
-        public void DudaCommand(Client player, String message)
+        [Command(Messages.COM_TICKET, Messages.GEN_HELP_REQUEST, GreedyArg = true)]
+        public void TicketCommand(Client player, String message)
         {
-            // Miramos si tiene alguna duda abierta
             foreach (AdminTicketModel ticket in adminTicketList)
             {
                 if (player.Value == ticket.playerId)
@@ -2894,13 +2895,13 @@ namespace WiredPlayers.globals
                 }
             }
 
-            // No tiene ninguna duda, creamos una nueva
+            // Create a new ticket
             AdminTicketModel adminTicket = new AdminTicketModel();
             adminTicket.playerId = player.Value;
             adminTicket.question = message;
             adminTicketList.Add(adminTicket);
 
-            // Enviamos el mensaje al jugador y administradores
+            // Send the message to the staff online
             foreach (Client target in NAPI.Pools.GetAllPlayers())
             {
                 if (NAPI.Data.HasEntityData(target, EntityData.PLAYER_PLAYING) && NAPI.Data.GetEntityData(target, EntityData.PLAYER_ADMIN_RANK) > 0)
@@ -2914,10 +2915,10 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("puerta")]
-        public void PuertaCommand(Client player)
+        [Command(Messages.COM_DOOR)]
+        public void DoorCommand(Client player)
         {
-            // Miramos si está en su casa
+            // Check if the player's in his house
             foreach (HouseModel house in House.houseList)
             {
                 if ((player.Position.DistanceTo(house.position) <= 1.5f && player.Dimension == house.dimension) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == house.id)
@@ -2930,15 +2931,14 @@ namespace WiredPlayers.globals
                     {
                         house.locked = !house.locked;
                         Database.UpdateHouse(house);
-
-                        // Mandamos el mensaje al jugador
+                        
                         NAPI.Chat.SendChatMessageToPlayer(player, house.locked ? Constants.COLOR_INFO + Messages.INF_HOUSE_LOCKED : Constants.COLOR_INFO + Messages.INF_HOUSE_OPENED);
                     }
                     return;
                 }
             }
 
-            // Miramos si está en su negocio
+            // Check if the player's in his business
             foreach (BusinessModel business in Business.businessList)
             {
                 if ((player.Position.DistanceTo(business.position) <= 1.5f && player.Dimension == business.dimension) || NAPI.Data.GetEntityData(player, EntityData.PLAYER_BUSINESS_ENTERED) == business.id)
@@ -2951,32 +2951,30 @@ namespace WiredPlayers.globals
                     {
                         business.locked = !business.locked;
                         Database.UpdateBusiness(business);
-
-                        // Mandamos el mensaje al jugador
+                        
                         NAPI.Chat.SendChatMessageToPlayer(player, business.locked ? Constants.COLOR_INFO + Messages.INF_BUSINESS_LOCKED : Constants.COLOR_INFO + Messages.INF_BUSINESS_OPENED);
                     }
                     return;
                 }
             }
 
-            // No está en ninguna casa ni negocio
+            // He's not in any house or business
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_NOT_HOUSE_BUSINESS);
         }
 
-        [Command("complemento", Messages.GEN_COMPLEMENT_COMMAND)]
-        public void ComplementoCommand(Client player, String type, String action)
+        [Command(Messages.COM_COMPLEMENT, Messages.GEN_COMPLEMENT_COMMAND)]
+        public void ComplementCommand(Client player, String type, String action)
         {
-            // Obtenemos el identificador del personaje
-            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
             ClothesModel clothes = null;
+            int playerId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID);
 
-            if (action.ToLower() == "poner" || action.ToLower() == "quitar")
+            if (action.ToLower() == Messages.ARG_WEAR || action.ToLower() == Messages.ARG_REMOVE)
             {
                 switch (type.ToLower())
                 {
-                    case "mascara":
+                    case Messages.ARG_MASK:
                         clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_MASK);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3008,9 +3006,9 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "bolsa":
+                    case Messages.ARG_BAG:
                         clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_BAGS);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3042,9 +3040,9 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "accesorio":
+                    case Messages.ARG_ACCESSORY:
                         clothes = GetDressedClothesInSlot(playerId, 0, Constants.CLOTHES_ACCESSORIES);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3076,9 +3074,9 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "sombrero":
+                    case Messages.ARG_HAT:
                         clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_HATS);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3117,9 +3115,9 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "gafas":
+                    case Messages.ARG_GLASSES:
                         clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_GLASSES);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3158,9 +3156,9 @@ namespace WiredPlayers.globals
                             }
                         }
                         break;
-                    case "pendientes":
+                    case Messages.ARG_EARRINGS:
                         clothes = GetDressedClothesInSlot(playerId, 1, Constants.ACCESSORY_EARS);
-                        if (action.ToLower() == "poner")
+                        if (action.ToLower() == Messages.ARG_WEAR)
                         {
                             if (clothes == null)
                             {
@@ -3210,112 +3208,11 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command("jugador")]
-        public void JugadorCommand(Client player)
+        [Command(Messages.COM_PLAYER)]
+        public void PlayerCommand(Client player)
         {
-            int rolePoints = NAPI.Data.GetEntityData(player, EntityData.PLAYER_ROLE_POINTS);
-            String sex = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? "Masculino" : "Femenino";
-            String age = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_AGE) + " años";
-            String money = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_MONEY) + "$";
-            String bank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_BANK) + "$";
-            String job = "Sin trabajo";
-            String faction = "Sin facción";
-            String rank = "Sin rango";
-            String houses = String.Empty;
-            String ownedVehicles = String.Empty;
-            String lentVehicles = NAPI.Data.GetEntityData(player, EntityData.PLAYER_VEHICLE_KEYS);
-            TimeSpan played = TimeSpan.FromMinutes(NAPI.Data.GetEntityData(player, EntityData.PLAYER_PLAYED));
-
-            // Miramos si tiene un trabajo
-            foreach (JobModel jobModel in Constants.JOB_LIST)
-            {
-                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) == jobModel.job)
-                {
-                    job = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
-                    break;
-                }
-            }
-
-            // Miramos si tiene una facción
-            foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
-            {
-                if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_FACTION) == factionModel.faction && NAPI.Data.GetEntityData(player, EntityData.PLAYER_RANK) == factionModel.rank)
-                {
-                    switch (factionModel.faction)
-                    {
-                        case Constants.FACTION_POLICE:
-                            faction = "Policía";
-                            break;
-                        case Constants.FACTION_EMERGENCY:
-                            faction = "Emergencias";
-                            break;
-                        case Constants.FACTION_NEWS:
-                            faction = "Weazel News";
-                            break;
-                        case Constants.FACTION_TOWNHALL:
-                            faction = "Ayuntamiento";
-                            break;
-                        case Constants.FACTION_TAXI_DRIVER:
-                            faction = "Servicio de transportes";
-                            break;
-                        default:
-                            faction = "Sin facción";
-                            break;
-                    }
-
-                    // Establecemos el rango
-                    rank = NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
-                    break;
-                }
-            }
-
-            // Miramos si tiene alguna casa alquilada
-            if (NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_RENT_HOUSE) > 0)
-            {
-                houses += " " + NAPI.Data.GetEntitySharedData(player, EntityData.PLAYER_RENT_HOUSE);
-            }
-
-            // Miramos si tiene alguna casa en propiedad
-            foreach (HouseModel house in House.houseList)
-            {
-                if (house.owner == player.Name)
-                {
-                    houses += " " + house.id;
-                }
-            }
-
-            // Miramos si tiene algún vehículo en propiedad
-            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
-            {
-                if (NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_OWNER) == player.Name)
-                {
-                    ownedVehicles += " " + NAPI.Data.GetEntityData(vehicle, EntityData.VEHICLE_ID);
-                }
-            }
-
-            // Miramos entre los vehículos aparcados
-            foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
-            {
-                if (parkedVehicle.vehicle.owner == player.Name)
-                {
-                    ownedVehicles += " " + parkedVehicle.vehicle.id;
-                }
-            }
-
-            // Mostramos la información
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos básicos:");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Nombre: " + player.Name + "; Sexo: " + sex + "; Edad: " + age + "; Dinero: " + money + "; Banco: " + bank);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Datos de empleo:");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Trabajo: " + job + "; Facción: " + faction + "; Rango: " + rank);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Propiedades:");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Casas: " + houses);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos propios: " + ownedVehicles);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Vehículos cedidos: " + lentVehicles);
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + " ");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + "Otros datos:");
-            NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_HELP + "Tiempo jugado: " + (int)played.TotalHours + "h " + played.Minutes + "m; Puntos de rol: " + rolePoints);
+            // Get players basic data
+            GetPlayerBasicData(player, player);
         }
     }
 }

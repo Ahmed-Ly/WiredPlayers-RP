@@ -250,7 +250,7 @@ namespace WiredPlayers.fastfood
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_ORDER_TIMEOUT);
         }
 
-        [Command(Commands.COMMAND_ORDERS)]
+        [Command(Messages.COM_ORDERS)]
         public void OrdersCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)

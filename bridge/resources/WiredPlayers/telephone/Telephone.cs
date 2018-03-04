@@ -156,7 +156,7 @@ namespace WiredPlayers.telephone
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PHONE_DISCONNECTED);
         }
 
-        [Command(Commands.COMMAND_CALL, Messages.GEN_PHONE_CALL_COMMAND)]
+        [Command(Messages.COM_CALL, Messages.GEN_PHONE_CALL_COMMAND)]
         public void CallCommand(Client player, String called)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_PHONE_TALKING) || NAPI.Data.HasEntityData(player, EntityData.PLAYER_CALLING) == true)
@@ -387,7 +387,7 @@ namespace WiredPlayers.telephone
             }
         }
 
-        [Command(Commands.COMMAND_ANSWER)]
+        [Command(Messages.COM_ANSWER)]
         public void AnswerCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_CALLING) || NAPI.Data.HasEntityData(player, EntityData.PLAYER_PHONE_TALKING) == true)
@@ -444,7 +444,7 @@ namespace WiredPlayers.telephone
             }
         }
 
-        [Command(Commands.COMMAND_HANG)]
+        [Command(Messages.COM_HANG)]
         public void HangCommand(Client player)
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_CALLING) == true)
@@ -486,7 +486,7 @@ namespace WiredPlayers.telephone
             }
         }
 
-        [Command(Commands.COMMAND_SMS, Messages.GEN_SMS_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_SMS, Messages.GEN_SMS_COMMAND, GreedyArg = true)]
         public void SmsCommand(Client player, int number, String message)
         {
             ItemModel item = Globals.GetItemInEntity(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID), Constants.ITEM_ENTITY_RIGHT_HAND);
@@ -547,7 +547,7 @@ namespace WiredPlayers.telephone
             }
         }
 
-        [Command(Commands.COMMAND_CONTACTS, Messages.GEN_CONTACTS_COMMAND)]
+        [Command(Messages.COM_CONTACTS, Messages.GEN_CONTACTS_COMMAND)]
         public void AgendaCommand(Client player, String action)
         {
             ItemModel item = Globals.GetItemInEntity(NAPI.Data.GetEntityData(player, EntityData.PLAYER_SQL_ID), Constants.ITEM_ENTITY_RIGHT_HAND);
@@ -559,11 +559,11 @@ namespace WiredPlayers.telephone
 
                 switch (action.ToLower())
                 {
-                    case Commands.ARGUMENT_NUMBER:
+                    case Messages.ARG_NUMBER:
                         String message = String.Format(Messages.INF_PHONE_NUMBER, phoneNumber);
                         NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + message);
                         break;
-                    case Commands.ARGUMENT_VIEW:
+                    case Messages.ARG_VIEW:
                         if (contacts.Count > 0)
                         {
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPhoneContacts", NAPI.Util.ToJson(contacts), Constants.ACTION_LOAD);
@@ -573,10 +573,10 @@ namespace WiredPlayers.telephone
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CONTACT_LIST_EMPTY);
                         }
                         break;
-                    case Commands.ARGUMENT_ADD:
+                    case Messages.ARG_ADD:
                         NAPI.ClientEvent.TriggerClientEvent(player, "addContactWindow", Constants.ACTION_ADD);
                         break;
-                    case Commands.ARGUMENT_MODIFY:
+                    case Messages.ARG_MODIFY:
                         if (contacts.Count > 0)
                         {
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPhoneContacts", NAPI.Util.ToJson(contacts), Constants.ACTION_RENAME);
@@ -586,7 +586,7 @@ namespace WiredPlayers.telephone
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CONTACT_LIST_EMPTY);
                         }
                         break;
-                    case Commands.ARGUMENT_REMOVE:
+                    case Messages.ARG_REMOVE:
                         if (contacts.Count > 0)
                         {
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPhoneContacts", NAPI.Util.ToJson(contacts), Constants.ACTION_DELETE);
@@ -596,7 +596,7 @@ namespace WiredPlayers.telephone
                             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_ERROR + Messages.ERR_CONTACT_LIST_EMPTY);
                         }
                         break;
-                    case Commands.ARGUMENT_SMS:
+                    case Messages.ARG_SMS:
                         if (contacts.Count > 0)
                         {
                             NAPI.ClientEvent.TriggerClientEvent(player, "showPhoneContacts", NAPI.Util.ToJson(contacts), Constants.ACTION_SMS);

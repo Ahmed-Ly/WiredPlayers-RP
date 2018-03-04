@@ -170,7 +170,7 @@ namespace WiredPlayers.house
             }
         }
 
-        [Command(Commands.COMMAND_RENTABLE, Messages.GEN_RENTABLE_COMMAND)]
+        [Command(Messages.COM_RENTABLE, Messages.GEN_RENTABLE_COMMAND)]
         public void RentableCommand(Client player, int amount = 0)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED) == 0)
@@ -223,7 +223,7 @@ namespace WiredPlayers.house
             }
         }
 
-        [Command(Commands.COMMAND_RENT)]
+        [Command(Messages.COM_RENT)]
         public void RentCommand(Client player)
         {
             foreach (HouseModel house in houseList)
@@ -276,7 +276,7 @@ namespace WiredPlayers.house
             }
         }
 
-        [Command(Commands.COMMAND_WARDROBE)]
+        [Command(Messages.COM_WARDROBE)]
         public void WardrobeCommand(Client player)
         {
             int houseId = NAPI.Data.GetEntityData(player, EntityData.PLAYER_HOUSE_ENTERED);

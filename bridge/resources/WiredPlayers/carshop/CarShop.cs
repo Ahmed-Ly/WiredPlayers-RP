@@ -76,21 +76,21 @@ namespace WiredPlayers.carshop
         public void OnResourceStart()
         {
             // Car dealer creation
-            carShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(-56.88f, -1097.12f, 26.52f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            carShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Messages.COM_CATALOG, new Vector3(-56.88f, -1097.12f, 26.52f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
             TextLabel carShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(-56.88f, -1097.12f, 26.42f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip carShopBlip = NAPI.Blip.CreateBlip(new Vector3(-56.88f, -1097.12f, 26.52f));
             NAPI.Blip.SetBlipName(carShopBlip, Messages.GEN_CAR_DEALER);
             NAPI.Blip.SetBlipSprite(carShopBlip, 225);
 
             // Motorcycle dealer creation
-            motorbikeShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(286.76f, -1148.36f, 29.29f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            motorbikeShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Messages.COM_CATALOG, new Vector3(286.76f, -1148.36f, 29.29f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
             TextLabel motorbikeShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(286.76f, -1148.36f, 29.19f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip motorbikeShopBlip = NAPI.Blip.CreateBlip(new Vector3(286.76f, -1148.36f, 29.29f));
             NAPI.Blip.SetBlipName(motorbikeShopBlip, Messages.GEN_MOTORCYCLE_DEALER);
             NAPI.Blip.SetBlipSprite(motorbikeShopBlip, 226);
 
             // Boat dealer creation
-            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COMMAND_CATALOG, new Vector3(-711.6249f, -1299.427f, 5.41f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
+            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Messages.COM_CATALOG, new Vector3(-711.6249f, -1299.427f, 5.41f), 10.0f, 0.5f, 4, new Color(255, 255, 153));
             TextLabel shipShopSubTextLabel = NAPI.TextLabel.CreateTextLabel(Messages.GEN_CATALOG_HELP, new Vector3(-711.6249f, -1299.427f, 5.31f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
             Blip shipShopBlip = NAPI.Blip.CreateBlip(new Vector3(-711.6249f, -1299.427f, 5.41f));
             NAPI.Blip.SetBlipName(shipShopBlip, Messages.GEN_BOAT_DEALER);
@@ -305,7 +305,7 @@ namespace WiredPlayers.carshop
             NAPI.Chat.SendChatMessageToPlayer(player, Constants.COLOR_INFO + Messages.INF_PLAYER_TEST_VEHICLE);
         }
 
-        [Command(Commands.COMMAND_CATALOG)]
+        [Command(Messages.COM_CATALOG)]
         public void CatalogoCommand(Client player)
         {
             int carShop = GetClosestCarShop(player);

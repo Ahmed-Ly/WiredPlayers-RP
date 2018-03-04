@@ -244,7 +244,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_SAY, Messages.GEN_SAY_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_SAY, Messages.GEN_SAY_COMMAND, GreedyArg = true)]
         public void DecirCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -257,7 +257,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_YELL, Messages.GEN_YELL_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_YELL, Messages.GEN_YELL_COMMAND, GreedyArg = true)]
         public void GritarCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -270,7 +270,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_WHISPER, Messages.GEN_WHISPER_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_WHISPER, Messages.GEN_WHISPER_COMMAND, GreedyArg = true)]
         public void SusurrarCommand(Client player, String message)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -283,25 +283,25 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_ME, Messages.GEN_ME_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_ME, Messages.GEN_ME_COMMAND, GreedyArg = true)]
         public void MeCommand(Client player, String message)
         {
             SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
-        [Command(Commands.COMMAND_DO, Messages.GEN_DO_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_DO, Messages.GEN_DO_COMMAND, GreedyArg = true)]
         public void DoCommand(Client player, String message)
         {
             SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_DO, NAPI.Entity.GetEntityDimension(player) > 0 ? 7.5f : 20.0f);
         }
 
-        [Command(Commands.COMMAND_OOC, Messages.GEN_OOC_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_OOC, Messages.GEN_OOC_COMMAND, GreedyArg = true)]
         public void OocCommand(Client player, String message)
         {
             SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_OOC, NAPI.Entity.GetEntityDimension(player) > 0 ? 5.0f : 10.0f);
         }
 
-        [Command(Commands.COMMAND_LUCK)]
+        [Command(Messages.COM_LUCK)]
         public void SuCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -316,7 +316,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_AME, Messages.GEN_AME_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_AME, Messages.GEN_AME_COMMAND, GreedyArg = true)]
         public void AmeCommand(Client player, String message = "")
         {
             if (NAPI.Data.HasEntityData(player, EntityData.PLAYER_AME) == true)
@@ -345,7 +345,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_MEGAPHONE, Messages.GEN_MEGAPHONE_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_MEGAPHONE, Messages.GEN_MEGAPHONE_COMMAND, GreedyArg = true)]
         public void MegafonoCommand(Client player, String message)
         {
             if (NAPI.Player.IsPlayerInAnyVehicle(player) == true)
@@ -368,7 +368,7 @@ namespace WiredPlayers.chat
             }
         }
 
-        [Command(Commands.COMMAND_PM, Messages.GEN_MP_COMMAND, GreedyArg = true)]
+        [Command(Messages.COM_PM, Messages.GEN_MP_COMMAND, GreedyArg = true)]
         public void MpCommand(Client player, String arguments)
         {
             Client target = null;

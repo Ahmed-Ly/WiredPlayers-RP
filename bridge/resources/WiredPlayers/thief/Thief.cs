@@ -210,7 +210,7 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command(Commands.COMMAND_FORCE)]
+        [Command(Messages.COM_FORCE)]
         public void ForceCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -260,7 +260,7 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command(Commands.COMMAND_STEAL)]
+        [Command(Messages.COM_STEAL)]
         public void StealCommand(Client player)
         {
             if (player.Position.DistanceTo(new Vector3(-286.7586f, -849.3693f, 31.74337f)) > 1150.0f)
@@ -346,7 +346,7 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command(Commands.COMMAND_HOTWIRE)]
+        [Command(Messages.COM_HOTWIRE)]
         public void HotwireCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_KILLED) != 0)
@@ -401,7 +401,7 @@ namespace WiredPlayers.thief
             }
         }
 
-        [Command(Commands.COMMAND_PAWN)]
+        [Command(Messages.COM_PAWN)]
         public void PawnCommand(Client player)
         {
             if (NAPI.Data.GetEntityData(player, EntityData.PLAYER_JOB) != Constants.JOB_THIEF)
