@@ -72,7 +72,6 @@
 
   <!-- Global variables and functions -->
   <script src="globals/Constants.cs"/>
-  <script src="globals/Commands.cs"/>
   <script src="globals/EntityData.cs"/>
   <script src="globals/Globals.cs"/>
   <script src="globals/Messages.cs"/>
